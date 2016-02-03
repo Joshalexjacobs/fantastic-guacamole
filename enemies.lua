@@ -42,6 +42,7 @@ enemies = {}
 function addEnemy(ID)
   table.insert(enemies, enemy)
   --parseID(ID)
+
 end
 
 function updateEnemies()

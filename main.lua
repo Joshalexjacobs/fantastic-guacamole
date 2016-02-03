@@ -8,6 +8,7 @@
 4. Change player.lastDir system
 5. Read this https://www.reddit.com/r/gamedev/comments/25tk7d/finally_finished_my_multipart_technical_series/
 6. And these https://www.reddit.com/r/gamedev/comments/1f83c5/3_articles_about_component_entity_systems/
+7. Implement game states (menu, pause, game over, etc...)
 --]]
 
 -- Includes: --
@@ -45,7 +46,7 @@ function love.load(arg)
   -- other
   loadController()
   love.window.setMode( windowWidth, windowHeight, {fullscreen=false, vsync=true})
-  love.mouse.setVisible(false)
+  --love.mouse.setVisible(false)
 
   loadPlayer(world)
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera

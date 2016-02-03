@@ -8,7 +8,7 @@ behaviourTable = {
   movement1 = {
     run = {
       'a',
-      update = runBehaviour
+      update = runBehaviour -- to call: behaviourTable.movement1.run.update('')
     },
     walk = 'b',
     hover = 'c',
@@ -48,7 +48,7 @@ function parseID(ID) -- azzzz
 
   -- for i=1,ID.size(),1 do
   --  another loop here?
-  -- 
+  --
   --  if ID[i] ==
   --
   --end
