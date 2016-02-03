@@ -45,7 +45,10 @@ behaviourTable = {
 
 function parseID(ID) -- azzzz
   -- parse ID and add behaviours to the enemies.behaviours table
-
+  for i=1, table.getn(ID) do
+    print(ID[i])
+    -- another loop? i really rather only do 1 other loop, not 2
+  end
   -- for i=1,ID.size(),1 do
   --  another loop here?
   --

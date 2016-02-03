@@ -41,7 +41,7 @@ enemies = {}
 
 function addEnemy(ID)
   table.insert(enemies, enemy)
-  --parseID(ID)
+  parseID(ID)
 
 end
 
