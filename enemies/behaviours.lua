@@ -1,58 +1,76 @@
 -- behaviours.lua
 
-local function runBehaviour(a)
+function runBehaviour(a)
     print(a)
 end
 
 behaviourTable = {
-  movement1 = {
-    run = {
-      'a',
-      update = runBehaviour -- to call: behaviourTable.movement1.run.update('')
+  { -- movement 1
+    {
+      name = "run",
+      update = runBehaviour -- to call behaviourTable[i][j].update
     },
-    walk = 'b',
-    hover = 'c',
-    fly = 'd',
-    static = 'e',
-    none = 'z'
+    {
+      name = "walk"
+    },
+    {
+      name = "hover"
+    },
+    {
+      name = "fly"
+    },
+    {
+      name = "static"
+    }
   },
-
-  movement2 = {
-    jump = 'a',
-    rotate = 'b',
-    teleport = 'c',
-    rise = 'd',
-    spawn = 'e',
-    wallcrawl = 'f',
-    none = 'z'
+  { -- movement 2
+    {
+      name = "jump"
+    },
+    {
+      name = "rotate"
+    },
+    {
+      name = "teleport"
+    },
+    {
+      name = "rise"
+    },
+    {
+      name = "spawn"
+    },
+    {
+      name = "wallcrawl"
+    }
   },
-
-  attack = {
-    shoot = 'a',
-    grenade = 'b',
-    shootNGrenade = 'c',
-    none = 'z'
-  },
-
-  other1 = {
-    none = 'z'
-  },
-
-  other2 = {
-    none = 'z'
+  { -- movement 3
+    {
+      name = "shoot"
+    },
+    {
+      name = "grenade"
+    },
+    {
+      name = "shootNGrenade" -- ???
+    }
   }
 }
 
-function parseID(ID) -- azzzz
-  -- parse ID and add behaviours to the enemies.behaviours table
-  for i=1, table.getn(ID) do
-    print(ID[i])
-    -- another loop? i really rather only do 1 other loop, not 2
+function parseID(ID)
+  result = {}
+
+  for i=1, table.getn(behaviourTable) do
+    if ID[i] == "" and i == table.getn(ID) then -- if the last element is empty...
+      break -- break out of the loop
+    end
+
+    for j=1, table.getn(behaviourTable[i]) do
+      if ID[i] == behaviourTable[i][j].name then
+        table.insert(result, behaviourTable[i][j])
+      end
+    end
+
   end
-  -- for i=1,ID.size(),1 do
-  --  another loop here?
-  --
-  --  if ID[i] ==
-  --
-  --end
+  
+  return result
 end

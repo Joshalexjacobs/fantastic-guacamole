@@ -40,15 +40,19 @@ enemies = {}
 -- function generateEnemies() -- randomly generates an enemy based on optional parameters
 
 function addEnemy(ID)
+  enemy.behaviours = parseID(ID)
   table.insert(enemies, enemy)
-  parseID(ID)
-
 end
 
 function updateEnemies()
-  for i, enemy in ipairs(enemies) do
-    -- enemy stuff here
-  end
+  --for i = 1, table.getn(enemies) do
+    --for j=1, table.getn(enemies[i].behaviours) do
+      --enemies[i].behaviours[j].update('s')
+    --end
+  --end
+  enemies[1].behaviours[1].update('q')
+  print(enemies[1].behaviours[1].name)
+  --enemies[1].x
 end
 
 function drawEnemies()

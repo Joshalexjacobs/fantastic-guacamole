@@ -22,6 +22,9 @@ local player = require 'player'
 local enemies = require 'enemies'
 local bump   = require 'collision/bump'
 
+
+require 'enemies/behaviours'
+
 -- Globals: --
 local debug = true
 
@@ -53,7 +56,7 @@ function love.load(arg)
 
   -- test functions:
   --addEnemy("azzzz")
-  addEnemy({'a','z','z','z','z'})
+  addEnemy({"run","",""})
 end
 
 function love.update(dt)
@@ -68,6 +71,7 @@ function love.update(dt)
   updatePlayer(dt, world)
   updateBullets(dt, bounds.left)
 
+  updateEnemies()
 end
 
 -- will be removing this at a later time
