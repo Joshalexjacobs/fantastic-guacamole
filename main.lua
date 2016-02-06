@@ -71,7 +71,7 @@ function love.update(dt)
   updatePlayer(dt, world)
   updateBullets(dt, bounds.left)
 
-  updateEnemies()
+  updateEnemies(dt)
 end
 
 -- will be removing this at a later time

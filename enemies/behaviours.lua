@@ -1,7 +1,8 @@
 -- behaviours.lua
 
-function runBehaviour(a)
-    print(a)
+function runBehaviour(dt, enemy)
+    enemy.dx = enemy.speed * dt
+    enemy.x = enemy.x + enemy.dx -- need to add each enemy to the world
 end
 
 behaviourTable = {
@@ -71,6 +72,6 @@ function parseID(ID)
     end
 
   end
-  
+
   return result
 end
