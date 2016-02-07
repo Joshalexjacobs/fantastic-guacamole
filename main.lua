@@ -56,7 +56,7 @@ function love.load(arg)
 
   -- test functions:
   --addEnemy("azzzz")
-  addEnemy({"run","",""})
+  addEnemy({"run","",""}, world)
 end
 
 function love.update(dt)
@@ -71,7 +71,7 @@ function love.update(dt)
   updatePlayer(dt, world)
   updateBullets(dt, bounds.left)
 
-  updateEnemies(dt)
+  updateEnemies(dt, world)
 end
 
 -- will be removing this at a later time
