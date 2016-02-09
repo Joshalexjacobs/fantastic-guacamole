@@ -2,6 +2,7 @@
 
 -- Player Class: --
 local player = {
+  name = "player",
   x = 375,
   y = 250,
   w = 32,
@@ -20,7 +21,7 @@ local player = {
   color = {255, 255, 255, 255}
 }
 
-midpoint = 0
+local midpoint
 
 function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
@@ -37,6 +38,14 @@ local jumpTimerMax = 0.4
 local jumpTimer = jumpTimerMax
 
 local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
+
+local playerFilter = function(item, other)
+  if other.name == "enemy" then
+    return 'touch'
+  elseif other.name == "block" then
+    return 'slide'
+  end
+end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
   -- MOVEMENT --
@@ -91,7 +100,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if player.dx ~= 0 or player.dy ~= 0 then
     local cols
-    player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy)
+    player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, playerFilter)
     if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
       player.isGrounded = true
     else
@@ -107,7 +116,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('up')) and shootTimer <= 0 then
-    addBullet(player.x, player.y + player.w, player.lastDir)
+    addBullet(player.x, player.y + player.w, player.lastDir, world)
     shootTimer = shootTimerMax
   end
 

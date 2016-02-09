@@ -2,13 +2,21 @@
 -- Todo: --
   Current Issues:
   - Some player movement choppiness, this might be due to the camera movement itself
-1. Implement enemies somehow, possible an entity.lua that adds behaviour to objects/enemies?
+1. Finish the Enemy/Behaviour system
 2. Basic obstacles and obstructions that the player has to jump over
 3. Force the player to tap the shoot button instead of just holding it down
 4. Change player.lastDir system
 5. Read this https://www.reddit.com/r/gamedev/comments/25tk7d/finally_finished_my_multipart_technical_series/
 6. And these https://www.reddit.com/r/gamedev/comments/1f83c5/3_articles_about_component_entity_systems/
-7. Implement game states (menu, pause, game over, etc...)
+7. Implement game states (menu, pause, game over, etc...) [love2d library known as HUMP]
+8. Decrease enemy/player hit boxes by a few pixels (5 or so)
+9. Add enemy zones
+10. Figure out enemy filters for bump (world). Maybe they should be unique to every enemy
+
+-- Things to Note: --
+1. Every item that is added to world MUST have a string called 'name'.
+2. Every object in world must also have a filter or else it may react unexpectedly.
+
 --]]
 
 -- Includes: --
@@ -69,7 +77,7 @@ function love.update(dt)
   -- update everything
   updateCFlux()
   updatePlayer(dt, world)
-  updateBullets(dt, bounds.left)
+  updateBullets(dt, bounds.left, world)
 
   updateEnemies(dt, world)
 end
