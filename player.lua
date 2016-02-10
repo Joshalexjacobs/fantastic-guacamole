@@ -41,7 +41,7 @@ local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
 
 local playerFilter = function(item, other)
   if other.name == "enemy" then
-    return 'touch'
+    return 'slide'
   elseif other.name == "block" then
     return 'slide'
   end

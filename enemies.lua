@@ -16,6 +16,13 @@ local enemy = {
   dy = 0,
   direction = "",
   behaviours = {},
+  filter = function(item, other) -- default enemy filter
+    if other.name == "player" then
+      return 'slide'
+    elseif other.name == "block" then
+      return 'slide'
+    end
+  end,
   color = {255, 0, 0, 255}
 }
 
@@ -30,7 +37,7 @@ function enemy.updateWorld(dt, world)
   -- constant force of gravity --
   enemy.dy = enemy.dy + (enemy.gravity * dt)
 
-  enemy.x, enemy.y = world:move(enemy, enemy.x + enemy.dx, enemy.y + enemy.dy)
+  enemy.x, enemy.y = world:move(enemy, enemy.x + enemy.dx, enemy.y + enemy.dy, enemy.filter)
 end
 
 enemies = {}
