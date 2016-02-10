@@ -1,4 +1,4 @@
--- behaviours.lua
+-- behaviours.lua --
 
 function runBehaviour(dt, enemy)
     enemy.dx = enemy.speed * dt
