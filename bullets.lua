@@ -30,6 +30,7 @@ function updateBullets(dt, left, world) -- add world as a parameter
     for j = 1, len do
       if cols[j].other.name == "enemy" then
         bullet.isDead = true
+        cols[j].other.isDead = true
         break
       end
     end

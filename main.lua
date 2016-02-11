@@ -13,10 +13,11 @@
 9. Add enemy zones
 10. Figure out enemy filters for bump (world). Maybe they should be unique to every enemy
 11. Add a level.lua file that will contain and handle all zones/enemies/environment
+
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
 2. Every object in world must also have a filter or else it may react unexpectedly.
-
+3. Bullets currently handle setting enemies.isDead to true because updateBullets is called before updateEnemies.
 --]]
 
 -- Includes: --
@@ -80,6 +81,7 @@ function love.update(dt)
   updateBullets(dt, bounds.left, world)
 
   updateEnemies(dt, world)
+  updateZones(player.x, player.y, player.w)
 end
 
 -- will be removing this at a later time

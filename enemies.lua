@@ -15,6 +15,7 @@ local enemy = {
   dx = 0,
   dy = 0,
   direction = "",
+  isDead = false,
   behaviours = {},
   filter = function(item, other) -- default enemy filter
     if other.name == "player" then
@@ -51,10 +52,15 @@ function addEnemy(ID, world)
 end
 
 function updateEnemies(dt, world) -- include world here?
-  for _,newEnemy in ipairs(enemies) do -- loops through number of enemies
+  for i, newEnemy in ipairs(enemies) do -- loops through number of enemies
     newEnemy.update(dt)
 
     newEnemy.updateWorld(dt, world)
+
+    if newEnemy.isDead then
+      world:remove(newEnemy) -- remove from world...
+      table.remove(enemies, i) -- ...and the bullets table
+    end
   end
 end
 

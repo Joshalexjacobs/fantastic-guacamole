@@ -17,7 +17,14 @@ zone = {
 zones = {}
 
 function addZone()
-  table.insert(zones, zone)
+  -- table.insert(zones, zone)
+end
+
+function updateZones(x, y, w)
+  if x + w > zone.x and x < zone.x + zone.w then
+    print("he in")
+  end
+  -- if the zone is no longer visible on the screen, then delete the zone
 end
 
 function drawZones() -- zone's draw function should only be called when debug is true
