@@ -12,7 +12,7 @@
 8. Decrease enemy/player hit boxes by a few pixels (5 or so)
 9. Add enemy zones
 10. Figure out enemy filters for bump (world). Maybe they should be unique to every enemy
-
+11. Add a level.lua file that will contain and handle all zones/enemies/environment
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
 2. Every object in world must also have a filter or else it may react unexpectedly.
@@ -30,8 +30,8 @@ local player = require 'player'
 local enemies = require 'enemies'
 local bump   = require 'collision/bump'
 
-
-require 'enemies/behaviours'
+require 'zones'
+--require 'enemies/behaviours'
 
 -- Globals: --
 local debug = true
@@ -44,8 +44,8 @@ local bounds = {
   height  = windowHeight,
   left    = 0,
   top     = 0,
-  rows    = 2,
-  columns = 20
+  rows    = 4,
+  columns = 30
 }
 
 local world = bump.newWorld() -- create a world with bump
@@ -63,8 +63,8 @@ function love.load(arg)
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:
-  --addEnemy("azzzz")
   addEnemy({"run","",""}, world)
+  addZone()
 end
 
 function love.update(dt)
@@ -107,6 +107,10 @@ function love.draw()
     drawBullets()
     drawEnemies()
 
+    if debug then
+      drawZones()
+    end
+
     -- draws that are determined by cflux
     setCFluxColor()
     drawBlocks()
@@ -118,5 +122,6 @@ function love.draw()
 
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
+    love.graphics.printf(math.floor(player.x + 0.5), 5, 550, 100)
   end
 end
