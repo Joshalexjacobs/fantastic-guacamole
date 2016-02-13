@@ -1,8 +1,7 @@
 -- behaviours.lua --
 
-function runBehaviour(dt, enemy)
-    enemy.dx = enemy.speed * dt
-    --enemy.x = enemy.x + enemy.dx -- need to add each enemy to the world
+function runBehaviour(dt, entity)
+    entity.dx = entity.speed * dt
 end
 
 behaviourTable = {
@@ -62,7 +61,7 @@ function parseID(ID)
 
   for i=1, table.getn(behaviourTable) do
     if ID[i] == "" and i == table.getn(ID) then -- if the last element is empty...
-      break -- break out of the loop
+      break
     end
 
     for j=1, table.getn(behaviourTable[i]) do

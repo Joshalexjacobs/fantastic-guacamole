@@ -28,7 +28,7 @@ require 'other/controller'
 local math   = require "math"
 local camera = require "camera"
 local player = require 'player'
-local enemies = require 'enemies'
+require 'enemies'
 local bump   = require 'collision/bump'
 
 require 'zones'
@@ -64,8 +64,9 @@ function love.load(arg)
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:
-  addEnemy({"run","",""}, world)
-  addZone()
+  addEnemy({"run","",""}, 501, 50, world)
+  addEnemy({"run","",""}, 400, 50, world)
+  --addZone()
 end
 
 function love.update(dt)
@@ -81,7 +82,7 @@ function love.update(dt)
   updateBullets(dt, bounds.left, world)
 
   updateEnemies(dt, world)
-  updateZones(player.x, player.y, player.w)
+  updateZones(player.x, player.y, player.w, world)
 end
 
 -- will be removing this at a later time

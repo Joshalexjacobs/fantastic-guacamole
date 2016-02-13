@@ -3,11 +3,18 @@
 -- zones indicate enemy spawns/item drops/boss encounters/trigger events
 -- all dependent on whether or not the player is inside of said zone (rectangle)
 
-zone = {
+local zone = {
   x = 750,
   y = 475,
   w = 400,
   h = 100,
+  spawnables = {
+    {
+      sBehaviours = {"run", "", ""},
+      count = 0,
+      max = 3
+    }
+  },
   color = {
     inner = {0, 250, 0, 20}, -- inner color
     outer = {0, 250, 0, 100} -- outer
@@ -16,15 +23,33 @@ zone = {
 
 zones = {}
 
+local function copy(obj, seen)
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
+  return res
+end
+
 function addZone()
+  -- local newZone = copy(zone, newZone)
   -- table.insert(zones, zone)
 end
 
-function updateZones(x, y, w)
+function updateZones(x, y, w, world)
   if x + w > zone.x and x < zone.x + zone.w then
-    print("he in")
+    for _, spawn in ipairs(zone.spawnables) do
+      if spawn.count < spawn.max then
+        addEnemy({"run", "", ""}, 100, 100, world)
+        spawn.count = spawn.count + 1
+        print("created")
+      end
+    end
   end
-  -- if the zone is no longer visible on the screen, then delete the zone
+
+  -- if the zone is no longer visible on the screen, then delete the zone?
 end
 
 function drawZones() -- zone's draw function should only be called when debug is true

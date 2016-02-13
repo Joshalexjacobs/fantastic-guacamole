@@ -1,5 +1,4 @@
 -- enemies.lua --
-
 require 'enemies/behaviours'
 
 -- Enemy Object --
@@ -10,7 +9,7 @@ local enemy = {
   y = 50, -- 511
   w = 32,
   h = 64,
-  speed = 10, -- increase me! 100
+  speed = 100, -- increase me! 100
   gravity = 9.8,
   dx = 0,
   dy = 0,
@@ -28,34 +27,51 @@ local enemy = {
 }
 
 -- Enemy Functions --
-function enemy.update(dt)
-  for i=1, table.getn(enemy.behaviours) do
-    enemy.behaviours[i].update(dt, enemy)
+function enemy.new()
+  local self = enemy
+  return self
+end
+
+function enemy.update(dt, newEnemy)
+  for i=1, table.getn(newEnemy.behaviours) do
+    newEnemy.behaviours[i].update(dt, newEnemy)
   end
 end
 
-function enemy.updateWorld(dt, world)
+function enemy.updateWorld(dt, newEnemy, world)
   -- constant force of gravity --
-  enemy.dy = enemy.dy + (enemy.gravity * dt)
+  newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 
-  enemy.x, enemy.y = world:move(enemy, enemy.x + enemy.dx, enemy.y + enemy.dy, enemy.filter)
+  newEnemy.x, newEnemy.y = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
 end
 
+-- Create Globals Table --
 enemies = {}
 
--- function generateEnemies() -- randomly generates an enemy based on optional parameters
+-- General Functions --
+local function copy(obj, seen)
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
+  return res
+end
 
-function addEnemy(ID, world)
-  enemy.behaviours = parseID(ID) -- returns list of behaviour functions
-  world:add(enemy, enemy.x, enemy.y, enemy.w, enemy.h) -- add enemy to world collision
-  table.insert(enemies, enemy)
+function addEnemy(ID, x, y, world)
+  local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
+  newEnemy.x, newEnemy.y = x, y
+  newEnemy.behaviours = parseID(ID) -- parse and return behaviours for this enemy
+
+  world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
+  table.insert(enemies, newEnemy)
 end
 
 function updateEnemies(dt, world) -- include world here?
   for i, newEnemy in ipairs(enemies) do -- loops through number of enemies
-    newEnemy.update(dt)
-
-    newEnemy.updateWorld(dt, world)
+    newEnemy.update(dt, newEnemy)
+    newEnemy.updateWorld(dt, newEnemy, world)
 
     if newEnemy.isDead then
       world:remove(newEnemy) -- remove from world...
@@ -65,10 +81,8 @@ function updateEnemies(dt, world) -- include world here?
 end
 
 function drawEnemies()
-  for _, enemy in ipairs(enemies) do
-    setColor(enemy.color) -- set each bullet's color
-    love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.w, enemy.h)
+  for _, newEnemy in ipairs(enemies) do
+    setColor(newEnemy.color) -- set each bullet's color
+    love.graphics.rectangle("fill", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
   end
 end
-
-return enemies
