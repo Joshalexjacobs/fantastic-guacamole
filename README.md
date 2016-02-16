@@ -4,7 +4,7 @@ The Guac that can't be stopped
 
 Todo (in order by priority)
 -------
-- Add a spawnable list to each zone object. Something like:
+- ~~Add a spawnable list to each zone object. Something like:~~
 ```
 spawnables = {
   {
