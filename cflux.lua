@@ -20,6 +20,11 @@ function setColor(r, g, b, a)
   love.graphics.setColor(r, g, b, a)
 end
 
+function setAlpha(a)
+  cflux.alpha = a
+  love.graphics.setColor(cflux.red, cflux.green, cflux.blue, cflux.alpha)
+end
+
 function setCFluxColor()
   love.graphics.setColor(cflux.red, cflux.green, cflux.blue, cflux.alpha)
 end

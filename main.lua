@@ -23,6 +23,7 @@
 -- Includes: --
 require 'collision/blocks'
 require 'cflux'
+require 'environment'
 require 'bullets'
 require 'other/controller'
 local math   = require "math"
@@ -44,9 +45,7 @@ local bounds = {
   width   = 5000,
   height  = windowHeight,
   left    = 0,
-  top     = 0,
-  rows    = 4,
-  columns = 30
+  top     = 0
 }
 
 local world = bump.newWorld() -- create a world with bump
@@ -85,18 +84,6 @@ function love.update(dt)
   updateZones(player.x, player.y, player.w, bounds.left, world, dt)
 end
 
--- will be removing this at a later time
-local function drawGrid()
-  local columnWidth = bounds.width / bounds.columns
-  for x=1, bounds.columns do
-    love.graphics.line(x*columnWidth, 0, x*columnWidth, bounds.height)
-  end
-  local rowHeight = bounds.height / bounds.rows
-  for y=1, bounds.rows do
-    love.graphics.line(0, y*rowHeight, bounds.width, y*rowHeight)
-  end
-end
-
 function love.draw()
 
   -- update camera
@@ -117,11 +104,9 @@ function love.draw()
     -- draws that are determined by cflux
     setCFluxColor()
     drawBlocks()
-
-    if debug then
-      drawGrid()
-    end
   end)
+
+  drawEnvironment()
 
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
