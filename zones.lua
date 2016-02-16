@@ -14,7 +14,7 @@ local zone = {
       count = 0,
       max = 3,
       spawnTimer = 0,
-      spawnTimerMax = 3
+      spawnTimerMax = .7
     }
   },
   color = {
@@ -42,10 +42,11 @@ end
 
 function updateZones(x, y, w, left, world, dt)
   if x + w > zone.x and x < zone.x + zone.w then
-    
+
       for _, spawn in ipairs(zone.spawnables) do
         if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
           spawn.spawnTimer = spawn.spawnTimerMax
+
           addEnemy({"run", "", ""}, left - 32, 511, world)
           spawn.count = spawn.count + 1
           print("created")
@@ -56,7 +57,7 @@ function updateZones(x, y, w, left, world, dt)
         end
       end
 
-    end
+    end -- elseif player leaves the zone, reset spawn count and timer
 
   -- if the zone is no longer visible on the screen, then delete the zone?
 end
