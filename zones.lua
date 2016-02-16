@@ -12,7 +12,9 @@ local zone = {
     {
       sBehaviours = {"run", "", ""},
       count = 0,
-      max = 3
+      max = 3,
+      spawnTimer = 0,
+      spawnTimerMax = 3
     }
   },
   color = {
@@ -38,16 +40,23 @@ function addZone()
   -- table.insert(zones, zone)
 end
 
-function updateZones(x, y, w, world)
+function updateZones(x, y, w, left, world, dt)
   if x + w > zone.x and x < zone.x + zone.w then
-    for _, spawn in ipairs(zone.spawnables) do
-      if spawn.count < spawn.max then
-        addEnemy({"run", "", ""}, 100, 100, world)
-        spawn.count = spawn.count + 1
-        print("created")
+    
+      for _, spawn in ipairs(zone.spawnables) do
+        if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
+          spawn.spawnTimer = spawn.spawnTimerMax
+          addEnemy({"run", "", ""}, left - 32, 511, world)
+          spawn.count = spawn.count + 1
+          print("created")
+        end
+
+        if spawn.spawnTimer > 0 then
+          spawn.spawnTimer = spawn.spawnTimer - (1 * dt)
+        end
       end
+
     end
-  end
 
   -- if the zone is no longer visible on the screen, then delete the zone?
 end

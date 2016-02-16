@@ -82,7 +82,7 @@ function love.update(dt)
   updateBullets(dt, bounds.left, world)
 
   updateEnemies(dt, world)
-  updateZones(player.x, player.y, player.w, world)
+  updateZones(player.x, player.y, player.w, bounds.left, world, dt)
 end
 
 -- will be removing this at a later time
