@@ -1,4 +1,4 @@
-local blocks = {}
+local blocksa = {}
 
 function loadBlocks()
   -- create randomly generated floating blocks, pillars in the foreground (in front of player), stars, stalagtites, and stalagmites
