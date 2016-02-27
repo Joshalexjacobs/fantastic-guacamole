@@ -18,6 +18,10 @@
 1. Every item that is added to world MUST have a string called 'name'.
 2. Every object in world must also have a filter or else it may react unexpectedly.
 3. Bullets currently handle setting enemies.isDead to true because updateBullets is called before updateEnemies.
+
+-- Credits: --
+-- Kikito for the bump and anim8 libraries.
+-- Ethan Smoller for introducing me to Love2d.
 --]]
 
 -- Includes: --
@@ -31,6 +35,7 @@ local camera = require "camera"
 local player = require 'player'
 require 'enemies'
 local bump   = require 'collision/bump'
+local anim8 = require 'anim8'
 
 require 'zones'
 --require 'enemies/behaviours'
@@ -59,7 +64,7 @@ function love.load(arg)
   love.window.setMode( windowWidth, windowHeight, {fullscreen=false, vsync=true})
   --love.mouse.setVisible(false)
 
-  loadPlayer(world)
+  loadPlayer(world, anim8) -- load player and player sprites
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:

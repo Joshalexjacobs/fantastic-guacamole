@@ -18,16 +18,29 @@ local player = {
   lastDir = 1, -- temporary solution and how it works:
               -- if lastDir is equal to 1 the player is facing right
               -- if it is equal to 0 then the player is facing left
+  spriteSheet = nil,
+  spiteGrid = nil,
+  animations = {},
   color = {255, 255, 255, 255}
 }
 
 local midpoint
 
-function loadPlayer(world)
+function loadPlayer(world, anim8)
   world:add(player, player.x, player.y, player.w, player.h)
+  midpoint = windowWidth / 2 -- calculate midpoint
 
-  -- calculate midpoint
-  midpoint = windowWidth / 2
+  -- load player sprites
+  player.spriteSheet = love.graphics.newImage('img/player/player.png')
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 448, 0, 0, 0)
+
+  player.animations = {
+    -- idlerun 1-6
+    -- horizontalshotrun 7-12
+    -- diagshotrun 13-18
+    -- look up 19
+    -- idle 20-21
+  }
 end
 
 -- Player Globals: --
@@ -133,6 +146,7 @@ end
 function drawPlayer()
   setColor(player.color) -- sets the player's color
   love.graphics.rectangle("fill", player.x, player.y, player.w, player.h)
+  love.graphics.draw(player.spriteSheet, 0, 0, 0, 2, 2, 0, 0)
 end
 
 return player
