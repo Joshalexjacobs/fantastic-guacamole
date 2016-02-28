@@ -36,10 +36,12 @@ function loadPlayer(world, anim8)
 
   player.animations = {
     -- idlerun 1-6
+      --anim8.newAnimation(player.spriteGrid('1-6'), 0.1)
+      -- try adding to table instead of creating the table here?
     -- horizontalshotrun 7-12
     -- diagshotrun 13-18
     -- look up 19
-    -- idle 20-21
+    -- idle 20-2l1
   }
 end
 
@@ -133,6 +135,12 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     shootTimer = shootTimerMax
   end
 
+
+  -- animation test
+  --for i=1,#player.animations do
+    --player.animations[1]:update(dt)
+  --end
+
 end
 
 function checkScreenMove(left)
@@ -146,7 +154,10 @@ end
 function drawPlayer()
   setColor(player.color) -- sets the player's color
   love.graphics.rectangle("fill", player.x, player.y, player.w, player.h)
-  love.graphics.draw(player.spriteSheet, 0, 0, 0, 2, 2, 0, 0)
+  --love.graphics.draw(player.spriteSheet, 0, 0, 0, 2, 2, 0, 0)
+  --for i=1,#player.animations do
+    --player.animations[1]:draw(player.spriteSheet, i*75, i*50)
+  --end
 end
 
 return player
