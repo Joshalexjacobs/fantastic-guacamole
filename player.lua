@@ -15,12 +15,15 @@ local player = {
   isJumping = false,
   isGrounded = false,
   isThrowing = false,
+  prevDir = 1, -- used for flipping animations
   lastDir = 1, -- temporary solution and how it works:
               -- if lastDir is equal to 1 the player is facing right
               -- if it is equal to 0 then the player is facing left
   spriteSheet = nil,
   spiteGrid = nil,
   animations = {},
+  curAnim = 1,
+  isRunning = false,
   color = {255, 255, 255, 255}
 }
 
@@ -32,16 +35,15 @@ function loadPlayer(world, anim8)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 448, 0, 0, 0)
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 448, 0, 0, 0.05)
 
   player.animations = {
-    -- idlerun 1-6
-      --anim8.newAnimation(player.spriteGrid('1-6'), 0.1)
-      -- try adding to table instead of creating the table here?
-    -- horizontalshotrun 7-12
-    -- diagshotrun 13-18
-    -- look up 19
-    -- idle 20-2l1
+    anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- idle
+    anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- idleRun
+    anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- horizontalShotRun
+    anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- diagShotRun
+    anim8.newAnimation(player.spriteGrid(1, 7), 0.1) -- lookUp
+    -- create a falling animation? row 2, column 2
   }
 end
 
@@ -131,15 +133,31 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('up')) and shootTimer <= 0 then
-    addBullet(player.x, player.y + player.w, player.lastDir, world)
+    addBullet(player.x + 40, player.y + player.w - 12, player.lastDir, world)
     shootTimer = shootTimerMax
   end
 
+  -- ANIMATION --
+  -- flip animations based on player's direction --
+  if player.lastDir ~= player.prevDir then
+    for i=1, table.getn(player.animations) do
+      player.animations[i]:flipH()
+      player.prevDir = player.lastDir
+    end
+  end
 
-  -- animation test
-  --for i=1,#player.animations do
-    --player.animations[1]:update(dt)
-  --end
+  -- set the player's current animation based on their movement
+  if player.dx <= 1 and player.dx >= -1 then player.curAnim = 1 -- if player speed is 0 anim is 1
+  elseif shootTimer <= 0 then
+    player.curAnim = 2 -- if player is moving and not shooting anim is 2
+    player.animations[3]:update(dt)
+  else
+    player.curAnim = 3
+    player.animations[2]:update(dt)
+  end -- if player is moving and shooting anim is 3
+
+  -- update the player's current animation --
+  player.animations[player.curAnim]:update(dt)
 
 end
 
@@ -153,11 +171,8 @@ end
 
 function drawPlayer()
   setColor(player.color) -- sets the player's color
-  love.graphics.rectangle("fill", player.x, player.y, player.w, player.h)
-  --love.graphics.draw(player.spriteSheet, 0, 0, 0, 2, 2, 0, 0)
-  --for i=1,#player.animations do
-    --player.animations[1]:draw(player.spriteSheet, i*75, i*50)
-  --end
+  -- love.graphics.rectangle("fill", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
+    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2, 2, 8, 32)
 end
 
 return player
