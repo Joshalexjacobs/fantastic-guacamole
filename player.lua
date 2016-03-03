@@ -133,7 +133,12 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('up')) and shootTimer <= 0 then
-    addBullet(player.x + 40, player.y + player.w - 12, player.lastDir, world)
+    if player.lastDir == 1 then
+      addBullet(player.x + 40, player.y + player.w - 12, player.lastDir, world)
+    else
+      addBullet(player.x - 15, player.y + player.w - 12, player.lastDir, world)
+    end
+
     shootTimer = shootTimerMax
   end
 
