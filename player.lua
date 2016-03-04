@@ -35,15 +35,15 @@ function loadPlayer(world, anim8)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 448, 0, 0, 0.05)
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 576, 0, 0, 0.05)
 
   player.animations = {
     anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- idle
     anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- idleRun
     anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- horizontalShotRun
     anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- diagShotRun
-    anim8.newAnimation(player.spriteGrid(1, 7), 0.1) -- lookUp
-    -- create a falling animation? row 2, column 2
+    anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- lookUp
+    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1) -- create a falling animation? row 2, column 2
   }
 end
 
@@ -152,13 +152,15 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   end
 
   -- set the player's current animation based on their movement
-  if player.dx <= 1 and player.dx >= -1 then player.curAnim = 1 -- if player speed is 0 anim is 1
+  if player.isJumping or not player.isGrounded then
+    player.curAnim = 6
+  elseif player.dx <= 1 and player.dx >= -1 then player.curAnim = 1 -- if player speed is 0 anim is 1
   elseif shootTimer <= 0 then
     player.curAnim = 2 -- if player is moving and not shooting anim is 2
-    player.animations[3]:update(dt)
+    player.animations[3]:update(dt) -- update the shotting+running anim at the same time
   else
-    player.curAnim = 3
-    player.animations[2]:update(dt)
+    player.curAnim = 3 -- if player is moving and shooting anim is 3
+    player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
   end -- if player is moving and shooting anim is 3
 
   -- update the player's current animation --
