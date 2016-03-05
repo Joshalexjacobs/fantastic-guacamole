@@ -8,7 +8,7 @@ local function drawScanLines()
   for x=1, 200 do
     love.graphics.line(x*columnWidth, 0, x*columnWidth, 800)
   end
-  
+
   local rowHeight = 600 / 150
   for y=1, 150 do
     love.graphics.line(0, y*rowHeight, 600, y*rowHeight)

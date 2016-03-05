@@ -20,6 +20,10 @@ function setColor(r, g, b, a)
   love.graphics.setColor(r, g, b, a)
 end
 
+function setCFluxShade()
+  setColor(cflux.red / 2,  cflux.green / 2, cflux.blue / 2, cflux.alpha)
+end
+
 function setAlpha(a)
   cflux.alpha = a
   love.graphics.setColor(cflux.red, cflux.green, cflux.blue, cflux.alpha)
@@ -29,7 +33,7 @@ function setCFluxColor()
   love.graphics.setColor(cflux.red, cflux.green, cflux.blue, cflux.alpha)
 end
 
-function generateRandomColor(dir)
+local function generateRandomColor(dir)
   newDir = dir
 
   while newDir == dir do -- loop to ensure that newDir is not the same as the previous one
@@ -39,7 +43,7 @@ function generateRandomColor(dir)
   return newDir
 end
 
-function updateColor(color, dir)
+local function updateColor(color, dir)
   if color == dir then
     dir = generateRandomColor(dir)
   elseif color > dir then
