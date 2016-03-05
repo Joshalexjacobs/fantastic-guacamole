@@ -142,7 +142,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     shootTimer = shootTimerMax
   end
 
-  -- ANIMATION --
+  -- ANIMATIONS --
   -- flip animations based on player's direction --
   if player.lastDir ~= player.prevDir then
     for i=1, table.getn(player.animations) do
@@ -178,8 +178,8 @@ end
 
 function drawPlayer()
   setColor(player.color) -- sets the player's color
-  -- love.graphics.rectangle("fill", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
-    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2, 2, 8, 32)
+    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
+    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2, 2, 8, 33) -- 8 and 33 are the offsets
 end
 
 return player

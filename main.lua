@@ -10,9 +10,8 @@
 6. And these https://www.reddit.com/r/gamedev/comments/1f83c5/3_articles_about_component_entity_systems/
 7. Implement game states (menu, pause, game over, etc...) [love2d library known as HUMP]
 8. Decrease enemy/player hit boxes by a few pixels (5 or so)
-9. Add enemy zones
-10. Figure out enemy filters for bump (world). Maybe they should be unique to every enemy
-11. Add a level.lua file that will contain and handle all zones/enemies/environment
+9. Add a level.lua file that will contain and handle all zones/enemies/environment
+10. Add parallax http://nova-fusion.com/2011/04/22/cameras-in-love2d-part-2-parallax-scrolling/
 
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
@@ -21,6 +20,7 @@
 
 -- Credits: --
 -- Kikito for the bump and anim8 libraries.
+-- Whoever made the camera library I'm using (should figure this out)
 -- Ethan Smoller for introducing me to Love2d.
 --]]
 
