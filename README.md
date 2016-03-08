@@ -2,7 +2,7 @@
 
 The Guac that can't be stopped
 
-core/amimation Todo (in order by priority)
+core/animation Todo (in order by priority)
 -------
 - Clean up the games appearance~~/add an animation library.~~ Make it look more presentable:
 
