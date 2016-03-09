@@ -57,7 +57,7 @@ local world = bump.newWorld() -- create a world with bump
 
 function love.load(arg)
   -- collision
-  addBlock(0, love.graphics.getHeight() - 25, bounds.width, 160, world) -- floor
+  addBlock(0, love.graphics.getHeight() - 150, bounds.width, 160, world) -- floor/ love.graphics.getHeight() - 150
 
   -- other
   loadController()
@@ -115,6 +115,6 @@ function love.draw()
 
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
-    love.graphics.printf(math.floor(player.x + 0.5), 5, 550, 100)
+    love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
   end
 end

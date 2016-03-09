@@ -35,7 +35,7 @@ function loadPlayer(world, anim8)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(34, 48, 102, 432, 0, 0, 0) -- 0.12 helps get rid of bleeding animations?
+  player.spriteGrid = anim8.newGrid(34, 48, 102, 432, 0, 0, 0)
 
   player.animations = {
     anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- idle
@@ -134,9 +134,9 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('up')) and shootTimer <= 0 then
     if player.lastDir == 1 then
-      addBullet(player.x + 40, player.y + player.w - 12, player.lastDir, world)
+      addBullet(player.x + 40, player.y + player.w - 10, player.lastDir, world)
     else
-      addBullet(player.x - 15, player.y + player.w - 12, player.lastDir, world)
+      addBullet(player.x - 15, player.y + player.w - 10, player.lastDir, world)
     end
 
     shootTimer = shootTimerMax

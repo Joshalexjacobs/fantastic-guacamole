@@ -5,7 +5,7 @@
 
 local zone = {
   x = 750,
-  y = 475,
+  y = 345, -- 475
   w = 400,
   h = 100,
   spawnables = {
@@ -47,7 +47,7 @@ function updateZones(x, y, w, left, world, dt)
         if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
           spawn.spawnTimer = spawn.spawnTimerMax
 
-          addEnemy({"run", "", ""}, left - 32, 511, world)
+          addEnemy({"run", "", ""}, left - 32, 50, world)
           spawn.count = spawn.count + 1
           print("created")
         end
