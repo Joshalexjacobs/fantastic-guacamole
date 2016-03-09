@@ -6,7 +6,7 @@ core/animation Todo (in order by priority)
 -------
 - Clean up the games appearance~~/add an animation library.~~ Make it look more presentable:
 
-  - Scale everything up
+  - ~~Scale everything up~~
   
   - Background image and content/randomly generated floating blocks.
 
