@@ -5,8 +5,8 @@ local player = {
   name = "player",
   x = 375,
   y = 250,
-  w = 32,
-  h = 64,
+  w = 24, --32
+  h = 72, --64
   dx = 0,
   dy = 0,
   speed = 200,
@@ -35,7 +35,7 @@ function loadPlayer(world, anim8)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 576, 0, 0, 0.05)
+  player.spriteGrid = anim8.newGrid(34, 48, 102, 432, 0, 0, 0) -- 0.12 helps get rid of bleeding animations?
 
   player.animations = {
     anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- idle
@@ -178,8 +178,8 @@ end
 
 function drawPlayer()
   setColor(player.color) -- sets the player's color
-    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
-    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2, 2, 8, 33) -- 8 and 33 are the offsets
+    love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
+    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- 8 and 33 are the offsets for scale 2....10 and 43 for scale 3
 end
 
 return player
