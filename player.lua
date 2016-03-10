@@ -14,17 +14,13 @@ local player = {
   termVel = -3,
   isJumping = false,
   isGrounded = false,
-  isThrowing = false,
   prevDir = 1, -- used for flipping animations
-  lastDir = 1, -- temporary solution and how it works:
-              -- if lastDir is equal to 1 the player is facing right
-              -- if it is equal to 0 then the player is facing left
+  lastDir = 1, -- 1 player is facing right, 0 player is facing left
+  controls = "right", -- can be up, upright, upleft, right, left, down, downright, and downleft
   spriteSheet = nil,
   spiteGrid = nil,
   animations = {},
   curAnim = 1,
-  isRunning = false,
-  color = {255, 255, 255, 255}
 }
 
 local midpoint
@@ -38,18 +34,21 @@ function loadPlayer(world, anim8)
   player.spriteGrid = anim8.newGrid(34, 48, 102, 432, 0, 0, 0)
 
   player.animations = {
-    anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- idle
-    anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- idleRun
-    anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- horizontalShotRun
-    anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- diagShotRun
-    anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- lookUp
-    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1) -- create a falling animation? row 2, column 2
+    anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- 1 idle
+    anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- 2 idleRun
+    anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- 3 horizontalShotRun
+    anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- 4 diagShotRun
+    anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- 5 lookUp
+    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1) -- 6 jump/fall
   }
 end
 
 -- Player Globals: --
 local shootTimerMax = 0.2
 local shootTimer = 0
+
+local animTimerMax = 0.5
+local animTimer = 0
 
 local jumpTimerMax = 0.4
 local jumpTimer = jumpTimerMax
@@ -64,21 +63,52 @@ local playerFilter = function(item, other)
   end
 end
 
+local function playerInput(dt)
+  if love.keyboard.isDown("d") or dPadRight() then
+    player.dx = player.speed * dt
+    player.lastDir = 1
+
+    if love.keyboard.isDown("w") then
+      player.controls = "upright"
+    elseif love.keyboard.isDown("s") then
+      player.controls = "downright"
+    else
+      player.controls = "right"
+    end
+
+  elseif love.keyboard.isDown("a") or dPadLeft() then
+    player.dx = -player.speed * dt
+    player.lastDir = 0
+
+    if love.keyboard.isDown("w") then
+      player.controls = "upleft"
+    elseif love.keyboard.isDown("s") then
+      player.controls = "downleft"
+    else
+      player.controls = "left"
+    end
+
+  elseif love.keyboard.isDown("w") then
+    player.controls = "up"
+
+  elseif love.keyboard.isDown("s") then
+    player.controls = "down"
+
+  else
+    if player.lastDir == 1 then player.controls = "right"
+    else player.controls = "left" end
+  end
+end
+
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
   -- MOVEMENT --
   -- player X movement --
-  if love.keyboard.isDown('right') or dPadRight() then
-    player.dx = player.speed * dt
-    player.lastDir = 1
-  elseif love.keyboard.isDown('left') or dPadLeft() then
-    player.dx = -player.speed * dt
-    player.lastDir = 0
-  end
+  playerInput(dt)
 
   -- deceleration --
-  if (love.keyboard.isDown("right") == false or dPadRight() == false) and player.dx > 0 then
+  if (dPadRight() == false or love.keyboard.isDown("d") == false) and player.dx > 0 then
 		player.dx = math.max((player.dx - decel * dt), 0)
-	elseif (love.keyboard.isDown("left") == false or dPadLeft() == false) and player.dx < 0 then
+	elseif (dPadLeft() == false or love.keyboard.isDown("a") == false) and player.dx < 0 then
 		player.dx = math.min((player.dx + decel * dt), 0)
   end
 
@@ -98,14 +128,14 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   jumpTimer = jumpTimer - (1 * dt)
 
   -- player jump --
-  if (love.keyboard.isDown('space') and not player.isJumping and player.isGrounded) or (pressX() and not player.isJumping and player.isGrounded) then -- when the player hits jump
+  if (love.keyboard.isDown('n') and not player.isJumping and player.isGrounded) or (pressX() and not player.isJumping and player.isGrounded) then -- when the player hits jump
     player.isJumping = true
     player.isGrounded = false
     player.dy = -player.initVel -- 6 is our current initial velocity
     jumpTimer = jumpTimerMax
-  elseif (love.keyboard.isDown('space') and jumpTimer > 0 and player.isJumping) or (pressX() and jumpTimer > 0 and player.isJumping) then
+  elseif (love.keyboard.isDown('n') and jumpTimer > 0 and player.isJumping) or (pressX() and jumpTimer > 0 and player.isJumping) then
     player.dy = player.dy + (-0.5)
-  elseif (not love.keyboard.isDown('space') and player.isJumping) or (not pressX() and player.isJumping) then -- if the player releases the jump button mid-jump...
+  elseif (not love.keyboard.isDown('n') and player.isJumping) or (not pressX() and player.isJumping) then -- if the player releases the jump button mid-jump...
     if player.dy < player.termVel then -- and if the player's velocity has reached the minimum velocity (minimum jump height)...
       player.dy = player.termVel -- terminate the jump
     end
@@ -126,13 +156,13 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   end
 
   -- SHOOTING --
-  -- decrement shootTimer --
-  if shootTimer > 0 then
-    shootTimer = shootTimer - (1 *  dt)
-  end
+  -- decrement shootTimer and animTimer--
+  if shootTimer > 0 then shootTimer = shootTimer - (1 * dt) end
+
+  if animTimer > 0 then animTimer = animTimer - (1 * dt) end
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
-  if (pressCircle() or love.keyboard.isDown('up')) and shootTimer <= 0 then
+  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 then
     if player.lastDir == 1 then
       addBullet(player.x + 40, player.y + player.w - 10, player.lastDir, world)
     else
@@ -140,6 +170,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     end
 
     shootTimer = shootTimerMax
+    animTimer = animTimerMax
   end
 
   -- ANIMATIONS --
@@ -153,19 +184,27 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- set the player's current animation based on their movement
   if player.isJumping or not player.isGrounded then
-    player.curAnim = 6
-  elseif player.dx <= 1 and player.dx >= -1 then player.curAnim = 1 -- if player speed is 0 anim is 1
-  elseif shootTimer <= 0 then
-    player.curAnim = 2 -- if player is moving and not shooting anim is 2
+    player.curAnim = 6 -- [JUMPING]
+  elseif player.dx <= 1.5 and player.dx >= -1.5 and love.keyboard.isDown('w') == false
+    then player.curAnim = 1 -- [IDLE]
+  elseif player.dx <= 1.5 and player.dx >= -1.5 and love.keyboard.isDown('w')
+    then player.curAnim = 5 -- [LOOKING UP]
+  elseif animTimer <= 0 then
+    player.curAnim = 2 -- [IDLE RUN]
     player.animations[3]:update(dt) -- update the shotting+running anim at the same time
-  else
-    player.curAnim = 3 -- if player is moving and shooting anim is 3
+    player.animations[4]:update(dt)
+  elseif love.keyboard.isDown('w') == false and animTimer > 0 then
+    player.curAnim = 3 -- [SHOOT N RUN HORIZONTAL]
     player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
-  end -- if player is moving and shooting anim is 3
+    player.animations[4]:update(dt)
+  elseif animTimer > 0 then
+    player.curAnim = 4-- [SHOOT N RUN DIAGONAL]
+    player.animations[3]:update(dt)
+    player.animations[2]:update(dt)
+  end
 
   -- update the player's current animation --
   player.animations[player.curAnim]:update(dt)
-
 end
 
 function checkScreenMove(left)
@@ -177,7 +216,7 @@ function checkScreenMove(left)
 end
 
 function drawPlayer()
-  setColor(player.color) -- sets the player's color
+  setColor({255, 255, 255, 255}) -- sets the player's color
     love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
     player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- 8 and 33 are the offsets for scale 2....10 and 43 for scale 3
 end
