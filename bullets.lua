@@ -8,9 +8,10 @@ local bulletFilter = function(item, other)
   end
 end
 
-function addBullet(xPos, yPos, direction, world, bulColor) -- add world as parameter
-  newBullet = {name = "bullet", x = xPos, y = yPos, w = 5, h = 5, speed = 500, dir = direction,  -- x pos, y pos, w, h, speed...
+function addBullet(xPos, yPos, direction, world, newDir, bulColor) -- add world as parameter
+  newBullet = {name = "bullet", x = xPos, y = yPos, w = 5, h = 5, speed = 500, dir = direction, actualDir = newDir, -- x pos, y pos, w, h, speed...
     color = bulColor or {255, 255, 255, 255}, dx = 0, dy = 0, isDead = false} -- ...color, dx and dy
+  print(newDir)
   world:add(newBullet, newBullet.x, newBullet.y, newBullet.w, newBullet.h) -- add all bullets to world...
   table.insert(bullets, newBullet)
 end
@@ -19,13 +20,17 @@ function updateBullets(dt, left, world) -- add world as a parameter
   for i, bullet in ipairs(bullets) do
     local cols, len -- cols is an array of objects the bullet is coliding with and len is the length of cols
 
-    if bullet.dir == 1 then
-      bullet.dx = bullet.speed * dt
+    --[[if bullet.dir == 1 then
+      bullet.dx = bullet.speed * dt -- math.cos(o.dir) * o.speed * dt
       bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x + bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
     elseif bullet.dir == 0 then
       bullet.dx = bullet.speed * dt
       bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x - bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
-    end
+    end]]
+
+    bullet.dx = math.cos(bullet.actualDir) * bullet.speed * dt
+    bullet.dy = math.sin(bullet.actualDir) * bullet.speed * dt
+    bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x - bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
 
     for j = 1, len do
       if cols[j].other.name == "enemy" then
