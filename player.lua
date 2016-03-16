@@ -16,7 +16,6 @@ local player = {
   isGrounded = false,
   prevDir = 1, -- used for flipping animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
-  --controls = "right", -- can be up, upright, upleft, right, left, down, downright, and downleft
   controls = {0, {x = 0, y = 0}},
   spriteSheet = nil,
   spiteGrid = nil,
@@ -72,10 +71,10 @@ local function playerInput(dt)
     player.lastDir = 1
 
     if love.keyboard.isDown("w") then -- UpRight
-      player.controls[1] = (math.pi * 5)/4
-      --player.controls[2].x, player.controls[2].y = 1, 0 -- UpRight offset
+      player.controls[1] = (math.pi * 7)/6 -- 5 pi / 4
+      player.controls[2].x, player.controls[2].y = 24, -15 -- UpRight offset
     elseif love.keyboard.isDown("s") then -- DownRight
-      player.controls[1] = (math.pi * 3)/4
+      player.controls[1] = (math.pi * 5)/6 -- 3 pi / 4
     else
       player.controls[1] = math.pi -- Right
       player.controls[2].x, player.controls[2].y = 40, 14
@@ -86,9 +85,10 @@ local function playerInput(dt)
     player.lastDir = 0
 
     if love.keyboard.isDown("w") then -- UpLeft
-      player.controls[1] = -0.785398
+      player.controls[1] = -0.523599
+      player.controls[2].x, player.controls[2].y = 0, -15
     elseif love.keyboard.isDown("s") then -- DownLeft
-      player.controls[1] = math.pi/4
+      player.controls[1] = math.pi/6 -- pi/4
     else
       player.controls[1] = 0 -- Left
       player.controls[2].x, player.controls[2].y = -15, 14
@@ -96,7 +96,11 @@ local function playerInput(dt)
 
   elseif love.keyboard.isDown("w") then -- Up
     player.controls[1] = (math.pi * 3)/2
-    player.controls[2].x, player.controls[2].y = 15, -28
+    if player.lastDir == 1 then
+      player.controls[2].x, player.controls[2].y = 17, -28
+    else
+      player.controls[2].x, player.controls[2].y = 11, -28
+    end
   elseif love.keyboard.isDown("s") then -- Down
     player.controls[1] = math.pi/2
     player.controls[2].x, player.controls[2].y = 15, 25
@@ -225,7 +229,7 @@ end
 
 function drawPlayer()
   setColor({255, 255, 255, 255}) -- sets the player's color
-    love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
+    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
     player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- 8 and 33 are the offsets for scale 2....10 and 43 for scale 3
 end
 
