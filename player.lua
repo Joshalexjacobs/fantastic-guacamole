@@ -17,7 +17,7 @@ local player = {
   prevDir = 1, -- used for flipping animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
   --controls = "right", -- can be up, upright, upleft, right, left, down, downright, and downleft
-  controls = 0,
+  controls = {0, {x = 0, y = 0}},
   spriteSheet = nil,
   spiteGrid = nil,
   animations = {},
@@ -71,35 +71,44 @@ local function playerInput(dt)
     player.dx = player.speed * dt
     player.lastDir = 1
 
-    if love.keyboard.isDown("w") then
-      player.controls = (math.pi * 5)/4
-    elseif love.keyboard.isDown("s") then
-      player.controls = (math.pi * 3)/4
+    if love.keyboard.isDown("w") then -- UpRight
+      player.controls[1] = (math.pi * 5)/4
+      --player.controls[2].x, player.controls[2].y = 1, 0 -- UpRight offset
+    elseif love.keyboard.isDown("s") then -- DownRight
+      player.controls[1] = (math.pi * 3)/4
     else
-      player.controls = math.pi
+      player.controls[1] = math.pi -- Right
+      player.controls[2].x, player.controls[2].y = 40, 14
     end
 
   elseif love.keyboard.isDown("a") or dPadLeft() then
     player.dx = -player.speed * dt
     player.lastDir = 0
 
-    if love.keyboard.isDown("w") then
-      player.controls = -0.785398
-    elseif love.keyboard.isDown("s") then
-      player.controls = math.pi/4
+    if love.keyboard.isDown("w") then -- UpLeft
+      player.controls[1] = -0.785398
+    elseif love.keyboard.isDown("s") then -- DownLeft
+      player.controls[1] = math.pi/4
     else
-      player.controls = 0
+      player.controls[1] = 0 -- Left
+      player.controls[2].x, player.controls[2].y = -15, 14
     end
 
-  elseif love.keyboard.isDown("w") then
-    player.controls = (math.pi * 3)/2
+  elseif love.keyboard.isDown("w") then -- Up
+    player.controls[1] = (math.pi * 3)/2
+    player.controls[2].x, player.controls[2].y = 15, -28
+  elseif love.keyboard.isDown("s") then -- Down
+    player.controls[1] = math.pi/2
+    player.controls[2].x, player.controls[2].y = 15, 25
 
-  elseif love.keyboard.isDown("s") then
-    player.controls = math.pi/2
-
-  else
-    if player.lastDir == 1 then player.controls = math.pi
-    else player.controls = 0 end
+  else -- else player isn't hitting any of these keys so default them back to left/right
+    if player.lastDir == 1 then
+      player.controls[1] = math.pi
+      player.controls[2].x, player.controls[2].y = 40, 14
+    else
+      player.controls[1] = 0
+      player.controls[2].x, player.controls[2].y = -15, 14
+    end
   end
 
   -- deceleration
@@ -166,12 +175,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 then
-    --[[if player.lastDir == 1 then
-      addBullet(player.x + 40, player.y + player.w - 10, player.lastDir, world, player.controls)
-    else
-      addBullet(player.x - 15, player.y + player.w - 10, player.lastDir, world, player.controls)
-    end]]
-    addBullet(player.x + 40, player.y + player.w - 10, player.lastDir, world, player.controls)
+    addBullet(player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
 
     shootTimer = shootTimerMax
     animTimer = animTimerMax
@@ -224,27 +228,5 @@ function drawPlayer()
     love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
     player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- 8 and 33 are the offsets for scale 2....10 and 43 for scale 3
 end
-
---[[
-local function checkAngle(angle)
-  if angle < 22.5 and angle > -22.5 then-- right
-    return 0
-  elseif angle < -22.5 and angle > -67.5 then -- top right
-    return (7*math.pi)/4
-  elseif angle < -67.5 and angle > -112.5 then -- up
-    return (3*math.pi)/2 (pi/2)
-  elseif angle < -112.5 and angle > -157.5 then -- top left
-    return (5*math.pi)/4
-  elseif angle > 157.5 or angle < -157.5 then -- left
-    return math.pi
-  elseif angle < 157.5 and angle > 112.5 then -- bottom left
-    return (3*math.pi)/4
-  elseif angle < 112.5 and angle > 67.5 then -- down
-    return math.pi/2 (-pi/2)
-  elseif angle < 67.5 and angle > 22.5 then -- bottom right
-    return math.pi/4
-  end
-end
-]]
 
 return player

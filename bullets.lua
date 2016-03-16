@@ -11,7 +11,7 @@ end
 function addBullet(xPos, yPos, direction, world, newDir, bulColor) -- add world as parameter
   newBullet = {name = "bullet", x = xPos, y = yPos, w = 5, h = 5, speed = 500, dir = direction, actualDir = newDir, -- x pos, y pos, w, h, speed...
     color = bulColor or {255, 255, 255, 255}, dx = 0, dy = 0, isDead = false} -- ...color, dx and dy
-  print(newDir)
+    
   world:add(newBullet, newBullet.x, newBullet.y, newBullet.w, newBullet.h) -- add all bullets to world...
   table.insert(bullets, newBullet)
 end
