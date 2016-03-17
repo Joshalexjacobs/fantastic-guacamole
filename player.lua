@@ -14,9 +14,9 @@ local player = {
   termVel = -3,
   isJumping = false,
   isGrounded = false,
-  prevDir = 1, -- used for flipping animations
+  prevDir = 1, -- used for mirroring animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
-  controls = {0, {x = 0, y = 0}},
+  controls = {0, {x = 0, y = 0}, true},
   spriteSheet = nil,
   spiteGrid = nil,
   animations = {},
@@ -71,13 +71,17 @@ local function playerInput(dt)
     player.lastDir = 1
 
     if love.keyboard.isDown("w") then -- UpRight
-      player.controls[1] = (math.pi * 7)/6 -- 5 pi / 4
-      player.controls[2].x, player.controls[2].y = 24, -15 -- UpRight offset
+      player.controls[1] = (math.pi * 7)/6
+      player.controls[2].x, player.controls[2].y = 24, -15
+      player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
-      player.controls[1] = (math.pi * 5)/6 -- 3 pi / 4
+      player.controls[1] = (math.pi * 5)/6
+      if player.isJumping or not player.isGrounded then player.controls[3] = true
+      else player.controls[3] = false end
     else
       player.controls[1] = math.pi -- Right
       player.controls[2].x, player.controls[2].y = 40, 14
+      player.controls[3] = true
     end
 
   elseif love.keyboard.isDown("a") or dPadLeft() then
@@ -87,31 +91,41 @@ local function playerInput(dt)
     if love.keyboard.isDown("w") then -- UpLeft
       player.controls[1] = -0.523599
       player.controls[2].x, player.controls[2].y = 0, -15
+      player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
-      player.controls[1] = math.pi/6 -- pi/4
+      player.controls[1] = math.pi/6
+      if player.isJumping or not player.isGrounded then player.controls[3] = true
+      else player.controls[3] = false end
     else
       player.controls[1] = 0 -- Left
       player.controls[2].x, player.controls[2].y = -15, 14
+      player.controls[3] = true
     end
 
   elseif love.keyboard.isDown("w") then -- Up
     player.controls[1] = (math.pi * 3)/2
+    player.controls[3] = true
     if player.lastDir == 1 then
       player.controls[2].x, player.controls[2].y = 17, -28
     else
       player.controls[2].x, player.controls[2].y = 11, -28
     end
+
   elseif love.keyboard.isDown("s") then -- Down
     player.controls[1] = math.pi/2
     player.controls[2].x, player.controls[2].y = 15, 25
+    if player.isJumping or not player.isGrounded then player.controls[3] = true
+    else player.controls[3] = false end
 
   else -- else player isn't hitting any of these keys so default them back to left/right
     if player.lastDir == 1 then
       player.controls[1] = math.pi
       player.controls[2].x, player.controls[2].y = 40, 14
+      player.controls[3] = true
     else
       player.controls[1] = 0
       player.controls[2].x, player.controls[2].y = -15, 14
+      player.controls[3] = true
     end
   end
 
@@ -179,7 +193,10 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
   if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 then
-    addBullet(player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
+    -- if player is grounded...
+    if player.controls[3] then
+      addBullet(player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
+    end
 
     shootTimer = shootTimerMax
     animTimer = animTimerMax
@@ -190,8 +207,8 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if player.lastDir ~= player.prevDir then
     for i=1, table.getn(player.animations) do
       player.animations[i]:flipH()
-      player.prevDir = player.lastDir
     end
+    player.prevDir = player.lastDir
   end
 
   -- set the player's current animation based on their movement
