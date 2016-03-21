@@ -31,7 +31,7 @@ function loadPlayer(world, anim8)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(34, 48, 102, 432, 0, 0, 0)
+  player.spriteGrid = anim8.newGrid(34, 48, 102, 480, 0, 0, 0) --432
 
   player.animations = {
     anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- 1 idle
@@ -39,7 +39,8 @@ function loadPlayer(world, anim8)
     anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- 3 horizontalShotRun
     anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- 4 diagShotRun
     anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- 5 lookUp
-    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1) -- 6 jump/fall
+    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1), -- 6 jump/fall
+    anim8.newAnimation(player.spriteGrid('2-3', 9, 1, 10), 0.1 ) -- 7 diagShotRunDown
   }
 end
 
@@ -76,8 +77,8 @@ local function playerInput(dt)
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
       player.controls[1] = (math.pi * 5)/6
-      if player.isJumping or not player.isGrounded then player.controls[3] = true
-      else player.controls[3] = false end
+      player.controls[2].x, player.controls[2].y = 35, 25
+      player.controls[3] = true
     else
       player.controls[1] = math.pi -- Right
       player.controls[2].x, player.controls[2].y = 40, 14
@@ -94,8 +95,8 @@ local function playerInput(dt)
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
       player.controls[1] = math.pi/6
-      if player.isJumping or not player.isGrounded then player.controls[3] = true
-      else player.controls[3] = false end
+      player.controls[2].x, player.controls[2].y = -10, 25
+      player.controls[3] = true
     else
       player.controls[1] = 0 -- Left
       player.controls[2].x, player.controls[2].y = -15, 14
@@ -222,14 +223,24 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     player.curAnim = 2 -- [IDLE RUN]
     player.animations[3]:update(dt) -- update the shotting+running anim at the same time
     player.animations[4]:update(dt)
-  elseif love.keyboard.isDown('w') == false and animTimer > 0 then
-    player.curAnim = 3 -- [SHOOT N RUN HORIZONTAL]
-    player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
+    player.animations[7]:update(dt)
+
+  elseif animTimer > 0 and love.keyboard.isDown('s') then
+    print("awdad")
+    player.curAnim = 7 -- [SHOOT N RUN DIAGONAL DOWN]
+    player.animations[3]:update(dt)
+    player.animations[2]:update(dt)
     player.animations[4]:update(dt)
-  elseif animTimer > 0 then
+  elseif animTimer > 0 and love.keyboard.isDown('w') then
     player.curAnim = 4-- [SHOOT N RUN DIAGONAL]
     player.animations[3]:update(dt)
     player.animations[2]:update(dt)
+    player.animations[7]:update(dt)
+  elseif animTimer > 0 then
+    player.curAnim = 3 -- [SHOOT N RUN HORIZONTAL]
+    player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
+    player.animations[4]:update(dt)
+    player.animations[7]:update(dt)
   end
 
   -- update the player's current animation --
