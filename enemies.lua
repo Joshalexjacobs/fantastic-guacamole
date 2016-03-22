@@ -59,9 +59,9 @@ local function copy(obj, seen)
   return res
 end
 
-function addEnemy(ID, x, y, world)
+function addEnemy(ID, x, y, dir, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
-  newEnemy.x, newEnemy.y = x, y
+  newEnemy.x, newEnemy.y, newEnemy.direction = x, y, dir
   newEnemy.behaviours = parseID(ID) -- parse and return behaviours for this enemy
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision

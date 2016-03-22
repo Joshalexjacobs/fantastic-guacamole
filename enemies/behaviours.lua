@@ -1,7 +1,11 @@
 -- behaviours.lua --
 
 function runBehaviour(dt, entity)
-    entity.dx = entity.speed * dt
+    if entity.direction == "right" then
+      entity.dx = entity.speed * dt
+    elseif entity.direction == "left" then
+      entity.dx = -(entity.speed * dt)
+    end
 end
 
 behaviourTable = {

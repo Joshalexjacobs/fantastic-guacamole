@@ -56,6 +56,9 @@ local bounds = {
 local world = bump.newWorld() -- create a world with bump
 
 function love.load(arg)
+  -- seed math.random
+  math.randomseed(os.time())
+
   -- collision
   addBlock(0, love.graphics.getHeight() - 150, bounds.width, 160, world) -- floor/ love.graphics.getHeight() - 150
 
@@ -68,8 +71,8 @@ function love.load(arg)
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:
-  addEnemy({"run","",""}, 501, 50, world)
-  addEnemy({"run","",""}, 400, 50, world)
+  addEnemy({"run","",""}, 501, 50, "right", world)
+  addEnemy({"run","",""}, 400, 50, "left", world)
   --addZone()
 end
 
