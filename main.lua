@@ -71,8 +71,8 @@ function love.load(arg)
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:
-  addEnemy({"run","",""}, 501, 50, "right", world)
-  addEnemy({"run","",""}, 400, 50, "left", world)
+  --addEnemy({"run","",""}, 501, 50, "right", world)
+  --addEnemy({"run","",""}, 400, 50, "left", world)
   --addZone()
 end
 

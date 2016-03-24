@@ -5,6 +5,7 @@ require 'enemies/behaviours'
 local enemy = {
   name = "enemy",
   health = 0,
+  spriteSheet = nil,
   x = 500,
   y = 50, -- 511
   w = 36, -- 32
@@ -13,7 +14,7 @@ local enemy = {
   gravity = 9.8,
   dx = 0,
   dy = 0,
-  direction = "",
+  direction = nil,
   isDead = false,
   behaviours = {},
   filter = function(item, other) -- default enemy filter
@@ -59,9 +60,9 @@ local function copy(obj, seen)
   return res
 end
 
-function addEnemy(ID, x, y, dir, world)
+function addEnemy(ID, x, y, dir, spriteS, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
-  newEnemy.x, newEnemy.y, newEnemy.direction = x, y, dir
+  newEnemy.x, newEnemy.y, newEnemy.direction, newEnemy.spriteSheet = x, y, dir, spriteS
   newEnemy.behaviours = parseID(ID) -- parse and return behaviours for this enemy
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision

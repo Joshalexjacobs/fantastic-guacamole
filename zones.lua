@@ -4,18 +4,22 @@
 -- all dependent on whether or not the player is inside of said zone (rectangle)
 
 local zone = {
-  x = 750,
+  x = 450,
   y = 345, -- 475
-  w = 400,
+  w = 200,
   h = 100,
   spawnables = {
     {
+      name = "runner",
       sBehaviours = {"run", "", ""},
       count = 0,
-      max = 7,
+      max = 1,
       side = "rand",
       spawnTimer = 0,
-      spawnTimerMax = .7
+      spawnTimerMax = .7,
+      spriteSheet = "img/enemies/runner.png" -- maybe i should create an Animation file???
+      -- animation file loads/returns the sprite image, the grid, and a table on animations
+      -- the rest is handled by the enemy? i think this is the way to go, just need to figure it out
     }
   },
   color = {
@@ -50,12 +54,12 @@ function updateZones(x, y, w, left, world, dt)
 
           if spawn.side == "rand" then
             if love.math.random(1, 2) == 1 then
-              addEnemy({"run", "", ""}, left - 32, 50, "right", world)
+              addEnemy({"run", "", ""}, left - 32, 50, "right", spawn.spriteSheet, world)
             else
-              addEnemy({"run", "", ""}, left + 832, 50, "left", world)
+              addEnemy({"run", "", ""}, left + 832, 50, "left", spawn.spriteSheet, world)
             end
           else
-            addEnemy({"run", "", ""}, left - 32, 50, spawn.side, world)
+            addEnemy({"run", "", ""}, left - 32, 50, spawn.side, spawn.spriteSheet, world)
           end
 
           spawn.count = spawn.count + 1
