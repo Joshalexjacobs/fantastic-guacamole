@@ -3,14 +3,17 @@ require 'enemies/behaviours'
 
 -- Enemy Object --
 local enemy = {
-  name = "enemy",
+  name = "enemy", -- type
   health = 0,
   spriteSheet = nil,
+  spriteGrid = nil,
+  animations = nil,
+  animIndex = nil,
   x = 500,
   y = 50, -- 511
   w = 36, -- 32
   h = 72, -- 64
-  speed = 200, -- increase me! 100
+  speed = 200,
   gravity = 9.8,
   dx = 0,
   dy = 0,
@@ -36,6 +39,7 @@ end
 function enemy.update(dt, newEnemy)
   for i=1, table.getn(newEnemy.behaviours) do
     newEnemy.behaviours[i].update(dt, newEnemy)
+    -- newEnemy.animIndex = newEnemy.behaviours[i].update(dt, newEnemy)
   end
 end
 
@@ -64,6 +68,8 @@ function addEnemy(ID, x, y, dir, spriteS, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
   newEnemy.x, newEnemy.y, newEnemy.direction, newEnemy.spriteSheet = x, y, dir, spriteS
   newEnemy.behaviours = parseID(ID) -- parse and return behaviours for this enemy
+
+  -- newEnemy.spriteSheet, newEnemy.spriteGrid, newEnemy.animations = loadAnimation(name??, spriteS)
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
   table.insert(enemies, newEnemy)

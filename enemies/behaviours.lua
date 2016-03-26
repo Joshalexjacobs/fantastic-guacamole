@@ -6,6 +6,8 @@ function runBehaviour(dt, entity)
     elseif entity.direction == "left" then
       entity.dx = -(entity.speed * dt)
     end
+
+    -- return animation index
 end
 
 behaviourTable = {

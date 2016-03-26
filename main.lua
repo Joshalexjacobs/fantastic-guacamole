@@ -33,9 +33,9 @@ require 'other/controller'
 local math   = require "math"
 local camera = require "camera"
 local player = require 'player'
-require 'enemies'
+require 'enemies/enemies'
 local bump   = require 'collision/bump'
-local anim8 = require 'anim8'
+local anim8 = require 'other/anim8'
 
 require 'zones'
 --require 'enemies/behaviours'
