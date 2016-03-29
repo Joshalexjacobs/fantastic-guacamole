@@ -2,7 +2,7 @@
 
 -- Player Class: --
 local player = {
-  name = "player",
+  type = "player",
   x = 375,
   y = 250,
   w = 24, --32
@@ -57,9 +57,9 @@ local jumpTimer = jumpTimerMax
 local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
 
 local playerFilter = function(item, other)
-  if other.name == "enemy" then
+  if other.type == "enemy" then
     return 'slide'
-  elseif other.name == "block" then
+  elseif other.type == "block" then
     return 'slide'
   end
 end

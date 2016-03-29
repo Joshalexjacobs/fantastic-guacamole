@@ -3,8 +3,8 @@ require 'enemies/behaviours'
 
 -- Enemy Object --
 local enemy = {
-  name = "enemy", -- type
-  health = 0,
+  type = "enemy", -- type
+  health = nil,
   spriteSheet = nil,
   spriteGrid = nil,
   animations = nil,
@@ -19,11 +19,11 @@ local enemy = {
   dy = 0,
   direction = nil,
   isDead = false,
-  behaviours = {},
+  behaviours = {}, -- change to be not a list
   filter = function(item, other) -- default enemy filter
-    if other.name == "player" then
+    if other.type == "player" then
       return 'slide'
-    elseif other.name == "block" then
+    elseif other.type == "block" then
       return 'slide'
     end
   end,
@@ -64,12 +64,12 @@ local function copy(obj, seen)
   return res
 end
 
-function addEnemy(ID, x, y, dir, spriteS, world)
+function addEnemy(name, x, y, dir, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
-  newEnemy.x, newEnemy.y, newEnemy.direction, newEnemy.spriteSheet = x, y, dir, spriteS
-  newEnemy.behaviours = parseID(ID) -- parse and return behaviours for this enemy
+  newEnemy.x, newEnemy.y, newEnemy.direction = x, y, dir
 
-  -- newEnemy.spriteSheet, newEnemy.spriteGrid, newEnemy.animations = loadAnimation(name??, spriteS)
+  newEnemy.behaviours = parseID(name) -- will actually be: getEnemy(newEnemy)
+  -- will add: getAnimations(newEnemy)
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
   table.insert(enemies, newEnemy)

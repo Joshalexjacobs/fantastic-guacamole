@@ -1,5 +1,6 @@
 -- behaviours.lua --
 
+
 function runBehaviour(dt, entity)
     if entity.direction == "right" then
       entity.dx = entity.speed * dt

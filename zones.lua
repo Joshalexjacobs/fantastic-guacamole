@@ -16,12 +16,7 @@ local zone = {
       max = 1,
       side = "rand",
       spawnTimer = 0,
-      spawnTimerMax = .7,
-      spriteSheet = love.graphics.newImage("img/enemies/runner.png"),
-      spriteGrid = anim8.newGrid(34, 48, 102, 96, 0, 0, 0),
-      animations = {
-        anim8.newAnimation(anim8.newGrid(34, 48, 102, 96, 0, 0, 0)('1-3', '1-2'), 0.1)
-      }
+      spawnTimerMax = .7
     }
   },
   color = {
@@ -56,12 +51,12 @@ function updateZones(x, y, w, left, world, dt)
 
           if spawn.side == "rand" then
             if love.math.random(1, 2) == 1 then
-              addEnemy({"run", "", ""}, left - 32, 50, "right", spawn.spriteSheet, world)
+              addEnemy({"run", "", ""}, left - 32, 50, "right", world)
             else
-              addEnemy({"run", "", ""}, left + 832, 50, "left", spawn.spriteSheet, world)
+              addEnemy({"run", "", ""}, left + 832, 50, "left", world)
             end
           else
-            addEnemy({"run", "", ""}, left - 32, 50, spawn.side, spawn.spriteSheet, world)
+            addEnemy({"run", "", ""}, left - 32, 50, spawn.side, world)
           end
 
           spawn.count = spawn.count + 1
