@@ -35,7 +35,7 @@ local camera = require "camera"
 local player = require 'player'
 require 'enemies/enemies'
 local bump   = require 'collision/bump'
-local anim8 = require 'other/anim8'
+anim8 = require 'other/anim8' -- this should be local in the fututre
 
 require 'zones'
 --require 'enemies/behaviours'
@@ -67,7 +67,7 @@ function love.load(arg)
   love.window.setMode( windowWidth, windowHeight, {fullscreen=false, vsync=true})
   --love.mouse.setVisible(false)
 
-  loadPlayer(world, anim8) -- load player and player sprites
+  loadPlayer(world) -- load player and player sprites
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
 
   -- test functions:

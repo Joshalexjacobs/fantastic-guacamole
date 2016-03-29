@@ -17,9 +17,11 @@ local zone = {
       side = "rand",
       spawnTimer = 0,
       spawnTimerMax = .7,
-      spriteSheet = "img/enemies/runner.png" -- maybe i should create an Animation file???
-      -- animation file loads/returns the sprite image, the grid, and a table on animations
-      -- the rest is handled by the enemy? i think this is the way to go, just need to figure it out
+      spriteSheet = love.graphics.newImage("img/enemies/runner.png"),
+      spriteGrid = anim8.newGrid(34, 48, 102, 96, 0, 0, 0),
+      animations = {
+        anim8.newAnimation(anim8.newGrid(34, 48, 102, 96, 0, 0, 0)('1-3', '1-2'), 0.1)
+      }
     }
   },
   color = {

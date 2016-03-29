@@ -25,7 +25,7 @@ local player = {
 
 local midpoint
 
-function loadPlayer(world, anim8)
+function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
   midpoint = windowWidth / 2 -- calculate midpoint
 
