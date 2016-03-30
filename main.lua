@@ -30,6 +30,9 @@ require 'cflux'
 require 'environment'
 require 'bullets'
 require 'other/controller'
+
+require 'enemies/enemyDictionary'
+
 local math   = require "math"
 local camera = require "camera"
 local player = require 'player'

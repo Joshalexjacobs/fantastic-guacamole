@@ -1,14 +1,18 @@
 -- enemies.lua --
-require 'enemies/behaviours'
+
+local function defaultBehaviour(dt, entity)
+  -- does nothing
+end
 
 -- Enemy Object --
 local enemy = {
   type = "enemy", -- type
+  name = nil,
   health = nil,
   spriteSheet = nil,
   spriteGrid = nil,
   animations = nil,
-  animIndex = nil,
+  curAnim = 1,
   x = 500,
   y = 50, -- 511
   w = 36, -- 32
@@ -19,7 +23,7 @@ local enemy = {
   dy = 0,
   direction = nil,
   isDead = false,
-  behaviours = {}, -- change to be not a list
+  behaviour = defaultBehaviour,
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
       return 'slide'
@@ -37,10 +41,7 @@ function enemy.new()
 end
 
 function enemy.update(dt, newEnemy)
-  for i=1, table.getn(newEnemy.behaviours) do
-    newEnemy.behaviours[i].update(dt, newEnemy)
-    -- newEnemy.animIndex = newEnemy.behaviours[i].update(dt, newEnemy)
-  end
+  newEnemy.behaviour(dt, newEnemy)
 end
 
 function enemy.updateWorld(dt, newEnemy, world)
@@ -48,6 +49,10 @@ function enemy.updateWorld(dt, newEnemy, world)
   newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 
   newEnemy.x, newEnemy.y = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
+end
+
+function enemy.draw(newEnemy)
+  newEnemy.animations[newEnemy.curAnim]:draw(newEnemy.spriteSheet, newEnemy.x, newEnemy.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
 end
 
 -- Create Globals Table --
@@ -66,9 +71,9 @@ end
 
 function addEnemy(name, x, y, dir, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
-  newEnemy.x, newEnemy.y, newEnemy.direction = x, y, dir
+  newEnemy.name, newEnemy.x, newEnemy.y, newEnemy.direction = name, x, y, dir
 
-  newEnemy.behaviours = parseID(name) -- will actually be: getEnemy(newEnemy)
+  getEnemy(newEnemy)
   -- will add: getAnimations(newEnemy)
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
@@ -90,6 +95,7 @@ end
 function drawEnemies()
   for _, newEnemy in ipairs(enemies) do
     setColor(newEnemy.color) -- set each bullet's color
-    love.graphics.rectangle("fill", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    -- love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    newEnemy.draw(newEnemy)
   end
 end

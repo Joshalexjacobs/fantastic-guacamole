@@ -13,7 +13,7 @@ local zone = {
       name = "runner",
       sBehaviours = {"run", "", ""},
       count = 0,
-      max = 1,
+      max = 2,
       side = "rand",
       spawnTimer = 0,
       spawnTimerMax = .7
@@ -51,16 +51,15 @@ function updateZones(x, y, w, left, world, dt)
 
           if spawn.side == "rand" then
             if love.math.random(1, 2) == 1 then
-              addEnemy({"run", "", ""}, left - 32, 50, "right", world)
+              addEnemy(spawn.name, left - 32, 50, "right", world)
             else
-              addEnemy({"run", "", ""}, left + 832, 50, "left", world)
+              addEnemy(spawn.name, left + 832, 50, "left", world)
             end
           else
-            addEnemy({"run", "", ""}, left - 32, 50, spawn.side, world)
+            addEnemy(spawn.name, left - 32, 50, spawn.side, world)
           end
 
           spawn.count = spawn.count + 1
-          print("created")
         end
 
         if spawn.spawnTimer > 0 then
