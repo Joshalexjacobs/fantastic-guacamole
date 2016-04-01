@@ -22,6 +22,7 @@ local enemy = {
   dx = 0,
   dy = 0,
   direction = nil,
+  prevDir = nil,
   isDead = false,
   behaviour = defaultBehaviour,
   filter = function(item, other) -- default enemy filter
@@ -73,8 +74,10 @@ function addEnemy(name, x, y, dir, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
   newEnemy.name, newEnemy.x, newEnemy.y, newEnemy.direction = name, x, y, dir
 
-  getEnemy(newEnemy)
-  -- will add: getAnimations(newEnemy)
+  getEnemy(newEnemy) -- update newEnemy depending on it's name
+
+  -- flip it's starting animation, any other flips must be done in enemy update function
+  if newEnemy.direction == "left" then newEnemy.animations[newEnemy.curAnim]:flipH() end
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
   table.insert(enemies, newEnemy)

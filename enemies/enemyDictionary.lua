@@ -23,7 +23,7 @@ local dictionary = {
   }
 }
 
-function getEnemy(newEnemy) -- create some sort of clever dictionary look up function later on
+function getEnemy(newEnemy) -- create some sort of clever dictionary look up function later on..if A > B etc... dictionary stuff
   if newEnemy.name == dictionary[1].name then
     newEnemy.behaviour = dictionary[1].update
 
