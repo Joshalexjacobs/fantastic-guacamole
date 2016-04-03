@@ -14,7 +14,7 @@ local zone = {
       sBehaviours = {"run", "", ""},
       count = 0,
       max = 2,
-      side = "rand",
+      side = "right", -- rand
       spawnTimer = 0,
       spawnTimerMax = .7
     }

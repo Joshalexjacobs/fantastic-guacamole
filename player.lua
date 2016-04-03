@@ -3,6 +3,7 @@
 -- Player Class: --
 local player = {
   type = "player",
+  lives = 3,
   x = 375,
   y = 250,
   w = 24, --32
@@ -177,14 +178,17 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   player.dy = player.dy + (gravity * dt)
 
   if player.dx ~= 0 or player.dy ~= 0 then
-    local cols
+
     player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, playerFilter)
     if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
       player.isGrounded = true
     else
       player.isGrounded = false
     end
+
   end
+
+
 
   -- SHOOTING --
   -- decrement shootTimer and animTimer--

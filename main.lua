@@ -122,5 +122,6 @@ function love.draw()
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
     love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
+    love.graphics.print(player.lives, 5, 35)
   end
 end

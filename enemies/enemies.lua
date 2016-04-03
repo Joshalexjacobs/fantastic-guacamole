@@ -49,7 +49,13 @@ function enemy.updateWorld(dt, newEnemy, world)
   -- constant force of gravity --
   newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 
-  newEnemy.x, newEnemy.y = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
+  newEnemy.x, newEnemy.y, cols, len = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
+
+  for i = 1, len do
+    if cols[i].other.type == "player" then
+      cols[i].other.lives = cols[i].other.lives - 1
+    end
+  end
 end
 
 function enemy.draw(newEnemy)
