@@ -2,7 +2,7 @@
 
 -- Player Class: --
 local player = {
-  type = "player",
+  type = "player", -- or "invincible"
   lives = 3,
   x = 375,
   y = 250,
@@ -15,6 +15,7 @@ local player = {
   termVel = -3,
   isJumping = false,
   isGrounded = false,
+  isDead = false,
   prevDir = 1, -- used for mirroring animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
   controls = {0, {x = 0, y = 0}, true},
@@ -22,7 +23,38 @@ local player = {
   spiteGrid = nil,
   animations = {},
   curAnim = 1,
+  filter = function(item, other)
+    if other.type == "enemy" then
+      return 'slide'
+    elseif other.type == "block" then
+      return 'slide'
+    end
+  end,
+  respawnFilter = function(item, other)
+    if other.type == "block" then
+      return 'slide'
+    end
+  end
 }
+
+respawnTimer = 0
+respawnTimerMax = 1.0 -- 1 second
+
+invinceTimer = 0
+invinceTimerMax = 1.0
+
+-- player functions
+function player.killPlayer(world)
+  if respawnTimer <= 0 then
+    player.lives = player.lives - 1
+    respawnTimer = respawnTimerMax
+    player.isDead = true
+
+    world:remove(player) -- remove player from the world
+  end
+end
+
+-- general functions
 
 local midpoint
 
@@ -56,14 +88,6 @@ local jumpTimerMax = 0.4
 local jumpTimer = jumpTimerMax
 
 local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
-
-local playerFilter = function(item, other)
-  if other.type == "enemy" then
-    return 'slide'
-  elseif other.type == "block" then
-    return 'slide'
-  end
-end
 
 local function playerInput(dt)
 
@@ -156,6 +180,29 @@ local function playerInput(dt)
 end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
+
+  -- DEATH/LIFE/DEATH --
+
+  if player.isDead then
+    respawnTimer = respawnTimer - (1 * dt) -- decrement respawnTimer
+
+    if respawnTimer <= 0 and player.lives > 0 then
+      -- revive player
+      player.isDead = false
+      world:add(player, player.x, player.y, player.w, player.h)
+
+      -- start invincibility timer
+      player.type = "invincible"
+      invinceTimer = invinceTimerMax
+    end
+
+    do return end -- skip rest of updatePlayer
+  end
+
+  -- decrement invincibility timer
+  if invinceTimer > 0 then invinceTimer = invinceTimer - (1 * dt) end
+  if invinceTimer <= 0 and player.type ~= "player" then player.type = "player" end
+
   -- MOVEMENT --
   playerInput(dt)
 
@@ -179,15 +226,19 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if player.dx ~= 0 or player.dy ~= 0 then
 
-    player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, playerFilter)
-    if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
-      player.isGrounded = true
-    else
-      player.isGrounded = false
+    if not player.isDead then
+      -- check if player has temporary invincibility
+      if player.type == "invincible" then player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.respawnFilter)
+      else player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.filter) end
+
+      if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
+        player.isGrounded = true
+      else
+        player.isGrounded = false
+      end
     end
 
   end
-
 
 
   -- SHOOTING --
@@ -230,7 +281,6 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     player.animations[7]:update(dt)
 
   elseif animTimer > 0 and love.keyboard.isDown('s') then
-    print("awdad")
     player.curAnim = 7 -- [SHOOT N RUN DIAGONAL DOWN]
     player.animations[3]:update(dt)
     player.animations[2]:update(dt)
@@ -262,7 +312,9 @@ end
 function drawPlayer()
   setColor({255, 255, 255, 255}) -- sets the player's color
     --love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
-    player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+    if not player.isDead then
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+    end
 end
 
 return player

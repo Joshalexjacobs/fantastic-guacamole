@@ -53,7 +53,7 @@ function enemy.updateWorld(dt, newEnemy, world)
 
   for i = 1, len do
     if cols[i].other.type == "player" then
-      cols[i].other.lives = cols[i].other.lives - 1
+      cols[i].other.killPlayer(world)
     end
   end
 end
