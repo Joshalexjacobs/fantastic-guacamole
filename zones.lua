@@ -38,37 +38,38 @@ local function copy(obj, seen)
 end
 
 function addZone()
-  -- local newZone = copy(zone, newZone)
-  -- table.insert(zones, zone)
+  local newZone = copy(zone, newZone)
+  table.insert(zones, zone)
 end
 
 function updateZones(x, y, w, left, world, dt)
-  if x + w > zone.x and x < zone.x + zone.w then
+  for _, newZone in ipairs(zones) do
+    if x + w > newZone.x and x < newZone.x + newZone.w then
 
-      for _, spawn in ipairs(zone.spawnables) do
-        if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
-          spawn.spawnTimer = spawn.spawnTimerMax
+        for _, spawn in ipairs(newZone.spawnables) do
+          if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
+            spawn.spawnTimer = spawn.spawnTimerMax
 
-          if spawn.side == "rand" then
-            if love.math.random(1, 2) == 1 then
-              addEnemy(spawn.name, left - 32, 50, "right", world)
+            if spawn.side == "rand" then
+              if love.math.random(1, 2) == 1 then
+                addEnemy(spawn.name, left - 32, 50, "right", world)
+              else
+                addEnemy(spawn.name, left + 832, 50, "left", world)
+              end
             else
-              addEnemy(spawn.name, left + 832, 50, "left", world)
+              addEnemy(spawn.name, left - 32, 50, spawn.side, world)
             end
-          else
-            addEnemy(spawn.name, left - 32, 50, spawn.side, world)
+
+            spawn.count = spawn.count + 1
           end
 
-          spawn.count = spawn.count + 1
+          if spawn.spawnTimer > 0 then
+            spawn.spawnTimer = spawn.spawnTimer - (1 * dt)
+          end
         end
 
-        if spawn.spawnTimer > 0 then
-          spawn.spawnTimer = spawn.spawnTimer - (1 * dt)
-        end
-      end
-
-    end -- elseif player leaves the zone, reset spawn count and timer
-
+      end -- elseif player leaves the zone, reset spawn count and timer
+    end
   -- if the zone is no longer visible on the screen, then delete the zone?
 end
 
