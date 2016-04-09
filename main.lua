@@ -76,7 +76,8 @@ function love.load(arg)
   -- test functions:
   --addEnemy({"run","",""}, 501, 50, "right", world)
   --addEnemy({"run","",""}, 400, 50, "left", world)
-  addZone()
+  addZone(450, 345, 200, 100)
+  addZone(750, 345, 200, 100)
 end
 
 function love.update(dt)

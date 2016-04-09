@@ -4,19 +4,18 @@
 -- all dependent on whether or not the player is inside of said zone (rectangle)
 
 local zone = {
-  x = 450,
-  y = 345, -- 475
-  w = 200,
-  h = 100,
-  spawnables = {
+  x = 0,
+  y = 0,
+  w = 0,
+  h = 0,
+  spawnables = { -- will start empty
     {
       name = "runner",
-      sBehaviours = {"run", "", ""},
       count = 0,
-      max = 99,
-      side = "rand", -- rand
+      max = 2,
+      side = "rand",
       spawnTimer = 0,
-      spawnTimerMax = .3
+      spawnTimerMax = .7
     }
   },
   color = {
@@ -37,9 +36,10 @@ local function copy(obj, seen)
   return res
 end
 
-function addZone()
+function addZone(x, y, w, h) -- will eventually need to pass an array of all spawnable enemy names
   local newZone = copy(zone, newZone)
-  table.insert(zones, zone)
+  newZone.x, newZone.y, newZone.w, newZone.h = x, y, w, h
+  table.insert(zones, newZone)
 end
 
 function updateZones(x, y, w, left, world, dt)
@@ -74,8 +74,10 @@ function updateZones(x, y, w, left, world, dt)
 end
 
 function drawZones() -- zone's draw function should only be called when debug is true
-  setColor(zone.color.inner)
-  love.graphics.rectangle("fill", zone.x, zone.y, zone.w, zone.h)
-  setColor(zone.color.outer)
-  love.graphics.rectangle("line", zone.x, zone.y, zone.w, zone.h)
+  for _, newZone in ipairs(zones) do
+    setColor(newZone.color.inner)
+    love.graphics.rectangle("fill", newZone.x, newZone.y, newZone.w, newZone.h)
+    setColor(newZone.color.outer)
+    love.graphics.rectangle("line", newZone.x, newZone.y, newZone.w, newZone.h)
+  end
 end
