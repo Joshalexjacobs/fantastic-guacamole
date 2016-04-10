@@ -3,21 +3,21 @@
 -- zones indicate enemy spawns/item drops/boss encounters/trigger events
 -- all dependent on whether or not the player is inside of said zone (rectangle)
 
+local defaultSpawn = {
+  name = "default",
+  count = 0,
+  max = 2,
+  side = "rand",
+  spawnTimer = 0,
+  spawnTimerMax = 0.7
+}
+
 local zone = {
   x = 0,
   y = 0,
   w = 0,
   h = 0,
-  spawnables = { -- will start empty
-    {
-      name = "runner",
-      count = 0,
-      max = 2,
-      side = "rand",
-      spawnTimer = 0,
-      spawnTimerMax = .7
-    }
-  },
+  spawnables = {},
   color = {
     inner = {0, 250, 0, 20}, -- inner color
     outer = {0, 250, 0, 100} -- outer
@@ -36,9 +36,16 @@ local function copy(obj, seen)
   return res
 end
 
-function addZone(x, y, w, h) -- will eventually need to pass an array of all spawnable enemy names
+function addZone(x, y, w, h, enemies)
   local newZone = copy(zone, newZone)
   newZone.x, newZone.y, newZone.w, newZone.h = x, y, w, h
+
+  for i = 1, #enemies do -- add spawnable enemies to the zone
+    local newSpawn = copy(defaultSpawn, newSpawn)
+    newSpawn.name = enemies[i]
+    table.insert(newZone.spawnables, newSpawn)
+  end
+
   table.insert(zones, newZone)
 end
 

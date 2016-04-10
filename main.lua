@@ -1,17 +1,12 @@
 --[[
 -- Todo: --
-  Current Issues:
-  - Some player movement choppiness, this might be due to the camera movement itself
-1. Finish the Enemy/Behaviour system
-2. Basic obstacles and obstructions that the player has to jump over
-3. Force the player to tap the shoot button instead of just holding it down
-4. Change player.lastDir system
-5. Read this https://www.reddit.com/r/gamedev/comments/25tk7d/finally_finished_my_multipart_technical_series/
-6. And these https://www.reddit.com/r/gamedev/comments/1f83c5/3_articles_about_component_entity_systems/
-7. Implement game states (menu, pause, game over, etc...) [love2d library known as HUMP]
-8. Decrease enemy/player hit boxes by a few pixels (5 or so)
-9. Add a level.lua file that will contain and handle all zones/enemies/environment
-10. Add parallax http://nova-fusion.com/2011/04/22/cameras-in-love2d-part-2-parallax-scrolling/
+1. Basic obstacles and obstructions that the player has to jump over
+2. Force the player to tap the shoot button instead of just holding it down
+3. Read this https://www.reddit.com/r/gamedev/comments/25tk7d/finally_finished_my_multipart_technical_series/
+4. And these https://www.reddit.com/r/gamedev/comments/1f83c5/3_articles_about_component_entity_systems/
+5. Implement game states (menu, pause, game over, etc...) [love2d library known as HUMP]
+6. Decrease enemy/player hit boxes by a few pixels (5 or so)
+7. Add parallax http://nova-fusion.com/2011/04/22/cameras-in-love2d-part-2-parallax-scrolling/
 
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
@@ -27,7 +22,7 @@
 -- Includes: --
 require 'collision/blocks'
 require 'cflux'
-require 'environment'
+require 'other/environment'
 require 'bullets'
 require 'other/controller'
 
@@ -40,7 +35,7 @@ require 'enemies/enemies'
 local bump   = require 'collision/bump'
 anim8 = require 'other/anim8' -- this should be local in the fututre
 
-require 'zones'
+require 'levels/zones'
 --require 'enemies/behaviours'
 
 -- Globals: --
@@ -76,8 +71,8 @@ function love.load(arg)
   -- test functions:
   --addEnemy({"run","",""}, 501, 50, "right", world)
   --addEnemy({"run","",""}, 400, 50, "left", world)
-  addZone(450, 345, 200, 100)
-  addZone(750, 345, 200, 100)
+  addZone(450, 345, 200, 100, {"runner"})
+  addZone(750, 345, 200, 100, {"runner"})
 end
 
 function love.update(dt)
