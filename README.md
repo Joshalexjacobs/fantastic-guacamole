@@ -12,9 +12,9 @@ core/animation Todo (in order by priority)
 
   - Add bullet spritesheets with collision animations.
 
-  - ~~Add remaining animations (look up and diagonal shoot while running).~~~
+  - ~~Add remaining animations (look up and diagonal shoot while running).~~
 
-- ~~Fix camera player jittering (or find a new camera to use). ~~
+- ~~Fix camera player jittering (or find a new camera to use).~~
 
 - Add hump (game states)
 
