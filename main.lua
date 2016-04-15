@@ -7,7 +7,8 @@
 5. Implement game states (menu, pause, game over, etc...) [love2d library known as HUMP]
 6. Decrease enemy/player hit boxes by a few pixels (5 or so)
 7. Add parallax http://nova-fusion.com/2011/04/22/cameras-in-love2d-part-2-parallax-scrolling/
-
+8. Make the bullets bigger with muzzle flash
+9. Add screenshake (watch the art of screenshake)
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
 2. Every object in world must also have a filter or else it may react unexpectedly.
@@ -36,7 +37,7 @@ local bump   = require 'collision/bump'
 anim8 = require 'other/anim8' -- this should be local in the fututre
 
 require 'levels/zones'
---require 'enemies/behaviours'
+require 'levels/levels'
 
 -- Globals: --
 local debug = true
@@ -57,8 +58,8 @@ function love.load(arg)
   -- seed math.random
   math.randomseed(os.time())
 
-  -- collision
-  addBlock(0, love.graphics.getHeight() - 150, bounds.width, 160, world) -- floor/ love.graphics.getHeight() - 150
+  -- load level
+  loadLevel(world)
 
   -- other
   loadController()

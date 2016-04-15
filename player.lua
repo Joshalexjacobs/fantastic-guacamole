@@ -25,13 +25,13 @@ local player = {
   curAnim = 1,
   filter = function(item, other)
     if other.type == "enemy" then
-      return 'slide'
-    elseif other.type == "block" then
+      return 'cross'
+    elseif other.type == "block" or other.type == "ground" then
       return 'slide'
     end
   end,
   respawnFilter = function(item, other)
-    if other.type == "block" then
+    if other.type == "block" or other.type == "ground" then
       return 'slide'
     end
   end

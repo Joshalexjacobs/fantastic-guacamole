@@ -27,8 +27,8 @@ local enemy = {
   behaviour = defaultBehaviour,
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
-      return 'slide'
-    elseif other.type == "block" then
+      return 'cross'
+    elseif other.type == "block" or other.type == "ground" then
       return 'slide'
     end
   end,

@@ -20,14 +20,6 @@ function updateBullets(dt, left, world) -- add world as a parameter
   for i, bullet in ipairs(bullets) do
     local cols, len -- cols is an array of objects the bullet is coliding with and len is the length of cols
 
-    --[[if bullet.dir == 1 then
-      bullet.dx = bullet.speed * dt -- math.cos(o.dir) * o.speed * dt
-      bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x + bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
-    elseif bullet.dir == 0 then
-      bullet.dx = bullet.speed * dt
-      bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x - bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
-    end]]
-
     bullet.dx = math.cos(bullet.actualDir) * bullet.speed * dt
     bullet.dy = math.sin(bullet.actualDir) * bullet.speed * dt
     bullet.x, bullet.y, cols, len = world:move(bullet, bullet.x - bullet.dx, bullet.y + bullet.dy, bulletFilter) -- update world
@@ -36,6 +28,9 @@ function updateBullets(dt, left, world) -- add world as a parameter
       if cols[j].other.type == "enemy" then
         bullet.isDead = true
         cols[j].other.isDead = true
+        break
+      elseif cols[j].other.type == "block" or other.type == "ground" then
+        bullet.isDead = true
         break
       end
     end

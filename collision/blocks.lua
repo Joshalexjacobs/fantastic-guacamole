@@ -5,8 +5,8 @@ function loadBlocks()
 end
 
 -- this function adds new blocks to our blocks table
-function addBlock(xPos, yPos, width, height, world)
-  local block = {type = "block", x = xPos, y = yPos, w = width, h = height}
+function addBlock(xPos, yPos, width, height, world, bType)
+  local block = {type = bType, x = xPos, y = yPos, w = width, h = height}
   blocks[#blocks+1] = block
   world:add(block, block.x, block.y, block.w, block.h)
 end
