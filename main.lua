@@ -9,6 +9,7 @@
 7. Add parallax http://nova-fusion.com/2011/04/22/cameras-in-love2d-part-2-parallax-scrolling/
 8. Make the bullets bigger with muzzle flash
 9. Add screenshake (watch the art of screenshake)
+10. Decrease the size of the player's hit box only while jumping
 -- Things to Note: --
 1. Every item that is added to world MUST have a string called 'name'.
 2. Every object in world must also have a filter or else it may react unexpectedly.
@@ -28,6 +29,7 @@ require 'bullets'
 require 'other/controller'
 
 require 'enemies/enemyDictionary'
+require 'levels/levelsDictionary'
 
 local math   = require "math"
 local camera = require "camera"
@@ -59,21 +61,14 @@ function love.load(arg)
   math.randomseed(os.time())
 
   -- load level
-  loadLevel(world)
+  loadLevel("test002", world)
 
   -- other
   loadController()
   love.window.setMode( windowWidth, windowHeight, {fullscreen=false, vsync=true})
-  --love.mouse.setVisible(false)
 
   loadPlayer(world) -- load player and player sprites
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
-
-  -- test functions:
-  --addEnemy({"run","",""}, 501, 50, "right", world)
-  --addEnemy({"run","",""}, 400, 50, "left", world)
-  addZone(450, 345, 200, 100, {"runner"})
-  addZone(750, 345, 200, 100, {"runner"})
 end
 
 function love.update(dt)
@@ -120,6 +115,7 @@ function love.draw()
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
     love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
     love.graphics.print(player.lives, 5, 35)
+    love.graphics.print(level.name, 750, 5)
     if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
   end
 end

@@ -1,27 +1,30 @@
 -- levels.lua --
 
--- levels.lua is used to load and generate levels by adding zones w/ enemies to a flat block which
--- will be the type "ground" at some point in the future.
-
 level = {
+  name = "nil",
   bounds = { -- camera boundaries
-    width = 5000,
-    height = windowHeight, -- at minimum should be equal to windowHeight
+    width = 0,
+    height = 0, -- at minimum should be equal to windowHeight
     left = 0,
     top = 0
   },
   ground = { -- will eventually be an array of ground types
     x = 0,
-    y = 450,
-    w = 5000,
-    h = 160
-  }
+    y = 0,
+    w = 0,
+    h = 0
+  },
+  zones = {}
 }
 
-levels = {}
+function loadLevel(levelName, world)
+  getLevel(levelName, level)
 
-function loadLevel(world)
-  --for i = 1, #level.ground do
-    addBlock(level.ground.x, level.ground.y, level.ground.w, level.ground.h, world, "ground") -- floor/ love.graphics.getHeight() - 150
-  --end
+  for i = 1, #level.ground do
+    addBlock(level.ground[i].x, level.ground[i].y, level.ground[i].w, level.ground[i].h, world, "ground") -- floor/ love.graphics.getHeight() - 150
+  end
+
+  for i = 1, #level.zones do
+    addZone(level.zones[i].x, level.zones[i].y, level.zones[i].w, level.zones[i].h, level.zones[i].enemies)
+  end
 end

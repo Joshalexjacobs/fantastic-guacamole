@@ -36,10 +36,10 @@ local enemy = {
 }
 
 -- Enemy Functions --
-function enemy.new()
-  local self = enemy
-  return self
-end
+--function enemy.new()
+  --local self = enemy
+  --return self
+--end
 
 function enemy.update(dt, newEnemy)
   newEnemy.behaviour(dt, newEnemy)
