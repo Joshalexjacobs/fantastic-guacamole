@@ -30,11 +30,11 @@ local dictionary = {
       top = 0
     },
     ground = { -- will eventually be an array of ground types
-      {x = 0, y = 450, w = 500, h = 160},
-      {x = 650, y = 450, w = 500, h = 160},
+      {x = 0, y = 450, w = 700, h = 160},
+      {x = 850, y = 450, w = 500, h = 160},
     },
     zones = {
-      {x = 450, y = 345, w = 200, h = 100, enemies = {"runner"}}
+      {x = 950, y = 345, w = 200, h = 100, enemies = {"runner"}}
     }
   }
 }

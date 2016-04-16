@@ -21,6 +21,7 @@ local enemy = {
   gravity = 9.8,
   dx = 0,
   dy = 0,
+  maxVelocity = 7.0,
   direction = nil,
   prevDir = nil,
   isDead = false,
@@ -46,6 +47,14 @@ function enemy.update(dt, newEnemy)
 end
 
 function enemy.updateWorld(dt, newEnemy, world)
+  -- this block locks in our velocity to maxVelocity
+  local v = math.sqrt(newEnemy.dx^2 + newEnemy.dy^2)
+  if v > newEnemy.maxVelocity then
+    local vs = newEnemy.maxVelocity/v
+    newEnemy.dx = newEnemy.dx*vs
+    newEnemy.dy = newEnemy.dy*vs
+  end
+
   -- constant force of gravity --
   newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 

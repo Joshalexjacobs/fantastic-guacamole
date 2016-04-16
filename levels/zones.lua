@@ -6,7 +6,7 @@
 local defaultSpawn = {
   name = "default",
   count = 0,
-  max = 2,
+  max = 1,
   side = "rand",
   spawnTimer = 0,
   spawnTimerMax = 0.7
