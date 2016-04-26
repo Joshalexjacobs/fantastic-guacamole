@@ -1,5 +1,29 @@
 -- game.lua --
 
+-- Includes: --
+require 'collision/blocks'
+require 'enemies/enemyDictionary'
+require 'enemies/enemies'
+require 'other/environment'
+require 'other/controller'
+
+require 'levels/levelsDictionary'
+require 'cflux'
+require 'bullets'
+
+
+local bump   = require 'collision/bump'
+local math   = require "math"
+local camera = require "camera"
+local player = require 'player'
+
+anim8 = require 'other/anim8' -- this should be local in the future
+
+require 'levels/zones'
+require 'levels/levels'
+
+local world = bump.newWorld() -- create a world with bump
+
 game = {}
 
 -- Globals: --
@@ -15,12 +39,13 @@ local bounds = {
   top     = 0
 }
 
-function game:enter()
+-- game:enter(previous state, parameter being passed)
+function game:enter(menu, levelName)
   -- seed math.random
   math.randomseed(os.time())
 
   -- load level
-  loadLevel("test002", world)
+  loadLevel(levelName, world)
 
   -- other
   loadController()

@@ -22,31 +22,10 @@
 -- whoever made hump? kikito?
 --]]
 
--- Includes: --
-require 'collision/blocks'
-require 'enemies/enemyDictionary'
-require 'other/environment'
-require 'other/controller'
-
-require 'levels/levelsDictionary'
-require 'cflux'
-require 'bullets'
-
+-- Gamestates --
 Gamestate = require 'gamestates/gamestate'
 require 'gamestates/start'
 require 'gamestates/game'
-
-local math   = require "math"
-local camera = require "camera"
-local player = require 'player'
-require 'enemies/enemies'
-local bump   = require 'collision/bump'
-anim8 = require 'other/anim8' -- this should be local in the fututre
-
-require 'levels/zones'
-require 'levels/levels'
-
-world = bump.newWorld() -- create a world with bump
 
 function love.load(arg)
   Gamestate.registerEvents()
