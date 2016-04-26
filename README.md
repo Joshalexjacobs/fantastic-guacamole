@@ -16,8 +16,8 @@ core/animation Todo (in order by priority)
 
 - ~~Fix camera player jittering (or find a new camera to use).~~
 
-- Add hump (game states)
+- ~~Add hump (game states)~~
 
-- Add ~~level.lua~~ and levelDictionary.lua
+- ~~Add level.lua and levelDictionary.lua~~
 
 - Player blinking on respawn (invincibility period) + a death animation for both the player and enemies
