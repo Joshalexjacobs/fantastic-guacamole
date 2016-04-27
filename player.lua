@@ -231,11 +231,23 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
       if player.type == "invincible" then player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.respawnFilter)
       else player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.filter) end
 
+      if len > 0 then
+        for i = 1, len do
+          if cols[i].other.type == "ground" then
+            player.isGrounded = true
+            break
+          end
+        end
+      else
+        player.isGrounded = false
+      end
+
+      --[[
       if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
         player.isGrounded = true
       else
         player.isGrounded = false
-      end
+      end]]
     end
 
   end

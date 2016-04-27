@@ -8,12 +8,8 @@ level = {
     left = 0,
     top = 0
   },
-  ground = { -- will eventually be an array of ground types
-    x = 0,
-    y = 0,
-    w = 0,
-    h = 0
-  },
+  ground = {},
+  walls = {},
   zones = {}
 }
 
@@ -21,7 +17,11 @@ function loadLevel(levelName, world)
   getLevel(levelName, level)
 
   for i = 1, #level.ground do
-    addBlock(level.ground[i].x, level.ground[i].y, level.ground[i].w, level.ground[i].h, world, "ground") -- floor/ love.graphics.getHeight() - 150
+    addBlock(level.ground[i].x, level.ground[i].y, level.ground[i].w, level.ground[i].h, world, "ground")
+  end
+
+  for i = 1, #level.walls do
+    addBlock(level.walls[i].x, level.walls[i].y, level.walls[i].w, level.walls[i].h, world, "block")
   end
 
   for i = 1, #level.zones do

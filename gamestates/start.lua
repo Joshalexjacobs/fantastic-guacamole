@@ -38,12 +38,16 @@ function menu:keyreleased(key, code)
     if key == 'down' or key == 's' then
         if indexPosition < #dictionary then
           indexPosition = indexPosition + 1
+        elseif indexPosition == #dictionary then
+          indexPosition = 1
         end
     end
 
     if key == 'up' or key == 'w' then
         if indexPosition > 1 then
           indexPosition = indexPosition - 1
+        elseif indexPosition == 1 then
+          indexPosition = #dictionary
         end
     end
 end
