@@ -31,12 +31,13 @@ local dictionary = {
       }
       return animations
     end,
-    filter = nil
+    filter = nil,
+    gravity = 9.8
   },
 
   {
     name = "target",
-    update = runBehaviour,
+    update = targetBehaviour,
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 128, h = 64},
     animations = function(grid)
@@ -48,7 +49,8 @@ local dictionary = {
       }
       return animations
     end,
-    filter = nil
+    filter = nil,
+    gravity = 0
   }
 }
 
@@ -62,6 +64,7 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
       newEnemy.spriteSheet = love.graphics.newImage(dictionary[i].sprite)
       newEnemy.spriteGrid = anim8.newGrid(dictionary[i].grid.x, dictionary[i].grid.y, dictionary[i].grid.w, dictionary[i].grid.h, 0, 0, 0)
       newEnemy.animations = dictionary[i].animations(newEnemy.spriteGrid)
+      newEnemy.gravity = dictionary[i].gravity
     end
   end
 end

@@ -8,6 +8,8 @@ local defaultSpawn = {
   count = 0,
   max = 3,
   side = "rand",
+  x = nil,
+  y = nil,
   spawnTimer = 0,
   spawnTimerMax = 0.7
 }
@@ -42,7 +44,11 @@ function addZone(x, y, w, h, enemies)
 
   for i = 1, #enemies do -- add spawnable enemies to the zone
     local newSpawn = copy(defaultSpawn, newSpawn)
-    newSpawn.name = enemies[i]
+    newSpawn.name, newSpawn.x, newSpawn.y = enemies[i].name, enemies[i].x, enemies[i].y
+
+    if newSpawn.x ~= nil and newSpawn.y ~= nil then
+      newSpawn.side = nil
+    end
     table.insert(newZone.spawnables, newSpawn)
   end
 
@@ -57,14 +63,16 @@ function updateZones(x, y, w, left, world, dt)
           if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
             spawn.spawnTimer = spawn.spawnTimerMax
 
-            if spawn.side == "rand" then
+            if spawn.side == "rand" then -- if random, generate enemy on a random side
               if love.math.random(1, 2) == 1 then
                 addEnemy(spawn.name, left - 32, 50, "right", world)
               else
                 addEnemy(spawn.name, left + 832, 50, "left", world)
               end
-            else
+            elseif spawn.side ~= nil then -- if not, generate enemy on specified side
               addEnemy(spawn.name, left - 32, 50, spawn.side, world)
+            else -- if neither, generate enemy at spawn point
+              addEnemy(spawn.name, spawn.x, spawn.y, spawn.side, world)
             end
 
             spawn.count = spawn.count + 1

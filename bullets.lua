@@ -18,7 +18,7 @@ end
 
 function updateBullets(dt, left, world) -- add world as a parameter
   for i, bullet in ipairs(bullets) do
-    local cols, len -- cols is an array of objects the bullet is coliding with and len is the length of cols
+    --local cols, len -- cols is an array of objects the bullet is coliding with and len is the length of cols
 
     bullet.dx = math.cos(bullet.actualDir) * bullet.speed * dt
     bullet.dy = math.sin(bullet.actualDir) * bullet.speed * dt
@@ -29,7 +29,7 @@ function updateBullets(dt, left, world) -- add world as a parameter
         bullet.isDead = true
         cols[j].other.isDead = true
         break
-      elseif cols[j].other.type == "block" or other.type == "ground" then
+      elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
         bullet.isDead = true
         break
       end

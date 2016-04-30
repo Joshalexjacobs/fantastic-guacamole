@@ -50,4 +50,6 @@ function menu:keyreleased(key, code)
           indexPosition = #dictionary
         end
     end
+
+    if key =='escape' then love.event.quit() end -- if player hits esc then quit
 end
