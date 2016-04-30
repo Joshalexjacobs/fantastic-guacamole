@@ -1,6 +1,9 @@
 -- game.lua --
 
 -- Includes: --
+
+anim8 = require 'other/anim8' -- this should be local in the future
+
 require 'collision/blocks'
 require 'enemies/enemyDictionary'
 require 'enemies/enemies'
@@ -16,8 +19,6 @@ local bump   = require 'collision/bump'
 local math   = require "math"
 local camera = require "camera"
 local player = require 'player'
-
-anim8 = require 'other/anim8' -- this should be local in the future
 
 require 'levels/zones'
 require 'levels/levels'
