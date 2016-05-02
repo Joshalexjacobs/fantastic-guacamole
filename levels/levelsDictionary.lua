@@ -21,7 +21,7 @@ local dictionary = {
         w = 200,
         h = 100,
         enemies = {
-          {name = "runner", x = nil, y = nil}
+          {name = "runner", x = nil, y = nil, max = 3}
         }
       },
 
@@ -31,7 +31,7 @@ local dictionary = {
         w = 200,
         h = 100,
         enemies = {
-          {name = "runner", x = nil, y = nil}
+          {name = "runner", x = nil, y = nil, max = 3}
         }
       }
     } -- end of zones
@@ -59,7 +59,9 @@ local dictionary = {
         w = 200,
         h = 100,
         enemies = {
-          {name = "target", x = 100, y = 100}
+          {name = "target", x = 100, y = 100, max = 1},
+          {name = "target", x = 368, y = 100, max = 1},
+          {name = "target", x = 668, y = 100, max = 1}
         }
       }
     } -- end of zones

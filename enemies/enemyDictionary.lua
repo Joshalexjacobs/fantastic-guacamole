@@ -17,12 +17,17 @@ end
 -- TARGET --
 local function targetBehaviour(dt, entity)
   -- static, if hit destroyed...start timer and then respawn
+
+  entity.animations[entity.curAnim]:update(dt)
 end
 
 local dictionary = {
   {
     name = "runner",
+    w = 36,
+    h = 72,
     update = runBehaviour,
+    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
     sprite = "img/enemies/runner.png",
     grid = {x = 34, y = 48, w = 102, h = 96},
     animations = function(grid)
@@ -37,7 +42,10 @@ local dictionary = {
 
   {
     name = "target",
+    w = 32,
+    h = 32,
     update = targetBehaviour,
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 128, h = 64},
     animations = function(grid)
@@ -58,7 +66,9 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
   for i=1, #dictionary do
 
     if newEnemy.name == dictionary[i].name then
+      newEnemy.w, newEnemy.h = dictionary[i].w, dictionary[i].h
       newEnemy.behaviour = dictionary[i].update
+      newEnemy.scale = dictionary[i].scale
 
       -- animation stuff
       newEnemy.spriteSheet = love.graphics.newImage(dictionary[i].sprite)

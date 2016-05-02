@@ -44,7 +44,7 @@ function addZone(x, y, w, h, enemies)
 
   for i = 1, #enemies do -- add spawnable enemies to the zone
     local newSpawn = copy(defaultSpawn, newSpawn)
-    newSpawn.name, newSpawn.x, newSpawn.y = enemies[i].name, enemies[i].x, enemies[i].y
+    newSpawn.name, newSpawn.x, newSpawn.y, newSpawn.max = enemies[i].name, enemies[i].x, enemies[i].y, enemies[i].max
 
     if newSpawn.x ~= nil and newSpawn.y ~= nil then
       newSpawn.side = nil

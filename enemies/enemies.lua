@@ -13,10 +13,11 @@ local enemy = {
   spriteGrid = nil,
   animations = nil,
   curAnim = 1,
-  x = 500,
-  y = 50, -- 511
-  w = 36, -- 32
-  h = 72, -- 64
+  scale = {x = nil, y = nil, offX = nil, offY = nil},
+  x = 0,
+  y = 0,
+  w = 0,
+  h = 0,
   speed = 200,
   gravity = 9.8,
   dx = 0,
@@ -37,11 +38,6 @@ local enemy = {
 }
 
 -- Enemy Functions --
---function enemy.new()
-  --local self = enemy
-  --return self
---end
-
 function enemy.update(dt, newEnemy)
   newEnemy.behaviour(dt, newEnemy)
 end
@@ -68,7 +64,7 @@ function enemy.updateWorld(dt, newEnemy, world)
 end
 
 function enemy.draw(newEnemy)
-  newEnemy.animations[newEnemy.curAnim]:draw(newEnemy.spriteSheet, newEnemy.x, newEnemy.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+  newEnemy.animations[newEnemy.curAnim]:draw(newEnemy.spriteSheet, newEnemy.x, newEnemy.y, 0, newEnemy.scale.x, newEnemy.scale.y, newEnemy.scale.offX, newEnemy.scale.offY)
 end
 
 -- Create Globals Table --
