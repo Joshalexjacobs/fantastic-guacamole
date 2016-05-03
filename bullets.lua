@@ -26,8 +26,9 @@ function updateBullets(dt, left, world) -- add world as a parameter
 
     for j = 1, len do
       if cols[j].other.type == "enemy" then
-        bullet.isDead = true
-        cols[j].other.isDead = true
+        bullet.isDead = true -- destroy bullet
+        cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
+
         break
       elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
         bullet.isDead = true

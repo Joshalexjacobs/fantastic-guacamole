@@ -8,7 +8,7 @@ end
 local enemy = {
   type = "enemy", -- type
   name = nil,
-  health = nil,
+  hp = nil,
   spriteSheet = nil,
   spriteGrid = nil,
   animations = nil,
@@ -94,10 +94,18 @@ function addEnemy(name, x, y, dir, world)
   table.insert(enemies, newEnemy)
 end
 
+function removeEnemyFromWorld(newEnemy, world)
+  world:remove(newEnemy)
+end
+
 function updateEnemies(dt, world) -- include world here?
   for i, newEnemy in ipairs(enemies) do -- loops through number of enemies
     newEnemy.update(dt, newEnemy)
     newEnemy.updateWorld(dt, newEnemy, world)
+
+    if newEnemy.hp <= 0 then
+      newEnemy.isDead = true
+    end
 
     if newEnemy.isDead then
       world:remove(newEnemy) -- remove from world...
@@ -109,7 +117,7 @@ end
 function drawEnemies()
   for _, newEnemy in ipairs(enemies) do
     --setColor(newEnemy.color) -- set each bullet's color
-     love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
     newEnemy.draw(newEnemy)
   end
 end

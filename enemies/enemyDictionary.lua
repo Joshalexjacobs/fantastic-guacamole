@@ -16,7 +16,7 @@ end
 
 -- TARGET --
 local function targetBehaviour(dt, entity)
-  -- static, if hit destroyed...start timer and then respawn
+  -- static
 
   entity.animations[entity.curAnim]:update(dt)
 end
@@ -24,6 +24,7 @@ end
 local dictionary = {
   {
     name = "runner",
+    hp = 1,
     w = 36,
     h = 72,
     update = runBehaviour,
@@ -42,6 +43,7 @@ local dictionary = {
 
   {
     name = "target",
+    hp = 3,
     w = 32,
     h = 32,
     update = targetBehaviour,
@@ -50,10 +52,10 @@ local dictionary = {
     grid = {x = 32, y = 32, w = 128, h = 64},
     animations = function(grid)
       animations = {
-        anim8.newAnimation(grid(1, 1), 0.1), -- intact
-        anim8.newAnimation(grid(2, 1), 0.1), -- outer layer hit
-        anim8.newAnimation(grid(3, 1), 0.1), -- inner layer hit
-        anim8.newAnimation(grid('3-4', 1, '1-2', 1), 0.1)  -- respawning
+        anim8.newAnimation(grid(1, 1), 0.1), -- intact - 1
+        anim8.newAnimation(grid(2, 1), 0.1), -- outer layer hit - 2
+        anim8.newAnimation(grid(3, 1), 0.1), -- inner layer hit - 3
+        anim8.newAnimation(grid('3-4', 1, '1-2', 1), 0.8)  -- respawning - 4
       }
       return animations
     end,
@@ -66,7 +68,7 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
   for i=1, #dictionary do
 
     if newEnemy.name == dictionary[i].name then
-      newEnemy.w, newEnemy.h = dictionary[i].w, dictionary[i].h
+      newEnemy.hp, newEnemy.w, newEnemy.h = dictionary[i].hp, dictionary[i].w, dictionary[i].h
       newEnemy.behaviour = dictionary[i].update
       newEnemy.scale = dictionary[i].scale
 

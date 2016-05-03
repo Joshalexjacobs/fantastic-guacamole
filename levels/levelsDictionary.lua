@@ -54,9 +54,9 @@ local dictionary = {
     },
     zones = {
       {
-        x = 100,
+        x = 0,
         y = 445,
-        w = 200,
+        w = 800,
         h = 100,
         enemies = {
           {name = "target", x = 100, y = 100, max = 1},
