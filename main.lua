@@ -1,3 +1,6 @@
+-- Hours:
+-- 5/10 9:25am -
+
 --[[
 -- Todo: --
 1. Basic obstacles and obstructions that the player has to jump over
@@ -26,6 +29,17 @@
 Gamestate = require 'gamestates/gamestate'
 require 'gamestates/start'
 require 'gamestates/game'
+
+-- Global Functions --
+function copy(obj, seen)
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
+  return res
+end
 
 function love.load(arg)
   Gamestate.registerEvents()

@@ -26,6 +26,8 @@ local enemy = {
   direction = nil,
   prevDir = nil,
   isDead = false,
+  playDead = nil,
+  timers = {},
   behaviour = defaultBehaviour,
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
@@ -54,7 +56,9 @@ function enemy.updateWorld(dt, newEnemy, world)
   -- constant force of gravity --
   newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 
-  newEnemy.x, newEnemy.y, cols, len = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
+  if not newEnemy.isDead then
+    newEnemy.x, newEnemy.y, cols, len = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
+  end
 
   for i = 1, len do
     if cols[i].other.type == "player" then
@@ -71,16 +75,6 @@ end
 enemies = {}
 
 -- General Functions --
-local function copy(obj, seen)
-  if type(obj) ~= 'table' then return obj end
-  if seen and seen[obj] then return seen[obj] end
-  local s = seen or {}
-  local res = setmetatable({}, getmetatable(obj))
-  s[obj] = res
-  for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
-  return res
-end
-
 function addEnemy(name, x, y, dir, world)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
   newEnemy.name, newEnemy.x, newEnemy.y, newEnemy.direction = name, x, y, dir
@@ -105,11 +99,17 @@ function updateEnemies(dt, world) -- include world here?
 
     if newEnemy.hp <= 0 then
       newEnemy.isDead = true
+      --newEnemy.playDead = true
     end
 
-    if newEnemy.isDead then
+    --if newEnemy.isDead and newEnemy.playDead == false then
+    if newEnemy.isDead and world:hasItem(newEnemy) then
       world:remove(newEnemy) -- remove from world...
-      table.remove(enemies, i) -- ...and the bullets table
+      --table.remove(enemies, i) -- ...and the bullets table
+    end
+
+    if newEnemy.playDead then
+      table.remove(enemies, i)
     end
   end
 end
@@ -117,7 +117,7 @@ end
 function drawEnemies()
   for _, newEnemy in ipairs(enemies) do
     --setColor(newEnemy.color) -- set each bullet's color
-    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
     newEnemy.draw(newEnemy)
+    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
   end
 end

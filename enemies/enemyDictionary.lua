@@ -10,6 +10,8 @@ local function runBehaviour(dt, entity)
       entity.dx = -(entity.speed * dt)
     end
 
+    if entity.isDead then entity.playDead = true end
+
     -- handle/update current animation running
     entity.animations[entity.curAnim]:update(dt)
 end
@@ -17,6 +19,15 @@ end
 -- TARGET --
 local function targetBehaviour(dt, entity)
   -- static
+
+  if entity.isDead then
+    -- create a timer.. etc
+    entity.curAnim = 2
+    addTimer(0.3, "death", entity.timers)
+    if updateTimer(dt, "death", entity.timers) then
+      entity.playDead = true
+    end
+  end
 
   entity.animations[entity.curAnim]:update(dt)
 end
@@ -43,19 +54,17 @@ local dictionary = {
 
   {
     name = "target",
-    hp = 3,
-    w = 32,
-    h = 32,
+    hp = 1,
+    w = 56,
+    h = 56,
     update = targetBehaviour,
-    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    scale = {x = 2, y = 2, offX = 2, offY = 2},
     sprite = "img/enemies/target/target.png",
-    grid = {x = 32, y = 32, w = 128, h = 64},
+    grid = {x = 32, y = 32, w = 96, h = 32},
     animations = function(grid)
       animations = {
-        anim8.newAnimation(grid(1, 1), 0.1), -- intact - 1
-        anim8.newAnimation(grid(2, 1), 0.1), -- outer layer hit - 2
-        anim8.newAnimation(grid(3, 1), 0.1), -- inner layer hit - 3
-        anim8.newAnimation(grid('3-4', 1, '1-2', 1), 0.8)  -- respawning - 4
+        anim8.newAnimation(grid(1, 1), 0.1),     -- idle - 1
+        anim8.newAnimation(grid('2-3', 1), 0.15), -- hit  - 2
       }
       return animations
     end,

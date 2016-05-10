@@ -9,11 +9,11 @@ require 'enemies/enemyDictionary'
 require 'enemies/enemies'
 require 'other/environment'
 require 'other/controller'
+require 'other/timer'
 
 require 'levels/levelsDictionary'
 require 'cflux'
 require 'bullets'
-
 
 local bump   = require 'collision/bump'
 local math   = require "math"
