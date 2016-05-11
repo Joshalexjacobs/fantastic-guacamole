@@ -89,7 +89,7 @@ local jumpTimer = jumpTimerMax
 
 local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
 
-local function playerInput(dt)
+local function playerInput(dt, world)
 
   -- left/right movement
   if love.keyboard.isDown("d") or dPadRight() then
@@ -204,7 +204,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if invinceTimer <= 0 and player.type ~= "player" then player.type = "player" end
 
   -- MOVEMENT --
-  playerInput(dt)
+  playerInput(dt, world)
 
   -- this block locks in our velocity to maxVel --
   local v = math.sqrt(player.dx^2 + player.dy^2)
@@ -235,11 +235,19 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
         for i = 1, len do
           if cols[i].other.type == "ground" then
             player.isGrounded = true
+
+            -- when player touches the ground expand the hit box
+            world:remove(player)
+            player.h = 72
+            world:add(player, player.x, player.y, player.w, player.h)
             break
           end
         end
       else
         player.isGrounded = false
+        world:remove(player) -- when player is falling/jumping...
+        player.h = 36 -- ..shrink the hitbox
+        world:add(player, player.x, player.y, player.w, player.h)
       end
 
       --[[

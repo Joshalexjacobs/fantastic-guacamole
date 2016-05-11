@@ -18,7 +18,7 @@ require 'bullets'
 local bump   = require 'collision/bump'
 local math   = require "math"
 local camera = require "camera"
-local player = require 'player'
+player = require 'player'
 
 require 'levels/zones'
 require 'levels/levels'

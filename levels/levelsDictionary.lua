@@ -59,13 +59,38 @@ local dictionary = {
         w = 800,
         h = 100,
         enemies = {
-          {name = "target", x = 100, y = 100, max = 1},
+          {name = "target", x = 100, y = 250, max = 1},
           {name = "target", x = 368, y = 100, max = 1},
-          {name = "target", x = 668, y = 100, max = 1}
+          {name = "target", x = 668, y = 250, max = 1}
         }
       }
     } -- end of zones
-  }
+  },
+
+  {
+    name = "shooter-run test level",
+    bounds = { -- camera boundaries
+      width = 5000,
+      height = 600,
+      left = 0,
+      top = 0
+    },
+    ground = {
+      {x = 0, y = 450, w = 1200, h = 160}
+    },
+    walls = {},
+    zones = {
+      {
+        x = 450,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", x = nil, y = nil, max = 1}
+        }
+      }
+    } -- end of zones
+  },
 
 }
 

@@ -18,13 +18,14 @@ local enemy = {
   y = 0,
   w = 0,
   h = 0,
-  speed = 200,
+  speed = 180,
   gravity = 9.8,
   dx = 0,
   dy = 0,
   maxVelocity = 7.0,
   direction = nil,
   prevDir = nil,
+  isFalling = false,
   isDead = false,
   playDead = nil,
   timers = {},
@@ -81,8 +82,12 @@ function addEnemy(name, x, y, dir, world)
 
   getEnemy(newEnemy) -- update newEnemy depending on it's name
 
-  -- flip it's starting animation, any other flips must be done in enemy update function
-  if newEnemy.direction == "left" then newEnemy.animations[newEnemy.curAnim]:flipH() end
+  -- flip all starting animations, any other flips must be done in enemy behaviour function
+  if newEnemy.direction == "left" then
+    for i = 1, #newEnemy.animations do
+      newEnemy.animations[i]:flipH()
+    end
+  end
 
   world:add(newEnemy, newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h) -- add enemy to world collision
   table.insert(enemies, newEnemy)
@@ -119,5 +124,6 @@ function drawEnemies()
     --setColor(newEnemy.color) -- set each bullet's color
     newEnemy.draw(newEnemy)
     --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, 50, 50) --range?
   end
 end

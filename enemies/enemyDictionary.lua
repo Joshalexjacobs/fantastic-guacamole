@@ -32,6 +32,56 @@ local function targetBehaviour(dt, entity)
   entity.animations[entity.curAnim]:update(dt)
 end
 
+-- SHOOTER-RUNNER --
+local function srBehaviour(dt, entity)
+    -- set timers (do this ONCE) --
+    if not checkTimer("shoot", entity.timers) then
+      addTimer(0.0, "shoot", entity.timers)
+      print("create shoot timer for the first time")
+    end
+
+    -- set direction
+    if player.x > entity.x and entity.direction ~= "right" then
+      entity.direction = "right"
+
+      for i = 1, #entity.animations do
+        entity.animations[i]:flipH()
+      end
+
+    elseif player.x < entity.x and entity.direction ~= "left" then
+      entity.direction = "left"
+
+      for i = 1, #entity.animations do
+        entity.animations[i]:flipH()
+      end
+
+    end
+
+    -- movement/shooting
+    if math.abs(entity.x - player.x) > 200 and updateTimer(dt, "shoot", entity.timers) then
+      entity.curAnim = 1
+      if entity.direction == "right" then
+        entity.dx = entity.speed * dt
+      elseif entity.direction == "left" then
+        entity.dx = -(entity.speed * dt)
+      end
+    else
+      entity.dx = 0
+      entity.curAnim = 2
+
+      if updateTimer(dt, "shoot", entity.timers) then
+        resetTimer(1.2, "shoot", entity.timers) -- add timer
+      end
+    end
+
+    if entity.isDead then entity.playDead = true end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+
+    print(entity.dy)
+end
+
 local dictionary = {
   {
     name = "runner",
@@ -45,6 +95,27 @@ local dictionary = {
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid('1-3', '1-2'), 0.1) -- running
+      }
+      return animations
+    end,
+    filter = nil,
+    gravity = 9.8
+  },
+
+  {
+    name = "shooter/run",
+    hp = 1,
+    w = 36,
+    h = 72,
+    update = srBehaviour,
+    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
+    sprite = "img/enemies/shooter-run/shooter-run.png",
+    grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running
+        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped
+        anim8.newAnimation(grid(2, 2), 0.1) -- falling
       }
       return animations
     end,
