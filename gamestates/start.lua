@@ -9,6 +9,13 @@ indexPosition = 1
 
 function menu:enter()
   dictionary = getDictionary()
+
+  -- other
+  loadController()
+  love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
+
+  loadEnvironment()
+
 end
 
 function menu:update()

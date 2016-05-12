@@ -3,7 +3,7 @@
 -- Player Class: --
 local player = {
   type = "player", -- or "invincible"
-  lives = 2,
+  lives = 6,
   x = 375,
   y = 250,
   w = 24, --32
@@ -102,7 +102,7 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then -- UpRight
       player.controls[1] = (math.pi * 7)/6
-      player.controls[2].x, player.controls[2].y = 24, -15
+      player.controls[2].x, player.controls[2].y = 32, -20
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
       player.controls[1] = (math.pi * 5)/6
@@ -110,7 +110,7 @@ local function playerInput(dt, world)
       player.controls[3] = true
     else
       player.controls[1] = math.pi -- Right
-      player.controls[2].x, player.controls[2].y = 40, 14
+      player.controls[2].x, player.controls[2].y = 45, 14
       player.controls[3] = true
     end
 
@@ -120,11 +120,11 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then -- UpLeft
       player.controls[1] = -0.523599
-      player.controls[2].x, player.controls[2].y = 0, -15
+      player.controls[2].x, player.controls[2].y = -2, -20
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
       player.controls[1] = math.pi/6
-      player.controls[2].x, player.controls[2].y = -10, 25
+      player.controls[2].x, player.controls[2].y = -10, 25 -- -10
       player.controls[3] = true
     else
       player.controls[1] = 0 -- Left
@@ -136,9 +136,9 @@ local function playerInput(dt, world)
     player.controls[1] = (math.pi * 3)/2
     player.controls[3] = true
     if player.lastDir == 1 then
-      player.controls[2].x, player.controls[2].y = 17, -28
+      player.controls[2].x, player.controls[2].y = 17, -40
     else
-      player.controls[2].x, player.controls[2].y = 11, -28
+      player.controls[2].x, player.controls[2].y = 11, -40
     end
 
   elseif love.keyboard.isDown("s") then -- Down

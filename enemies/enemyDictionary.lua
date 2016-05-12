@@ -87,25 +87,25 @@ local function srBehaviour(dt, entity, world)
         angle = getAngle(player.x, player.y, entity.x, entity.y)
 
         if angle == math.pi or angle == 0 then
-          entity.curAnim = 2
+          entity.curAnim = 2 -- left/right
           if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 31, 14
+            entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
           elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -28, 12
+            entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
           end
         elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
-          entity.curAnim = 3
+          entity.curAnim = 3 -- up
           if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 30, -18
+            entity.shootPoint.x, entity.shootPoint.y = 32, -20
           elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -15, -20
+            entity.shootPoint.x, entity.shootPoint.y = -2, -20
           end
         elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
-          entity.curAnim = 4
+          entity.curAnim = 4 -- down
           if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 7, 7
+            entity.shootPoint.x, entity.shootPoint.y = 35, 25
           elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -20, 29
+            entity.shootPoint.x, entity.shootPoint.y = -10, 25
           end
         end
 

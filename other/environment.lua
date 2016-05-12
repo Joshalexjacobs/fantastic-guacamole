@@ -1,5 +1,10 @@
 -- environment.lua --
 
+function loadEnvironment()
+   infoBox = love.graphics.newImage("img/background/infoBox.png")
+   lives = love.graphics.newImage("img/background/assets/skull.png")
+end
+
 local function drawScanLines()
   local r, g, b, a = love.graphics.getColor()
   setColor(0, 0, 0, 15)
@@ -17,6 +22,21 @@ local function drawScanLines()
   setColor(r, g, b, a)
 end
 
+local function drawInfoBox()
+  local r, g, b, a = love.graphics.getColor()
+  setColor(255, 255, 255, 255)
+
+  love.graphics.draw(infoBox, 0, 525)
+
+  for i = 1, player.lives do -- draw lives
+    love.graphics.draw(lives, (40 * i) - 25, 530, 0, 2, 2, 0, 0)
+    if i > 3 then break end
+  end
+
+  setColor(r, g, b, a)
+end
+
 function drawEnvironment()
   drawScanLines()
+  drawInfoBox()
 end

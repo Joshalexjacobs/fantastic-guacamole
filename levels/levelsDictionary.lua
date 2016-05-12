@@ -46,7 +46,7 @@ local dictionary = {
       top = 0
     },
     ground = {
-      {x = 0, y = 550, w = 800, h = 150},
+      {x = 0, y = 500, w = 800, h = 150},
     },
     walls = {
       {x = -25, y = 75, w = 25, h = 475},
@@ -88,6 +88,31 @@ local dictionary = {
         h = 100,
         enemies = {
           {name = "shooter/run", x = nil, y = nil, max = 2}
+        }
+      }
+    } -- end of zones
+  },
+
+  {
+    name = "tilemap",
+    bounds = { -- camera boundaries
+      width = 5000,
+      height = 600,
+      left = 0,
+      top = 0
+    },
+    ground = {
+      {x = 0, y = 450, w = 1200, h = 160},
+    },
+    walls = {},
+    zones = {
+      {
+        x = 450,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", x = nil, y = nil, max = 0} -- if max = 0 no enemies will spawn
         }
       }
     } -- end of zones

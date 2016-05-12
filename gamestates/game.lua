@@ -48,10 +48,11 @@ function game:enter(menu, levelName)
   -- load level
   loadLevel(levelName, world)
   bounds = level.bounds
+  --loadEnvironment()
 
   -- other
-  loadController()
-  love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
+  --loadController()
+  --love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   loadPlayer(world) -- load player and player sprites
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
@@ -84,8 +85,8 @@ function game:draw()
   camera.draw(function(l,t,w,h)
     -- color independent draws
     drawPlayer()
-    drawBullets()
     drawEnemies()
+    drawBullets()
 
     if debug then
       --drawZones()
@@ -102,7 +103,7 @@ function game:draw()
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
     love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
     love.graphics.print(player.lives, 5, 35)
-    love.graphics.printf(level.name, 700, 5, 100)
+    -- love.graphics.print(level.name, 700, 5)
     if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
   end
 end

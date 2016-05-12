@@ -43,6 +43,11 @@ function copy(obj, seen)
 end
 
 function love.load(arg)
+  -- load font
+  smallFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 17)
+  largeFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 30)
+  love.graphics.setFont(smallFont)
+
   Gamestate.registerEvents()
   Gamestate.switch(menu)
 end

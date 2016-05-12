@@ -16,7 +16,7 @@ local bullet = {
   filter = nil,
   reaction = nil,
   curAnim = 1,
-  spriteSheet = nil,
+  spriteSheet = love.graphics.newImage("img/other/playerBullet.png"),
   spriteGrid = nil,
   aniamtions = {},
   timers = {}
@@ -95,7 +95,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
   end
 
   -- animations --
-  newBullet.spriteSheet = love.graphics.newImage("img/other/playerBullet.png")
+  --newBullet.spriteSheet =
   newBullet.spriteGrid = anim8.newGrid(16, 16, 48, 32, 0, 0, 0)
   newBullet.animations = {
     anim8.newAnimation(newBullet.spriteGrid('1-2', 1), 0.04, 'pauseAtEnd'), -- shot
@@ -144,7 +144,7 @@ end
 function drawBullets()
   for i, newBullet in ipairs(bullets) do
     setColor(newBullet.color) -- set each newBullet's color
-    --love.graphics.rectangle("fill", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
-    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 0.8, 0.8, 5, 5)
+    --love.graphics.rectangle("line", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
+    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
   end
 end
