@@ -34,6 +34,10 @@ local playerFilter = function(item, other)
   if other.type == "player" then
     return 'cross'
   end
+
+  if other.type == "block" or other.type == "ground" then
+    return 'cross'
+  end
 end
 
 local enemyFilter = function(item, other)
@@ -44,6 +48,10 @@ local enemyFilter = function(item, other)
   if other.type == "player" then
     return 'cross'
   end
+
+  if other.type == "block" or other.type == "ground" then
+    return 'cross'
+  end
 end
 
 -- reaction functions --
@@ -52,12 +60,10 @@ local playerBullet = function(entity, cols, len)
     if cols[j].other.type == "enemy" then
       entity.isDead = true -- destroy bullet
       cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
-      break
     end
 
-    if cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
+    if cols[j].other.type == "block" or cols[j].other.type == "ground" then
       entity.isDead = true
-      break
     end
   end
 end
@@ -119,7 +125,9 @@ function updateBullets(dt, left, world) -- add world as a parameter
 
     if newBullet.isDead == true then -- if a newBullet leaves the play area...
       if checkTimer("dead", newBullet.timers) == false then
-        world:remove(newBullet) -- remove from world...
+        if world:hasItem(newBullet) then
+          world:remove(newBullet) -- remove from world...
+        end
         newBullet.curAnim = 2
         addTimer(0.1, "dead", newBullet.timers)
       end
@@ -137,6 +145,6 @@ function drawBullets()
   for i, newBullet in ipairs(bullets) do
     setColor(newBullet.color) -- set each newBullet's color
     --love.graphics.rectangle("fill", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
-    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 0.8, 0.8, 0, 0)
+    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 0.8, 0.8, 5, 5)
   end
 end
