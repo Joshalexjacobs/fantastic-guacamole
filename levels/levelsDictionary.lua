@@ -76,7 +76,8 @@ local dictionary = {
       top = 0
     },
     ground = {
-      {x = 0, y = 450, w = 1200, h = 160}
+      {x = 0, y = 450, w = 1200, h = 160},
+      --{x = 600, y = 250, w = 700, h = 50}
     },
     walls = {},
     zones = {

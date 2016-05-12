@@ -1,9 +1,27 @@
 -- enemyDictionary.lua --
 
+-- general enemy functions --
+local function getAngle(pX, pY, eX, eY)
+  angle = math.atan2(pY - eY, pX - eX)
+  if angle > -0.40 and angle < 0.40 then -- right
+    return math.pi
+  elseif angle > 2.8 or angle < -2.8 then -- left
+    return 0
+  elseif angle < -1.57 and angle > -2.8 then -- up left
+    return -0.523599
+  elseif angle < -0.40 and angle > -1.57 then -- up right
+    return (math.pi * 7)/6
+  elseif angle > 0.40 and angle < 1.57 then -- down right
+    return (math.pi * 5)/6
+  elseif angle > 1.57 and angle < 2.8 then -- down left
+    return math.pi/6
+  end
+end
+
 -- enemy functions
 
 -- RUNNER --
-local function runBehaviour(dt, entity)
+local function runBehaviour(dt, entity, world)
     if entity.direction == "right" then
       entity.dx = entity.speed * dt
     elseif entity.direction == "left" then
@@ -17,7 +35,7 @@ local function runBehaviour(dt, entity)
 end
 
 -- TARGET --
-local function targetBehaviour(dt, entity)
+local function targetBehaviour(dt, entity, world)
   -- static
 
   if entity.isDead then
@@ -33,13 +51,7 @@ local function targetBehaviour(dt, entity)
 end
 
 -- SHOOTER-RUNNER --
-local function srBehaviour(dt, entity)
-    -- set timers (do this ONCE) --
-    if not checkTimer("shoot", entity.timers) then
-      addTimer(0.0, "shoot", entity.timers)
-      print("create shoot timer for the first time")
-    end
-
+local function srBehaviour(dt, entity, world)
     -- set direction
     if player.x > entity.x and entity.direction ~= "right" then
       entity.direction = "right"
@@ -58,18 +70,46 @@ local function srBehaviour(dt, entity)
     end
 
     -- movement/shooting
-    if math.abs(entity.x - player.x) > 200 and updateTimer(dt, "shoot", entity.timers) then
+    -- run towards player until within 200 pixels and create timer
+    if math.abs(entity.x - player.x) > 200 and not checkTimer("shoot", entity.timers) then
       entity.curAnim = 1
       if entity.direction == "right" then
         entity.dx = entity.speed * dt
       elseif entity.direction == "left" then
         entity.dx = -(entity.speed * dt)
       end
-    else
+    else -- once timer is created, stop and shoot at the player
       entity.dx = 0
-      entity.curAnim = 2
+
+      addTimer(0.0, "shoot", entity.timers)
 
       if updateTimer(dt, "shoot", entity.timers) then
+        angle = getAngle(player.x, player.y, entity.x, entity.y)
+
+        if angle == math.pi or angle == 0 then
+          entity.curAnim = 2
+          if entity.direction == "right" then
+            entity.shootPoint.x, entity.shootPoint.y = 31, 14
+          elseif entity.direction == "left" then
+            entity.shootPoint.x, entity.shootPoint.y = -28, 12
+          end
+        elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
+          entity.curAnim = 3
+          if entity.direction == "right" then
+            entity.shootPoint.x, entity.shootPoint.y = 30, -18
+          elseif entity.direction == "left" then
+            entity.shootPoint.x, entity.shootPoint.y = -15, -20
+          end
+        elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
+          entity.curAnim = 4
+          if entity.direction == "right" then
+            entity.shootPoint.x, entity.shootPoint.y = 7, 7
+          elseif entity.direction == "left" then
+            entity.shootPoint.x, entity.shootPoint.y = -20, 29
+          end
+        end
+
+        addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
         resetTimer(1.2, "shoot", entity.timers) -- add timer
       end
     end
@@ -78,8 +118,6 @@ local function srBehaviour(dt, entity)
 
     -- handle/update current animation running
     entity.animations[entity.curAnim]:update(dt)
-
-    print(entity.dy)
 end
 
 local dictionary = {
@@ -113,9 +151,11 @@ local dictionary = {
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     animations = function(grid)
       animations = {
-        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running
-        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped
-        anim8.newAnimation(grid(2, 2), 0.1) -- falling
+        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
+        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped 2
+        anim8.newAnimation(grid(2, 3), 0.1), -- shoot up 3
+        anim8.newAnimation(grid(3, 3), 0.1), -- shoot down 4
+        anim8.newAnimation(grid(2, 2), 0.1) -- falling 5
       }
       return animations
     end,

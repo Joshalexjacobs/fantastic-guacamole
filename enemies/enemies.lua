@@ -13,6 +13,7 @@ local enemy = {
   spriteGrid = nil,
   animations = nil,
   curAnim = 1,
+  shootPoint = {x = 0, y = 0}, -- point that determines where bullets spawn (in relation to enemy.x and enemy.y)
   scale = {x = nil, y = nil, offX = nil, offY = nil},
   x = 0,
   y = 0,
@@ -41,11 +42,9 @@ local enemy = {
 }
 
 -- Enemy Functions --
-function enemy.update(dt, newEnemy)
-  newEnemy.behaviour(dt, newEnemy)
-end
+function enemy.update(dt, newEnemy, world)
+  newEnemy.behaviour(dt, newEnemy, world)
 
-function enemy.updateWorld(dt, newEnemy, world)
   -- this block locks in our velocity to maxVelocity
   local v = math.sqrt(newEnemy.dx^2 + newEnemy.dy^2)
   if v > newEnemy.maxVelocity then
@@ -99,18 +98,14 @@ end
 
 function updateEnemies(dt, world) -- include world here?
   for i, newEnemy in ipairs(enemies) do -- loops through number of enemies
-    newEnemy.update(dt, newEnemy)
-    newEnemy.updateWorld(dt, newEnemy, world)
+    newEnemy.update(dt, newEnemy, world)
 
     if newEnemy.hp <= 0 then
       newEnemy.isDead = true
-      --newEnemy.playDead = true
     end
 
-    --if newEnemy.isDead and newEnemy.playDead == false then
     if newEnemy.isDead and world:hasItem(newEnemy) then
       world:remove(newEnemy) -- remove from world...
-      --table.remove(enemies, i) -- ...and the bullets table
     end
 
     if newEnemy.playDead then
@@ -123,7 +118,7 @@ function drawEnemies()
   for _, newEnemy in ipairs(enemies) do
     --setColor(newEnemy.color) -- set each bullet's color
     newEnemy.draw(newEnemy)
-    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
     --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, 50, 50) --range?
   end
 end

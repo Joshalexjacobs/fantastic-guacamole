@@ -3,7 +3,7 @@
 -- Player Class: --
 local player = {
   type = "player", -- or "invincible"
-  lives = 3,
+  lives = 2,
   x = 375,
   y = 250,
   w = 24, --32
@@ -23,11 +23,14 @@ local player = {
   spiteGrid = nil,
   animations = {},
   curAnim = 1,
+  timers = {},
   filter = function(item, other)
     if other.type == "enemy" then
       return 'cross'
     elseif other.type == "block" or other.type == "ground" then
       return 'slide'
+    elseif other.type == "bullet" then
+      return 'cross'
     end
   end,
   respawnFilter = function(item, other)
@@ -50,7 +53,7 @@ function player.killPlayer(world)
     respawnTimer = respawnTimerMax
     player.isDead = true
 
-    world:remove(player) -- remove player from the world
+    player.type = "invincible"
   end
 end
 
@@ -73,7 +76,8 @@ function loadPlayer(world)
     anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- 4 diagShotRun
     anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- 5 lookUp
     anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1), -- 6 jump/fall
-    anim8.newAnimation(player.spriteGrid('2-3', 9, 1, 10), 0.1 ) -- 7 diagShotRunDown
+    anim8.newAnimation(player.spriteGrid('2-3', 9, 1, 10), 0.1 ), -- 7 diagShotRunDown
+    anim8.newAnimation(player.spriteGrid(3, 10), 0.1 ) -- 8 blinking
   }
 end
 
@@ -189,14 +193,12 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     if respawnTimer <= 0 and player.lives > 0 then
       -- revive player
       player.isDead = false
-      world:add(player, player.x, player.y, player.w, player.h)
 
       -- start invincibility timer
-      player.type = "invincible"
       invinceTimer = invinceTimerMax
     end
 
-    do return end -- skip rest of updatePlayer
+    --do return end -- skip rest of updatePlayer
   end
 
   -- decrement invincibility timer
@@ -226,7 +228,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if player.dx ~= 0 or player.dy ~= 0 then
 
-    if not player.isDead then
+    if player.lives > 0 then
       -- check if player has temporary invincibility
       if player.type == "invincible" then player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.respawnFilter)
       else player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.filter) end
@@ -249,13 +251,6 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
         player.h = 36 -- ..shrink the hitbox
         world:add(player, player.x, player.y, player.w, player.h)
       end
-
-      --[[
-      if len > 0 and not player.isJumping then -- check if the player is colliding with the ground
-        player.isGrounded = true
-      else
-        player.isGrounded = false
-      end]]
     end
 
   end
@@ -271,7 +266,8 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 then
     -- if player is grounded...
     if player.controls[3] then
-      addBullet(player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
+      --print(player.controls[1])
+      addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
     end
 
     shootTimer = shootTimerMax
@@ -330,11 +326,17 @@ function checkScreenMove(left)
 end
 
 function drawPlayer()
-  setColor({255, 255, 255, 255}) -- sets the player's color
-    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- *KEEP* will most likely become hit box!
-    if not player.isDead then
+    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
+
+    if player.isDead == false then
+      setColor({255, 255, 255, 255})
       player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+    elseif player.lives > 0 then
+      setColor({255, 255, 255, 25})
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      setColor({255, 255, 255, 255})
     end
+
 end
 
 return player
