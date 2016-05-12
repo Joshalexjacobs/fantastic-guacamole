@@ -118,7 +118,7 @@ function drawEnemies()
   for _, newEnemy in ipairs(enemies) do
     --setColor(newEnemy.color) -- set each bullet's color
     newEnemy.draw(newEnemy)
-    love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
+    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
     --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, 50, 50) --range?
   end
 end

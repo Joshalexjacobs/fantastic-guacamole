@@ -88,7 +88,7 @@ function game:draw()
     drawEnemies()
 
     if debug then
-      drawZones()
+      --drawZones()
     end
 
     -- draws that are determined by cflux

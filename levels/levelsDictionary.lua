@@ -87,7 +87,7 @@ local dictionary = {
         w = 300,
         h = 100,
         enemies = {
-          {name = "shooter/run", x = nil, y = nil, max = 1}
+          {name = "shooter/run", x = nil, y = nil, max = 2}
         }
       }
     } -- end of zones
