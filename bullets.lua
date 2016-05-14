@@ -8,7 +8,7 @@ local bullet = {
   h = 5,
   dx = 0,
   dy = 0,
-  speed = 400,
+  speed = 500,
   dir = nil,
   actualDir = nil,
   isDead = false,
@@ -90,6 +90,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
     newBullet.filter = playerFilter
     newBullet.reaction = playerBullet
   elseif danger == true then
+    newBullet.speed = 300
     newBullet.filter = enemyFilter
     newBullet.reaction = enemyBullet
   end

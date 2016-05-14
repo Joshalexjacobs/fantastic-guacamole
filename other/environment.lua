@@ -3,6 +3,16 @@
 function loadEnvironment()
    infoBox = love.graphics.newImage("img/background/infoBox.png")
    lives = love.graphics.newImage("img/background/assets/skull.png")
+   backdrop = love.graphics.newImage("img/background/mock.png")
+end
+
+function drawBackdrop()
+  local r, g, b, a = love.graphics.getColor()
+  setColor(255, 255, 255, 255)
+
+  love.graphics.draw(backdrop, 0, 0, 0, 1, 1)
+
+  setColor(r, g, b, a)
 end
 
 local function drawScanLines()
@@ -29,7 +39,7 @@ local function drawInfoBox()
   love.graphics.draw(infoBox, 0, 525)
 
   for i = 1, player.lives do -- draw lives
-    love.graphics.draw(lives, (40 * i) - 25, 530, 0, 2, 2, 0, 0)
+    love.graphics.draw(lives, (40 * i) - 25, 530, 0, 1, 1, 0, 0)
     if i > 3 then break end
   end
 
@@ -37,6 +47,6 @@ local function drawInfoBox()
 end
 
 function drawEnvironment()
-  drawScanLines()
+  --drawScanLines()
   drawInfoBox()
 end

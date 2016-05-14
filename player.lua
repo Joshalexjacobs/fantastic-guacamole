@@ -237,19 +237,11 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
         for i = 1, len do
           if cols[i].other.type == "ground" then
             player.isGrounded = true
-
-            -- when player touches the ground expand the hit box
-            world:remove(player)
-            player.h = 72
-            world:add(player, player.x, player.y, player.w, player.h)
             break
           end
         end
       else
         player.isGrounded = false
-        world:remove(player) -- when player is falling/jumping...
-        player.h = 36 -- ..shrink the hitbox
-        world:add(player, player.x, player.y, player.w, player.h)
       end
     end
 

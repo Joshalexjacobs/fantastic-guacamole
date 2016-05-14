@@ -84,6 +84,8 @@ function game:draw()
 
   camera.draw(function(l,t,w,h)
     -- color independent draws
+
+    drawBackdrop()
     drawPlayer()
     drawEnemies()
     drawBullets()
@@ -94,7 +96,7 @@ function game:draw()
 
     -- draws that are determined by cflux
     setCFluxColor()
-    drawBlocks()
+    --drawBlocks()
   end)
 
   drawEnvironment()
