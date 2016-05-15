@@ -71,7 +71,7 @@ local function srBehaviour(dt, entity, world)
 
     -- movement/shooting
     -- run towards player until within 200 pixels and create timer
-    if math.abs(entity.x - player.x) > 200 and not checkTimer("shoot", entity.timers) then
+    if math.abs(entity.x - player.x) > 300 and not checkTimer("shoot", entity.timers) then
       entity.curAnim = 1
       if entity.direction == "right" then
         entity.dx = entity.speed * dt

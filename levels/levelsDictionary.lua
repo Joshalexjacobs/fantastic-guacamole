@@ -10,28 +10,30 @@ local dictionary = {
       top = 0
     },
     ground = {
-      {x = 0, y = 450, w = 700, h = 160},
-      {x = 850, y = 320, w = 700, h = 350}
+      {x = 0, y = 450, w = 900, h = 160},
+      {x = 1050, y = 320, w = 700, h = 350}
     },
     walls = {},
     zones = {
       {
+        name = "josh",
         x = 450,
         y = 345,
-        w = 200,
+        w = 100,
         h = 100,
         enemies = {
-          {name = "runner", x = nil, y = nil, max = 3}
+          {name = "runner", count = 0, max = 1, side = "left", x = 850, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
 
       {
+        name = "jacobs",
         x = 1100,
         y = 215,
         w = 200,
         h = 100,
         enemies = {
-          {name = "runner", x = nil, y = nil, max = 3}
+          {name = "runner", count = 0, max = 1, side = "left", x = 1650, y = 250, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       }
     } -- end of zones
@@ -54,21 +56,22 @@ local dictionary = {
     },
     zones = {
       {
+        name = "targets",
         x = 0,
         y = 445,
         w = 800,
         h = 100,
         enemies = {
-          {name = "target", x = 100, y = 250, max = 1},
-          {name = "target", x = 368, y = 100, max = 1},
-          {name = "target", x = 668, y = 250, max = 1}
+          {name = "target", count = 0, max = 1, side = "left", x = 100, y = 250, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "target", count = 0, max = 1, side = "left", x = 368, y = 100, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "target", count = 0, max = 1, side = "left", x = 668, y = 250, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       }
     } -- end of zones
   },
 
   {
-    name = "shooter-run test level",
+    name = "level one - city",
     bounds = { -- camera boundaries
       width = 5000,
       height = 600,
@@ -76,25 +79,37 @@ local dictionary = {
       top = 0
     },
     ground = {
-      {x = 0, y = 450, w = 1200, h = 160},
-      --{x = 600, y = 250, w = 700, h = 50}
+      {x = 0, y = 450, w = 6000, h = 160},
     },
     walls = {},
     zones = {
       {
+        name = "first runner",
         x = 450,
         y = 345,
-        w = 300,
+        w = 100,
         h = 100,
         enemies = {
-          {name = "shooter/run", x = nil, y = nil, max = 2}
+          {name = "runner", count = 0, max = 1, side = "left", x = 900, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
         }
-      }
+      },
+      {
+        name = "two runners",
+        x = 700,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "runner", count = 0, max = 1, side = "right", x = 250, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "left", x = 1000, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+
     } -- end of zones
   },
-
   {
-    name = "tilemap",
+    name = "16:9",
     bounds = { -- camera boundaries
       width = 5000,
       height = 600,
@@ -102,22 +117,35 @@ local dictionary = {
       top = 0
     },
     ground = {
-      {x = 0, y = 450, w = 1200, h = 160},
+      {x = 0, y = 325, w = 6000, h = 160},
     },
     walls = {},
     zones = {
       {
+        name = "first runner",
         x = 450,
         y = 345,
-        w = 300,
+        w = 100,
         h = 100,
         enemies = {
-          {name = "shooter/run", x = nil, y = nil, max = 0} -- if max = 0 no enemies will spawn
+          {name = "runner", count = 0, max = 1, side = "left", x = 900, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
         }
-      }
+      },
+      {
+        name = "two runners",
+        x = 700,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "runner", count = 0, max = 1, side = "right", x = 250, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "left", x = 1000, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+
     } -- end of zones
   },
-
 }
 
 function getLevel(levelName, level)

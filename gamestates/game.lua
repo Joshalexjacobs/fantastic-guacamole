@@ -31,6 +31,7 @@ game = {}
 local debug = true
 
 windowWidth, windowHeight = 800, 600
+--windowWidth, windowHeight = 640, 360
 
 -- Camera boundaries
 local bounds = {
@@ -72,7 +73,15 @@ function game:update(dt)
   updateBullets(dt, bounds.left, world)
 
   updateEnemies(dt, world)
-  updateZones(player.x, player.y, player.w, bounds.left, world, dt)
+  updateZones(player.x, player.w, bounds.left, world, dt)
+end
+
+function game:keyreleased(key, code)
+  if key == 'n' then
+    player.jumpLock = false
+  elseif key == 'm' then
+    player.shootLock = false
+  end
 end
 
 function game:draw()
@@ -91,12 +100,12 @@ function game:draw()
     drawBullets()
 
     if debug then
-      --drawZones()
+      drawZones()
     end
 
     -- draws that are determined by cflux
     setCFluxColor()
-    --drawBlocks()
+    drawBlocks()
   end)
 
   drawEnvironment()

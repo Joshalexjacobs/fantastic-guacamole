@@ -45,7 +45,7 @@ end
 function love.load(arg)
   -- load font
   smallFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 17)
-  largeFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 30)
+  teenyFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 13)
   love.graphics.setFont(smallFont)
 
   Gamestate.registerEvents()

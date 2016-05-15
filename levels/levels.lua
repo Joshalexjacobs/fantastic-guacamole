@@ -25,6 +25,6 @@ function loadLevel(levelName, world)
   end
 
   for i = 1, #level.zones do
-    addZone(level.zones[i].x, level.zones[i].y, level.zones[i].w, level.zones[i].h, level.zones[i].enemies)
+    addZone(level.zones[i].name, level.zones[i].x, level.zones[i].y, level.zones[i].w, level.zones[i].h, level.zones[i].enemies)
   end
 end

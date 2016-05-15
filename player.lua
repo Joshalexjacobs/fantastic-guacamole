@@ -14,6 +14,8 @@ local player = {
   initVel = 6,
   termVel = -3,
   isJumping = false,
+  jumpLock = false,
+  shootLock = false,
   isGrounded = false,
   isDead = false,
   prevDir = 1, -- used for mirroring animations
@@ -69,7 +71,7 @@ function loadPlayer(world)
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
   player.spriteGrid = anim8.newGrid(34, 48, 102, 480, 0, 0, 0) --432
 
-  player.animations = {
+  player.animations = {                -- col, row
     anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- 1 idle
     anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- 2 idleRun
     anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- 3 horizontalShotRun
@@ -79,6 +81,7 @@ function loadPlayer(world)
     anim8.newAnimation(player.spriteGrid('2-3', 9, 1, 10), 0.1 ), -- 7 diagShotRunDown
     anim8.newAnimation(player.spriteGrid(3, 10), 0.1 ) -- 8 blinking
   }
+
 end
 
 -- Player Globals: --
@@ -144,7 +147,7 @@ local function playerInput(dt, world)
   elseif love.keyboard.isDown("s") then -- Down
     player.controls[1] = math.pi/2
     player.controls[2].x, player.controls[2].y = 15, 25
-    if player.isJumping or not player.isGrounded then player.controls[3] = true
+    if player.isJumping or player.isGrounded == false then player.controls[3] = true
     else player.controls[3] = false end
 
   else -- else player isn't hitting any of these keys so default them back to left/right
@@ -167,14 +170,15 @@ local function playerInput(dt, world)
   end
 
   -- jump --
-  if (love.keyboard.isDown('n') and not player.isJumping and player.isGrounded) or (pressX() and not player.isJumping and player.isGrounded) then -- when the player hits jump
+  if (love.keyboard.isDown('n') and player.isJumping == false and player.isGrounded and player.jumpLock == false) or (pressX() and player.isJumping == false and player.isGrounded) then -- when the player hits jump
     player.isJumping = true
+    player.jumpLock = true
     player.isGrounded = false
     player.dy = -player.initVel -- 6 is our current initial velocity
     jumpTimer = jumpTimerMax
   elseif (love.keyboard.isDown('n') and jumpTimer > 0 and player.isJumping) or (pressX() and jumpTimer > 0 and player.isJumping) then
     player.dy = player.dy + (-0.5)
-  elseif (not love.keyboard.isDown('n') and player.isJumping) or (not pressX() and player.isJumping) then -- if the player releases the jump button mid-jump...
+  elseif (love.keyboard.isDown('n') == false and player.isJumping) or (pressX() == false and player.isJumping) then -- if the player releases the jump button mid-jump...
     if player.dy < player.termVel then -- and if the player's velocity has reached the minimum velocity (minimum jump height)...
       player.dy = player.termVel -- terminate the jump
     end
@@ -254,12 +258,10 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if animTimer > 0 then animTimer = animTimer - (1 * dt) end
 
-  -- player shoot -- !!! this must be modified in the future to force the player to tap the circle/shoot button
-  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 then
-    -- if player is grounded...
+  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false then
     if player.controls[3] then
-      --print(player.controls[1])
       addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
+      player.shootLock = true
     end
 
     shootTimer = shootTimerMax
@@ -328,7 +330,6 @@ function drawPlayer()
       player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
       setColor({255, 255, 255, 255})
     end
-
 end
 
 return player
