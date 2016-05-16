@@ -105,7 +105,7 @@ function game:draw()
 
     -- draws that are determined by cflux
     setCFluxColor()
-    drawBlocks()
+    --drawBlocks()
   end)
 
   drawEnvironment()

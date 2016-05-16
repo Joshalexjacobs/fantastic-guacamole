@@ -1,9 +1,5 @@
 local blocks = {}
 
-function loadBlocks()
-  -- create randomly generated floating blocks, pillars in the foreground (in front of player), stars, stalagtites, and stalagmites
-end
-
 -- this function adds new blocks to our blocks table
 function addBlock(xPos, yPos, width, height, world, bType)
   local block = {type = bType, x = xPos, y = yPos, w = width, h = height}

@@ -108,6 +108,8 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
 end
 
 function updateBullets(dt, left, world) -- add world as a parameter
+  local bulletDump = {}
+
   for i, newBullet in ipairs(bullets) do
     --local cols, len -- cols is an array of objects the newBullet is coliding with and len is the length of cols
 
@@ -120,8 +122,19 @@ function updateBullets(dt, left, world) -- add world as a parameter
     newBullet.reaction(newBullet, cols, len)
 
     if(newBullet.x > left + windowWidth + newBullet.w) or (newBullet.x < left - newBullet.w) then
-      world:remove(newBullet) -- remove from world...
-      table.remove(bullets, i) -- ...and the bullets table
+      if world:hasItem(newBullet) then
+        world:remove(newBullet) -- remove from world...
+        --table.remove(bullets, i) -- ...and the bullets table
+        table.insert(bulletDump, i)
+      end
+    end
+
+    -- dispose of all dead bullets [may still not be working properly, will watch for bullet related errors]
+    local j = #bulletDump
+    while #bulletDump > 0 do
+      table.remove(bullets, bulletDump[j])
+      table.remove(bulletDump, j)
+      j = j - 1
     end
 
     if newBullet.isDead == true then -- if a newBullet leaves the play area...

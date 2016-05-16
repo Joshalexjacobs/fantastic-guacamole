@@ -34,7 +34,7 @@ local enemy = {
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
       return 'cross'
-    elseif other.type == "block" or other.type == "ground" then
+    elseif other.type == "block" or other.type == "ground" or other.type == "enemyPlatform" then
       return 'slide'
     end
   end,

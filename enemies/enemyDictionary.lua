@@ -120,6 +120,69 @@ local function srBehaviour(dt, entity, world)
     entity.animations[entity.curAnim]:update(dt)
 end
 
+-- STATIC-SHOOTER --
+local function sBehaviour(dt, entity, world)
+    -- set direction
+    if player.x > entity.x and entity.direction ~= "right" then
+      entity.direction = "right"
+
+      for i = 1, #entity.animations do
+        entity.animations[i]:flipH()
+      end
+
+    elseif player.x < entity.x and entity.direction ~= "left" then
+      entity.direction = "left"
+
+      for i = 1, #entity.animations do
+        entity.animations[i]:flipH()
+      end
+    end
+
+    if checkTimer("shoot", entity.timers) == false then
+      addTimer(0.0, "shoot", entity.timers)
+      addTimer(0.0, "secondShot", entity.timers)
+    end
+
+    if updateTimer(dt, "shoot", entity.timers) then
+      angle = getAngle(player.x, player.y, entity.x, entity.y)
+
+      if angle == math.pi or angle == 0 then
+        entity.curAnim = 2 -- left/right
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
+        end
+      elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
+        entity.curAnim = 3 -- up
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 32, -20
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -2, -20
+        end
+      elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
+        entity.curAnim = 4 -- down
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 35, 25
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -10, 25
+        end
+      end
+
+      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
+      resetTimer(1.5, "shoot", entity.timers) -- add timer
+      resetTimer(0.3, "secondShot", entity.timers)
+    elseif updateTimer(dt, "secondShot", entity.timers) then
+      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
+      resetTimer(1.8, "secondShot", entity.timers)
+    end
+
+    if entity.isDead then entity.playDead = true end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
 local dictionary = {
   {
     name = "runner",
@@ -146,6 +209,29 @@ local dictionary = {
     w = 36,
     h = 72,
     update = srBehaviour,
+    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
+    sprite = "img/enemies/shooter-run/shooter-run.png",
+    grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
+        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped 2
+        anim8.newAnimation(grid(2, 3), 0.1), -- shoot up 3
+        anim8.newAnimation(grid(3, 3), 0.1), -- shoot down 4
+        anim8.newAnimation(grid(2, 2), 0.1) -- falling 5
+      }
+      return animations
+    end,
+    filter = nil,
+    gravity = 9.8
+  },
+
+  {
+    name = "static-shooter",
+    hp = 1,
+    w = 36,
+    h = 72,
+    update = sBehaviour,
     scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,

@@ -17,7 +17,7 @@ function loadLevel(levelName, world)
   getLevel(levelName, level)
 
   for i = 1, #level.ground do
-    addBlock(level.ground[i].x, level.ground[i].y, level.ground[i].w, level.ground[i].h, world, "ground")
+    addBlock(level.ground[i].x, level.ground[i].y, level.ground[i].w, level.ground[i].h, world, level.ground[i].type)
   end
 
   for i = 1, #level.walls do
