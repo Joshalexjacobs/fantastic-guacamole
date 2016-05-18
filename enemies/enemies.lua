@@ -28,7 +28,7 @@ local enemy = {
   prevDir = nil,
   isFalling = false,
   isDead = false,
-  playDead = nil,
+  playDead = false,
   timers = {},
   behaviour = defaultBehaviour,
   filter = function(item, other) -- default enemy filter
@@ -119,6 +119,5 @@ function drawEnemies()
     --setColor(newEnemy.color) -- set each bullet's color
     newEnemy.draw(newEnemy)
     --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, newEnemy.w, newEnemy.h)
-    --love.graphics.rectangle("line", newEnemy.x, newEnemy.y, 50, 50) --range?
   end
 end

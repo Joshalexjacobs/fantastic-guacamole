@@ -11,9 +11,15 @@ local function getAngle(pX, pY, eX, eY)
     return -0.523599
   elseif angle < -0.40 and angle > -1.57 then -- up right
     return (math.pi * 7)/6
-  elseif angle > 0.40 and angle < 1.57 then -- down right
+  --[[elseif angle > 0.40 and angle < 1.57 then -- down right
     return (math.pi * 5)/6
   elseif angle > 1.57 and angle < 2.8 then -- down left
+    return math.pi/6]]
+  elseif angle > 0.40 and angle < 1.18 then -- down right
+    return (math.pi * 5)/6
+  elseif angle > 1.18 and angle < 1.8 then -- down
+    return math.pi/2
+  elseif angle > 1.8 and angle < 2.8 then -- down left
     return math.pi/6
   end
 end
@@ -183,6 +189,49 @@ local function sBehaviour(dt, entity, world)
     entity.animations[entity.curAnim]:update(dt)
 end
 
+-- CAMERA-TURRET --
+local function cctvBehaviour(dt, entity, world)
+    if checkTimer("shoot", entity.timers) == false then
+      addTimer(0.0, "shoot", entity.timers)
+      addTimer(0.0, "secondShot", entity.timers)
+    end
+
+    if updateTimer(dt, "shoot", entity.timers) and entity.isDead ~= true then
+      angle = getAngle(player.x, player.y, entity.x, entity.y)
+
+      if angle == (math.pi * 5)/6 then
+        entity.curAnim = 1
+        entity.shootPoint.x, entity.shootPoint.y = 30, 48
+      elseif angle == math.pi/6 then
+        entity.curAnim = 2
+        entity.shootPoint.x, entity.shootPoint.y = 15, 48
+      elseif angle == math.pi/2 then
+        entity.curAnim = 3
+        entity.shootPoint.x, entity.shootPoint.y = 22, 55
+      end
+
+      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
+      resetTimer(1.5, "shoot", entity.timers) -- add timer
+      resetTimer(0.3, "secondShot", entity.timers)
+    elseif updateTimer(dt, "secondShot", entity.timers) and entity.isDead ~= true then
+      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
+      resetTimer(1.8, "secondShot", entity.timers)
+    end
+
+    if entity.isDead then
+      -- create a timer.. etc
+      entity.curAnim = 4
+      addTimer(0.8, "death", entity.timers)
+      if updateTimer(dt, "death", entity.timers) then
+        entity.playDead = true
+      end
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
+
 local dictionary = {
   {
     name = "runner",
@@ -247,6 +296,28 @@ local dictionary = {
     end,
     filter = nil,
     gravity = 9.8
+  },
+
+  {
+    name = "camera-turret",
+    hp = 1,
+    w = 50,
+    h = 50,
+    update = cctvBehaviour,
+    scale = {x = 1, y = 1, offX = 8, offY = 5},
+    sprite = "img/enemies/camera turret/camera turret.png",
+    grid = {x = 64, y = 64, w = 192, h = 256},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- face left 1
+        anim8.newAnimation(grid(2, 1), 0.1), -- face right 2
+        anim8.newAnimation(grid(3, 1), 0.1), -- down 3
+        anim8.newAnimation(grid('1-3', '2-4'), 0.1, 'pauseAtEnd'), -- dead 4
+      }
+      return animations
+    end,
+    filter = nil,
+    gravity = 0
   },
 
   {
