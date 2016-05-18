@@ -68,7 +68,6 @@ function game:update(dt)
   bounds.left, bounds.top = camera.getViewport()
 
   -- update everything
-  updateCFlux()
   updatePlayer(dt, world)
   updateBullets(dt, bounds.left, world)
 
@@ -103,9 +102,6 @@ function game:draw()
       drawZones()
     end
 
-    -- draws that are determined by cflux
-    setCFluxColor()
-    --drawBlocks()
   end)
 
   drawEnvironment()

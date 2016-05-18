@@ -42,7 +42,7 @@ local dictionary = {
     },
     ground = {
       {x = 0, y = 450, w = 6000, h = 160, type = "ground"},
-      {x = 1200, y = 200, w = 100, h = 25, type = "enemyPlatform"}
+      {x = 1100, y = 190, w = 100, h = 25, type = "enemyPlatform"}
     },
     walls = {},
     zones = {
@@ -74,8 +74,8 @@ local dictionary = {
         w = 100,
         h = 100,
         enemies = {
-          --{name = "static-shooter", count = 0, max = 1, side = "left", x = 1225, y = 130, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "camera-turret", count = 0, max = 1, side = "left", x = 1225, y = 130, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1155, y = 120, spawnTimer = 0, spawnTimerMax = 0.8},
+          --{name = "camera-turret", count = 0, max = 1, side = "left", x = 1225, y = 130, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
 
