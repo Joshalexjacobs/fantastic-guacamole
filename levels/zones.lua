@@ -43,7 +43,11 @@ function updateZones(x, w, left, world, dt)
           if spawn.count < spawn.max and spawn.spawnTimer <= 0 then
             spawn.spawnTimer = spawn.spawnTimerMax
 
-            addEnemy(spawn.name, spawn.x, spawn.y, spawn.side, world)
+            if spawn.dynamic then
+              addEnemy(spawn.name, player.x + spawn.x, spawn.y, spawn.side, world)
+            else
+              addEnemy(spawn.name, spawn.x, spawn.y, spawn.side, world)
+            end
 
             spawn.count = spawn.count + 1
           end
@@ -70,6 +74,7 @@ function drawZones() -- zone's draw function should only be called when debug is
     love.graphics.rectangle("line", newZone.x, newZone.y, newZone.w, newZone.h)
 
     -- print zone name
+    setColor({255, 255, 255, 255})
     love.graphics.setFont(teenyFont)
     love.graphics.print(newZone.name, newZone.x + 1, newZone.y + 1)
     love.graphics.setFont(smallFont)

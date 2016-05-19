@@ -12,11 +12,11 @@ function drawBlocks()
   for _,block in ipairs(blocks) do
     love.graphics.rectangle("fill", block.x, block.y, block.w, block.h)
 
-    setCFluxShade() -- block outline
-    love.graphics.setLineWidth(6)
-    love.graphics.rectangle("line", block.x, block.y, block.w, block.h)
+    --setCFluxShade() -- block outline
+    --love.graphics.setLineWidth(6)
+    --love.graphics.rectangle("line", block.x, block.y, block.w, block.h)
 
-    setCFluxColor() -- reset cflux...
-    love.graphics.setLineWidth(2) -- and line width
+    --setCFluxColor() -- reset cflux...
+    --love.graphics.setLineWidth(2) -- and line width
   end
 end

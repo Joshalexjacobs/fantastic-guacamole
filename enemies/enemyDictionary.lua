@@ -300,7 +300,7 @@ local dictionary = {
 
   {
     name = "camera-turret",
-    hp = 1,
+    hp = 4,
     w = 50,
     h = 50,
     update = cctvBehaviour,

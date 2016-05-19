@@ -24,9 +24,9 @@ local dictionary = {
         w = 800,
         h = 100,
         enemies = {
-          {name = "target", count = 0, max = 1, side = "left", x = 100, y = 250, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "target", count = 0, max = 1, side = "left", x = 368, y = 100, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "target", count = 0, max = 1, side = "left", x = 668, y = 250, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "target", count = 0, max = 1, side = "left", x = 100, y = 250, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "target", count = 0, max = 1, side = "left", x = 368, y = 100, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "target", count = 0, max = 1, side = "left", x = 668, y = 250, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       }
     } -- end of zones
@@ -35,50 +35,91 @@ local dictionary = {
   {
     name = "level one - city",
     bounds = { -- camera boundaries
-      width = 5000,
+      width = 8000,
       height = 600,
       left = 0,
       top = 0
     },
     ground = {
-      {x = 0, y = 450, w = 6000, h = 160, type = "ground"},
-      {x = 1100, y = 190, w = 100, h = 25, type = "enemyPlatform"}
+      {x = 0, y = 450, w = 8000, h = 160, type = "ground"},
+      {x = 1100, y = 190, w = 100, h = 10, type = "enemyPlatform"},
+      {x = 1300, y = 190, w = 100, h = 10, type = "enemyPlatform"},
+      {x = 1700, y = 190, w = 200, h = 10, type = "enemyPlatform"},
     },
     walls = {},
     zones = {
       {
-        name = "one runner",
+        name = "dynamic runners",
         x = 450,
         y = 345,
-        w = 100,
+        w = 2650,
         h = 100,
         enemies = {
-          {name = "runner", count = 0, max = 1, side = "left", x = 900, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
-        }
-      },
-      {
-        name = "two runners",
-        x = 700,
-        y = 345,
-        w = 100,
-        h = 100,
-        enemies = {
-          {name = "runner", count = 0, max = 1, side = "right", x = 250, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "runner", count = 0, max = 1, side = "left", x = 1200, y = 380, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1000, side = "left", x = 450, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
+          {name = "runner", count = 0, max = 1000, side = "right", x = -450, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 5.7},
         }
       },
       {
         name = "static shooter",
-        x = 800,
+        x = 750,
         y = 345,
         w = 100,
         h = 100,
         enemies = {
-          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1155, y = 120, spawnTimer = 0, spawnTimerMax = 0.8},
-          --{name = "camera-turret", count = 0, max = 1, side = "left", x = 1225, y = 130, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1155, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "left", x = 1300, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
 
+      {
+        name = "static shooter 2",
+        x = 950,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1355, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "left", x = 1500, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 3, side = "right", x = 400, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "static shooter 3",
+        x = 1350,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1745, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "static-shooter", count = 0, max = 1, side = "left", x = 1845, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "left", x = 1850, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 3, side = "right", x = 950, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "cameras",
+        x = 1850,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 2275, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 2675, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 3075, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+      {
+        name = "runner shooter",
+        x = 3750,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 4175, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
     } -- end of zones
   }, -- end of level
 
@@ -104,7 +145,7 @@ local dictionary = {
         w = 800,
         h = 100,
         enemies = {
-          {name = "camera-turret", count = 0, max = 1, side = "left", x = 150, y = 100, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 150, y = 100, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       }
     } -- end of zones

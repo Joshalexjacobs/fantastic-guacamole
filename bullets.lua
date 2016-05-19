@@ -29,13 +29,9 @@ local bullets = {}
 local playerFilter = function(item, other)
   if other.type == "enemy" then
     return 'cross'
-  end
-
-  if other.type == "player" then
+  elseif other.type == "player" then
     return 'cross'
-  end
-
-  if other.type == "block" or other.type == "ground" then
+  elseif other.type == "block" or other.type == "ground" then
     return 'cross'
   end
 end
@@ -43,13 +39,9 @@ end
 local enemyFilter = function(item, other)
   if other.type == "enemy" then
     return 'cross'
-  end
-
-  if other.type == "player" then
+  elseif other.type == "player" then
     return 'cross'
-  end
-
-  if other.type == "block" or other.type == "ground" then
+  elseif other.type == "block" or other.type == "ground" then
     return 'cross'
   end
 end
@@ -60,9 +52,7 @@ local playerBullet = function(entity, cols, len)
     if cols[j].other.type == "enemy" then
       entity.isDead = true -- destroy bullet
       cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
-    end
-
-    if cols[j].other.type == "block" or cols[j].other.type == "ground" then
+    elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then
       entity.isDead = true
     end
   end
@@ -74,8 +64,7 @@ local enemyBullet = function(entity, cols, len)
       entity.isDead = true -- destroy bullet
       cols[j].other.killPlayer(world)
       break
-    end
-    if cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
+    elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
       entity.isDead = true
       break
     end

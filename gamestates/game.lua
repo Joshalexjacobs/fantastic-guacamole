@@ -97,7 +97,8 @@ function game:draw()
     drawPlayer()
     drawEnemies()
     drawBullets()
-
+    drawBlocks()
+    
     if debug then
       drawZones()
     end
