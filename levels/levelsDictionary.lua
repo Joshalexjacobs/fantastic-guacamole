@@ -55,7 +55,7 @@ local dictionary = {
         w = 2650,
         h = 100,
         enemies = {
-          {name = "runner", count = 0, max = 1000, side = "left", x = 450, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
+          {name = "runner", count = 0, max = 1000, side = "left", x = 800, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
           {name = "runner", count = 0, max = 1000, side = "right", x = -450, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 5.7},
         }
       },
@@ -80,7 +80,7 @@ local dictionary = {
         enemies = {
           {name = "static-shooter", count = 0, max = 1, side = "left", x = 1355, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
           {name = "runner", count = 0, max = 1, side = "left", x = 1500, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "runner", count = 0, max = 3, side = "right", x = 400, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "right", x = 400, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
 
@@ -94,7 +94,7 @@ local dictionary = {
           {name = "static-shooter", count = 0, max = 1, side = "left", x = 1745, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
           {name = "static-shooter", count = 0, max = 1, side = "left", x = 1845, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
           {name = "runner", count = 0, max = 1, side = "left", x = 1850, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "runner", count = 0, max = 3, side = "right", x = 950, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "runner", count = 0, max = 1, side = "right", x = 950, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
 
@@ -118,6 +118,97 @@ local dictionary = {
         h = 100,
         enemies = {
           {name = "shooter/run", count = 0, max = 1, side = "left", x = 4175, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "cameras",
+        x = 4000,
+        y = 345,
+        w = 100,
+        h = 100,
+        enemies = {
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 4750, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 5000, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 5300, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 5800, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+          {name = "camera-turret", count = 0, max = 1, side = "left", x = 6350, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "dynamic runners",
+        x = 4550,
+        y = 345,
+        w = 2000,
+        h = 100,
+        enemies = {
+          {name = "runner", count = 0, max = 1000, side = "left", x = 800, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
+          {name = "runner", count = 0, max = 1000, side = "right", x = -450, y = 380, dynamic = true, spawnTimer = 0, spawnTimerMax = 5.7},
+        }
+      },
+
+      {
+        name = "runner shooter",
+        x = 4600,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 5400, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "runner shooter",
+        x = 4900,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 5700, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "runner shooter",
+        x = 5200,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 6000, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+
+      {
+        name = "runner shooter",
+        x = 5650,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 6450, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+      {
+        name = "runner shooter",
+        x = 5950,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 6750, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
+        }
+      },
+      {
+        name = "runner shooter",
+        x = 6250,
+        y = 345,
+        w = 300,
+        h = 100,
+        enemies = {
+          {name = "shooter/run", count = 0, max = 1, side = "left", x = 7050, y = 380, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
         }
       },
     } -- end of zones

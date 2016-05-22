@@ -3,14 +3,14 @@
 -- Player Class: --
 local player = {
   type = "player", -- or "invincible"
-  lives = 6,
-  x = 375,
-  y = 250,
-  w = 24, --32
-  h = 72, --64
+  lives = 600,
+  x = 200,
+  y = 200,
+  w = 24,
+  h = 72,
   dx = 0,
   dy = 0,
-  speed = 200,
+  speed = 150, -- 200
   initVel = 6,
   termVel = -3,
   isJumping = false,
@@ -85,7 +85,7 @@ function loadPlayer(world)
 end
 
 -- Player Globals: --
-local shootTimerMax = 0.2
+local shootTimerMax = 0.15 -- 0.2
 local shootTimer = 0
 
 local animTimerMax = 0.5

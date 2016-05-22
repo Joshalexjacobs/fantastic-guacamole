@@ -110,6 +110,7 @@ function updateEnemies(dt, world) -- include world here?
 
     if newEnemy.playDead then
       table.remove(enemies, i)
+      --print("RIP ENEMY", newEnemy.name)
     end
   end
 end

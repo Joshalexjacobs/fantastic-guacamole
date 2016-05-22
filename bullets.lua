@@ -2,13 +2,14 @@
 
 local bullet = {
   type = "bullet",
+  owner = "nil",
   x = nil,
   y = nil,
   w = 5,
   h = 5,
   dx = 0,
   dy = 0,
-  speed = 500,
+  speed = 650,
   dir = nil,
   actualDir = nil,
   isDead = false,
@@ -22,6 +23,7 @@ local bullet = {
   timers = {}
 }
 
+local playerBullets = 0 -- max is 4
 local bullets = {}
 
 
@@ -75,13 +77,18 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
   newBullet = copy(bullet, newBullet)
   newBullet.x, newBullet.y, newBullet.dir, newBullet.actualDir = xPos, yPos, direction, newDir
 
-  if danger == false then
+  if playerBullets >= 4 and danger == false then
+    return false
+  elseif danger == false then
+    playerBullets = playerBullets + 1
     newBullet.filter = playerFilter
     newBullet.reaction = playerBullet
+    newBullet.owner = "player"
   elseif danger == true then
     newBullet.speed = 300
     newBullet.filter = enemyFilter
     newBullet.reaction = enemyBullet
+    newBullet.owner = "enemy"
   end
 
   -- animations --
@@ -97,11 +104,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
 end
 
 function updateBullets(dt, left, world) -- add world as a parameter
-  local bulletDump = {}
-
   for i, newBullet in ipairs(bullets) do
-    --local cols, len -- cols is an array of objects the newBullet is coliding with and len is the length of cols
-
     newBullet.dx = math.cos(newBullet.actualDir) * newBullet.speed * dt
     newBullet.dy = math.sin(newBullet.actualDir) * newBullet.speed * dt
     if newBullet.isDead == false then
@@ -110,20 +113,8 @@ function updateBullets(dt, left, world) -- add world as a parameter
 
     newBullet.reaction(newBullet, cols, len)
 
-    if(newBullet.x > left + windowWidth + newBullet.w) or (newBullet.x < left - newBullet.w) then
-      if world:hasItem(newBullet) then
-        world:remove(newBullet) -- remove from world...
-        --table.remove(bullets, i) -- ...and the bullets table
-        table.insert(bulletDump, i)
-      end
-    end
-
-    -- dispose of all dead bullets [may still not be working properly, will watch for bullet related errors]
-    local j = #bulletDump
-    while #bulletDump > 0 do
-      table.remove(bullets, bulletDump[j])
-      table.remove(bulletDump, j)
-      j = j - 1
+    if(newBullet.x > left + windowWidth + newBullet.w) or (newBullet.x < left - newBullet.w) or (newBullet.y < -16) then
+      newBullet.isDead = true
     end
 
     if newBullet.isDead == true then -- if a newBullet leaves the play area...
@@ -137,6 +128,9 @@ function updateBullets(dt, left, world) -- add world as a parameter
 
       if updateTimer(dt, "dead", newBullet.timers) then
         table.remove(bullets, i) -- ...and the bullets table
+        if newBullet.owner == "player" then
+          playerBullets = playerBullets - 1
+        end
       end
     end -- always perform this check last
 
@@ -146,8 +140,13 @@ end
 
 function drawBullets()
   for i, newBullet in ipairs(bullets) do
-    setColor(newBullet.color) -- set each newBullet's color
-    --love.graphics.rectangle("line", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
-    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
+    if newBullet.owner == "player" then
+      setColor({255,0,0,255})
+      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
+      setColor({255,255,255,255})
+    else
+      setColor({255,255,255,255})
+      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
+    end
   end
 end

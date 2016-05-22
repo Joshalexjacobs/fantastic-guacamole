@@ -3,6 +3,7 @@
 -- Includes: --
 
 anim8 = require 'other/anim8' -- this should be local in the future
+local sti = require "sti"
 
 require 'collision/blocks'
 require 'enemies/enemyDictionary'
@@ -32,6 +33,13 @@ local debug = true
 
 windowWidth, windowHeight = 800, 600
 --windowWidth, windowHeight = 640, 360
+--[[To change to 16:9:
+- change windowWidth and windowHeight
+- change background image size
+- change infobox draw position
+- move every level's ground up
+- move all enemy y locations
+]]
 
 -- Camera boundaries
 local bounds = {
@@ -48,12 +56,13 @@ function game:enter(menu, levelName)
 
   -- load level
   loadLevel(levelName, world)
+  --map = sti.new("tiled/Level 1-1.lua")
   bounds = level.bounds
   --loadEnvironment()
 
   -- other
   --loadController()
-  --love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
+  love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   loadPlayer(world) -- load player and player sprites
   camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
@@ -94,11 +103,12 @@ function game:draw()
     -- color independent draws
 
     drawBackdrop()
+    --map:draw()
     drawPlayer()
     drawEnemies()
     drawBullets()
     drawBlocks()
-    
+
     if debug then
       drawZones()
     end

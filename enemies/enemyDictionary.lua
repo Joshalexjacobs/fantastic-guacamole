@@ -177,10 +177,35 @@ local function sBehaviour(dt, entity, world)
 
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
       resetTimer(1.5, "shoot", entity.timers) -- add timer
-      resetTimer(0.3, "secondShot", entity.timers)
+      resetTimer(0.1, "secondShot", entity.timers)
     elseif updateTimer(dt, "secondShot", entity.timers) then
+      angle = getAngle(player.x, player.y, entity.x, entity.y)
+
+      if angle == math.pi or angle == 0 then
+        entity.curAnim = 2 -- left/right
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
+        end
+      elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
+        entity.curAnim = 3 -- up
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 32, -20
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -2, -20
+        end
+      elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
+        entity.curAnim = 4 -- down
+        if entity.direction == "right" then
+          entity.shootPoint.x, entity.shootPoint.y = 35, 25
+        elseif entity.direction == "left" then
+          entity.shootPoint.x, entity.shootPoint.y = -10, 25
+        end
+      end
+
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.8, "secondShot", entity.timers)
+      resetTimer(1.6, "secondShot", entity.timers)
     end
 
     if entity.isDead then entity.playDead = true end
@@ -199,23 +224,40 @@ local function cctvBehaviour(dt, entity, world)
     if updateTimer(dt, "shoot", entity.timers) and entity.isDead ~= true then
       angle = getAngle(player.x, player.y, entity.x, entity.y)
 
-      if angle == (math.pi * 5)/6 then
-        entity.curAnim = 1
+      if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
+        angle = (math.pi * 5)/6
+        entity.curAnim = 1 -- down right
         entity.shootPoint.x, entity.shootPoint.y = 30, 48
-      elseif angle == math.pi/6 then
-        entity.curAnim = 2
+      elseif angle == math.pi/6 or angle == 0 then
+        angle = math.pi/6
+        entity.curAnim = 2 -- down left
         entity.shootPoint.x, entity.shootPoint.y = 15, 48
       elseif angle == math.pi/2 then
-        entity.curAnim = 3
+        entity.curAnim = 3 -- down
         entity.shootPoint.x, entity.shootPoint.y = 22, 55
       end
 
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
       resetTimer(1.5, "shoot", entity.timers) -- add timer
-      resetTimer(0.3, "secondShot", entity.timers)
+      resetTimer(0.1, "secondShot", entity.timers)
     elseif updateTimer(dt, "secondShot", entity.timers) and entity.isDead ~= true then
+      angle = getAngle(player.x, player.y, entity.x, entity.y)
+
+      if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
+        angle = (math.pi * 5)/6
+        entity.curAnim = 1 -- down right
+        entity.shootPoint.x, entity.shootPoint.y = 30, 48
+      elseif angle == math.pi/6 or angle == 0 then
+        angle = math.pi/6
+        entity.curAnim = 2 -- down left
+        entity.shootPoint.x, entity.shootPoint.y = 15, 48
+      elseif angle == math.pi/2 then
+        entity.curAnim = 3 -- down
+        entity.shootPoint.x, entity.shootPoint.y = 22, 55
+      end
+
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.8, "secondShot", entity.timers)
+      resetTimer(1.6, "secondShot", entity.timers)
     end
 
     if entity.isDead then

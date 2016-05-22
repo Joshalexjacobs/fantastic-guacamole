@@ -2,7 +2,7 @@
 
 function loadEnvironment()
    infoBox = love.graphics.newImage("img/background/infoBox.png")
-   lives = love.graphics.newImage("img/background/assets/skull.png")
+   lives = love.graphics.newImage("img/background/skull.png")
    backdrop = love.graphics.newImage("img/background/mock.png")
 end
 

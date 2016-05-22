@@ -7,13 +7,15 @@ menu = {} -- previously: Gamestate.new()
 dictionary = {}
 indexPosition = 1
 
+--              1      2        3         4      5
+testTable = {"josh", "mik", "collin", "ethan", "nigel"}
+
 function menu:enter()
   dictionary = getDictionary()
 
   -- other
   loadController()
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
-
   loadEnvironment()
 
 end
@@ -40,23 +42,17 @@ end
 function menu:keyreleased(key, code)
     if key == 'return' then
         Gamestate.switch(game, dictionary[indexPosition].name) -- switch to game and send select level name
-    end
-
-    if key == 'down' or key == 's' then
+    elseif key == 'down' or key == 's' then
         if indexPosition < #dictionary then
           indexPosition = indexPosition + 1
         elseif indexPosition == #dictionary then
           indexPosition = 1
         end
-    end
-
-    if key == 'up' or key == 'w' then
+    elseif key == 'up' or key == 'w' then
         if indexPosition > 1 then
           indexPosition = indexPosition - 1
         elseif indexPosition == 1 then
           indexPosition = #dictionary
         end
-    end
-
-    if key =='escape' then love.event.quit() end -- if player hits esc then quit
+    elseif key =='escape' then love.event.quit() end -- if player hits esc then quit
 end
