@@ -31,8 +31,15 @@ game = {}
 -- Globals: --
 local debug = true
 
-windowWidth, windowHeight = 800, 600
---windowWidth, windowHeight = 640, 360
+--windowWidth, windowHeight = 800, 600
+
+--windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
+--windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
+--windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
+windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
+--windowWidth, windowHeight, windowScale = 1600, 900, 5  -- 5:5
+--windowWidth, windowHeight, windowScale = 1920, 1080, 6 -- 6:6
+
 --[[To change to 16:9:
 - change windowWidth and windowHeight
 - change background image size
@@ -53,19 +60,23 @@ local bounds = {
 function game:enter(menu, levelName)
   -- seed math.random
   math.randomseed(os.time())
+  love.graphics.setDefaultFilter( "nearest", "nearest")
 
   -- load level
   loadLevel(levelName, world)
-  --map = sti.new("tiled/Level 1-1.lua")
-  bounds = level.bounds
-  --loadEnvironment()
+  map = sti.new("tiled/Level 1-1.lua", {"bump"})
+  map:bump_init(world)
+  for _, object in ipairs(map.objects) do
+    world:add(object, object.x, object.y, object.width, object.height)
+  end
 
-  -- other
-  --loadController()
+  bounds = level.bounds
+
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   loadPlayer(world) -- load player and player sprites
-  camera.setBoundary(0, 0, bounds.width, bounds.height) -- load camera
+  camera.setBoundary(0, 0, bounds.width, windowHeight) -- load camera
+  camera.setViewport(0, 0, 320, 180)
 end
 
 
@@ -94,16 +105,14 @@ end
 
 function game:draw()
 
+
   -- update camera
   if checkScreenMove(bounds.left) and player.lastDir == 1 then -- if player is moving right and beyond the middle of the screen...
     camera.lookAt(player.x + player.w / 2, 0) -- set the camera to follow the player's movement
   end
-
+  love.graphics.scale(windowScale, windowScale)
   camera.draw(function(l,t,w,h)
-    -- color independent draws
-
-    drawBackdrop()
-    --map:draw()
+    map:draw()
     drawPlayer()
     drawEnemies()
     drawBullets()

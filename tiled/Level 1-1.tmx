@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="11" tilewidth="16" tileheight="16" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="11" tilewidth="16" tileheight="16" nextobjectid="2">
  <tileset firstgid="1" name="assets001" tilewidth="16" tileheight="16" tilecount="64" columns="2">
   <image source="../img/background/assets001.png" width="32" height="512"/>
  </tileset>
@@ -48,4 +48,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup name="Platforms">
+  <object id="1" name="ground" type="ground" x="0" y="145" width="1600" height="20"/>
+ </objectgroup>
 </map>

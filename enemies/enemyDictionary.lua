@@ -281,7 +281,7 @@ local dictionary = {
     w = 36,
     h = 72,
     update = runBehaviour,
-    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/runner.png",
     grid = {x = 34, y = 48, w = 102, h = 96},
     animations = function(grid)
@@ -300,7 +300,7 @@ local dictionary = {
     w = 36,
     h = 72,
     update = srBehaviour,
-    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     animations = function(grid)
@@ -323,7 +323,7 @@ local dictionary = {
     w = 36,
     h = 72,
     update = sBehaviour,
-    scale = {x = 2.5, y = 2.5, offX = 11, offY = 18.5},
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     animations = function(grid)
@@ -346,7 +346,7 @@ local dictionary = {
     w = 50,
     h = 50,
     update = cctvBehaviour,
-    scale = {x = 1, y = 1, offX = 8, offY = 5},
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/camera turret/camera turret.png",
     grid = {x = 64, y = 64, w = 192, h = 256},
     animations = function(grid)
@@ -368,7 +368,7 @@ local dictionary = {
     w = 56,
     h = 56,
     update = targetBehaviour,
-    scale = {x = 2, y = 2, offX = 2, offY = 2},
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 96, h = 32},
     animations = function(grid)

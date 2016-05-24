@@ -2,38 +2,7 @@
 
 local dictionary = {
   {
-    name = "shooting range",
-    bounds = { -- camera boundaries
-      width = 800,
-      height = 600,
-      left = 0,
-      top = 0
-    },
-    ground = {
-      {x = 0, y = 500, w = 800, h = 150, type = "ground"},
-    },
-    walls = {
-      {x = -25, y = 75, w = 25, h = 475},
-      {x = 800, y = 75, w = 25, h = 475}
-    },
-    zones = {
-      {
-        name = "targets",
-        x = 0,
-        y = 445,
-        w = 800,
-        h = 100,
-        enemies = {
-          {name = "target", count = 0, max = 1, side = "left", x = 100, y = 250, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "target", count = 0, max = 1, side = "left", x = 368, y = 100, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-          {name = "target", count = 0, max = 1, side = "left", x = 668, y = 250, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-        }
-      }
-    } -- end of zones
-  },
-
-  {
-    name = "level one - city",
+    name = "1-1",
     bounds = { -- camera boundaries
       width = 8000,
       height = 600,
@@ -214,33 +183,6 @@ local dictionary = {
     } -- end of zones
   }, -- end of level
 
-  {
-    name = "camera test",
-    bounds = { -- camera boundaries
-      width = 800,
-      height = 600,
-      left = 0,
-      top = 0
-    },
-    ground = {
-      {x = 0, y = 500, w = 800, h = 150, type = "ground"},
-    },
-    walls = {
-      {x = 800, y = 75, w = 25, h = 475}
-    },
-    zones = {
-      {
-        name = "camera turret",
-        x = 0,
-        y = 445,
-        w = 800,
-        h = 100,
-        enemies = {
-          {name = "camera-turret", count = 0, max = 1, side = "left", x = 150, y = 100, dynamic = false, spawnTimer = 0, spawnTimerMax = 0.8},
-        }
-      }
-    } -- end of zones
-  }, -- end of level
 } -- end of dictionary
 
 function getLevel(levelName, level)

@@ -4,8 +4,8 @@
 local player = {
   type = "player", -- or "invincible"
   lives = 600,
-  x = 200,
-  y = 200,
+  x = 0,
+  y = 0,
   w = 24,
   h = 72,
   dx = 0,
@@ -65,7 +65,9 @@ local midpoint
 
 function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
-  midpoint = windowWidth / 2 -- calculate midpoint
+  --midpoint = windowWidth / 2 -- calculate midpoint
+  midpoint = 320 / 2
+  print("mp", midpoint, "wW", windowWidth)
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
@@ -312,6 +314,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 end
 
 function checkScreenMove(left)
+  print("player x", player.x, "mp", midpoint)
   if player.x + player.w / 2 > midpoint + left then
     return true
   else
@@ -324,10 +327,10 @@ function drawPlayer()
 
     if player.isDead == false then
       setColor({255, 255, 255, 255})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 0, 0) -- SCALED UP 2.5, 11 and 18.5 are offsets
     elseif player.lives > 0 then
       setColor({255, 255, 255, 25})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 2.5, 2.5, 11, 18.5) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 0, 0) -- SCALED UP 2.5, 11 and 18.5 are offsets
       setColor({255, 255, 255, 255})
     end
 end
