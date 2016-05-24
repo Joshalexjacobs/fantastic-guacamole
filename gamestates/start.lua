@@ -7,9 +7,6 @@ menu = {} -- previously: Gamestate.new()
 dictionary = {}
 indexPosition = 1
 
---              1      2        3         4      5
-testTable = {"josh", "mik", "collin", "ethan", "nigel"}
-
 function menu:enter()
   dictionary = getDictionary()
 
@@ -26,12 +23,12 @@ end
 
 function menu:draw()
     love.graphics.print("Level", 10, 0)
-    love.graphics.rectangle("fill", 0, 13, 800, 2)
+    love.graphics.rectangle("fill", 0, 13, 1920, 2)
 
     for i = 1, #dictionary do
       if i == indexPosition then
         love.graphics.setColor(255, 255, 0, 125)
-        love.graphics.rectangle("fill", 0, i * 15, 800, 15)
+        love.graphics.rectangle("fill", 0, i * 15, 1920, 15)
       end
 
       love.graphics.setColor(255, 255, 255, 250)

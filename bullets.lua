@@ -9,7 +9,7 @@ local bullet = {
   h = 5,
   dx = 0,
   dy = 0,
-  speed = 650,
+  speed = 275,
   dir = nil,
   actualDir = nil,
   isDead = false,
@@ -85,7 +85,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
     newBullet.reaction = playerBullet
     newBullet.owner = "player"
   elseif danger == true then
-    newBullet.speed = 300
+    newBullet.speed = 150 -- 300
     newBullet.filter = enemyFilter
     newBullet.reaction = enemyBullet
     newBullet.owner = "enemy"
@@ -103,7 +103,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
   table.insert(bullets, newBullet)
 end
 
-function updateBullets(dt, left, world) -- add world as a parameter
+function updateBullets(dt, left, viewportWidth, world) -- add world as a parameter
   for i, newBullet in ipairs(bullets) do
     newBullet.dx = math.cos(newBullet.actualDir) * newBullet.speed * dt
     newBullet.dy = math.sin(newBullet.actualDir) * newBullet.speed * dt
@@ -113,7 +113,7 @@ function updateBullets(dt, left, world) -- add world as a parameter
 
     newBullet.reaction(newBullet, cols, len)
 
-    if(newBullet.x > left + windowWidth + newBullet.w) or (newBullet.x < left - newBullet.w) or (newBullet.y < -16) then
+    if(newBullet.x > left + viewportWidth + newBullet.w) or (newBullet.x < left - newBullet.w) or (newBullet.y < -16) then
       newBullet.isDead = true
     end
 
@@ -142,11 +142,11 @@ function drawBullets()
   for i, newBullet in ipairs(bullets) do
     if newBullet.owner == "player" then
       setColor({255,0,0,255})
-      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
+      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 0.5, 0.5, 5, 5)
       setColor({255,255,255,255})
     else
       setColor({255,255,255,255})
-      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 1, 1, 5, 5)
+      newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, 0, 0.5, 0.5, 5, 5)
     end
   end
 end

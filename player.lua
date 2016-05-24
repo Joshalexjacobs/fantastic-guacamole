@@ -6,12 +6,12 @@ local player = {
   lives = 600,
   x = 0,
   y = 0,
-  w = 24,
-  h = 72,
+  w = 16,
+  h = 36,
   dx = 0,
   dy = 0,
-  speed = 150, -- 200
-  initVel = 6,
+  speed = 90, -- 200 120
+  initVel = 3, -- 6
   termVel = -3,
   isJumping = false,
   jumpLock = false,
@@ -61,13 +61,11 @@ end
 
 -- general functions
 
-local midpoint
+local midpoint = 160
 
 function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
-  --midpoint = windowWidth / 2 -- calculate midpoint
-  midpoint = 320 / 2
-  print("mp", midpoint, "wW", windowWidth)
+  --midpoint = 320 / 2 -- 160
 
   -- load player sprites
   player.spriteSheet = love.graphics.newImage('img/player/player.png')
@@ -93,7 +91,7 @@ local shootTimer = 0
 local animTimerMax = 0.5
 local animTimer = 0
 
-local jumpTimerMax = 0.4
+local jumpTimerMax = 0.2 -- 0.4
 local jumpTimer = jumpTimerMax
 
 local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
@@ -107,15 +105,15 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then -- UpRight
       player.controls[1] = (math.pi * 7)/6
-      player.controls[2].x, player.controls[2].y = 32, -20
+      player.controls[2].x, player.controls[2].y = 16, -4
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
       player.controls[1] = (math.pi * 5)/6
-      player.controls[2].x, player.controls[2].y = 35, 25
+      player.controls[2].x, player.controls[2].y = 18, 16
       player.controls[3] = true
     else
       player.controls[1] = math.pi -- Right
-      player.controls[2].x, player.controls[2].y = 45, 14
+      player.controls[2].x, player.controls[2].y = 20, 12
       player.controls[3] = true
     end
 
@@ -125,15 +123,15 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then -- UpLeft
       player.controls[1] = -0.523599
-      player.controls[2].x, player.controls[2].y = -2, -20
+      player.controls[2].x, player.controls[2].y = 0, 0
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
       player.controls[1] = math.pi/6
-      player.controls[2].x, player.controls[2].y = -10, 25 -- -10
+      player.controls[2].x, player.controls[2].y = -5, 15 -- -10
       player.controls[3] = true
     else
       player.controls[1] = 0 -- Left
-      player.controls[2].x, player.controls[2].y = -15, 14
+      player.controls[2].x, player.controls[2].y = -8, 12
       player.controls[3] = true
     end
 
@@ -141,25 +139,25 @@ local function playerInput(dt, world)
     player.controls[1] = (math.pi * 3)/2
     player.controls[3] = true
     if player.lastDir == 1 then
-      player.controls[2].x, player.controls[2].y = 17, -40
+      player.controls[2].x, player.controls[2].y = 8, -10
     else
-      player.controls[2].x, player.controls[2].y = 11, -40
+      player.controls[2].x, player.controls[2].y = 4, -10
     end
 
   elseif love.keyboard.isDown("s") then -- Down
     player.controls[1] = math.pi/2
-    player.controls[2].x, player.controls[2].y = 15, 25
+    player.controls[2].x, player.controls[2].y = 5, 15
     if player.isJumping or player.isGrounded == false then player.controls[3] = true
     else player.controls[3] = false end
 
   else -- else player isn't hitting any of these keys so default them back to left/right
     if player.lastDir == 1 then
       player.controls[1] = math.pi
-      player.controls[2].x, player.controls[2].y = 40, 14
+      player.controls[2].x, player.controls[2].y = 20, 12 -- right
       player.controls[3] = true
     else
       player.controls[1] = 0
-      player.controls[2].x, player.controls[2].y = -15, 14
+      player.controls[2].x, player.controls[2].y = -8, 12 -- left
       player.controls[3] = true
     end
   end
@@ -190,7 +188,6 @@ local function playerInput(dt, world)
 end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
-
   -- DEATH/LIFE/DEATH --
 
   if player.isDead then
@@ -282,9 +279,9 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   -- set the player's current animation based on their movement
   if player.isJumping or not player.isGrounded then
     player.curAnim = 6 -- [JUMPING]
-  elseif player.dx <= 1.5 and player.dx >= -1.5 and love.keyboard.isDown('w') == false
+  elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w') == false
     then player.curAnim = 1 -- [IDLE]
-  elseif player.dx <= 1.5 and player.dx >= -1.5 and love.keyboard.isDown('w')
+  elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w')
     then player.curAnim = 5 -- [LOOKING UP]
   elseif animTimer <= 0 then
     player.curAnim = 2 -- [IDLE RUN]
@@ -314,7 +311,6 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 end
 
 function checkScreenMove(left)
-  print("player x", player.x, "mp", midpoint)
   if player.x + player.w / 2 > midpoint + left then
     return true
   else
@@ -327,10 +323,10 @@ function drawPlayer()
 
     if player.isDead == false then
       setColor({255, 255, 255, 255})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 0, 0) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 10, 12) -- SCALED UP 2.5, 11 and 18.5 are offsets
     elseif player.lives > 0 then
       setColor({255, 255, 255, 25})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 0, 0) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 10, 12) -- SCALED UP 2.5, 11 and 18.5 are offsets
       setColor({255, 255, 255, 255})
     end
 end

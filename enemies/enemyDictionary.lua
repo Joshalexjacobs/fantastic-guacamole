@@ -278,10 +278,10 @@ local dictionary = {
   {
     name = "runner",
     hp = 1,
-    w = 36,
-    h = 72,
+    w = 16,
+    h = 36,
     update = runBehaviour,
-    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/runner.png",
     grid = {x = 34, y = 48, w = 102, h = 96},
     animations = function(grid)
@@ -297,10 +297,10 @@ local dictionary = {
   {
     name = "shooter/run",
     hp = 1,
-    w = 36,
-    h = 72,
+    w = 16,
+    h = 36,
     update = srBehaviour,
-    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     animations = function(grid)
@@ -320,10 +320,10 @@ local dictionary = {
   {
     name = "static-shooter",
     hp = 1,
-    w = 36,
-    h = 72,
+    w = 16,
+    h = 36,
     update = sBehaviour,
-    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     animations = function(grid)

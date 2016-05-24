@@ -34,26 +34,20 @@ local debug = true
 --windowWidth, windowHeight = 800, 600
 
 --windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
---windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
+windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
 --windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
-windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
+--windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
 --windowWidth, windowHeight, windowScale = 1600, 900, 5  -- 5:5
 --windowWidth, windowHeight, windowScale = 1920, 1080, 6 -- 6:6
 
---[[To change to 16:9:
-- change windowWidth and windowHeight
-- change background image size
-- change infobox draw position
-- move every level's ground up
-- move all enemy y locations
-]]
-
 -- Camera boundaries
 local bounds = {
-  width   = 5000,
-  height  = windowHeight,
-  left    = 0,
-  top     = 0
+  levelWidth   = 5000,
+  levelHeight  = windowHeight, -- windowHeight at minimum
+  left = 0,
+  top = 0,
+  viewportWidth = 0,
+  viewportHeight = 0,
 }
 
 -- game:enter(previous state, parameter being passed)
@@ -66,8 +60,11 @@ function game:enter(menu, levelName)
   loadLevel(levelName, world)
   map = sti.new("tiled/Level 1-1.lua", {"bump"})
   map:bump_init(world)
+
   for _, object in ipairs(map.objects) do
-    world:add(object, object.x, object.y, object.width, object.height)
+    if object.properties.collidable then
+      world:add(object, object.x, object.y, object.width, object.height)
+    end
   end
 
   bounds = level.bounds
@@ -75,7 +72,7 @@ function game:enter(menu, levelName)
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   loadPlayer(world) -- load player and player sprites
-  camera.setBoundary(0, 0, bounds.width, windowHeight) -- load camera
+  camera.setBoundary(0, 0, bounds.levelWidth, windowHeight) -- load camera
   camera.setViewport(0, 0, 320, 180)
 end
 
@@ -85,11 +82,11 @@ function game:update(dt)
   if love.keyboard.isDown('escape') then love.event.quit() end -- if player hits esc then quit
 
   -- update bounds
-  bounds.left, bounds.top = camera.getViewport()
+  bounds.left, bounds.top, bounds.viewportWidth, bounds.viewportHeight = camera.getViewport()
 
   -- update everything
   updatePlayer(dt, world)
-  updateBullets(dt, bounds.left, world)
+  updateBullets(dt, bounds.left, bounds.viewportWidth, world)
 
   updateEnemies(dt, world)
   updateZones(player.x, player.w, bounds.left, world, dt)
@@ -104,7 +101,6 @@ function game:keyreleased(key, code)
 end
 
 function game:draw()
-
 
   -- update camera
   if checkScreenMove(bounds.left) and player.lastDir == 1 then -- if player is moving right and beyond the middle of the screen...
