@@ -24,12 +24,15 @@ player = require 'player'
 require 'levels/zones'
 require 'levels/levels'
 
+require 'bosses/waterWalker'
+
 local world = bump.newWorld() -- create a world with bump
 
 game = {}
 
 -- Globals: --
 local debug = true
+bossFight = false
 
 --windowWidth, windowHeight = 800, 600
 
@@ -54,24 +57,35 @@ local bounds = {
 function game:enter(menu, levelName)
   -- seed math.random
   math.randomseed(os.time())
-  love.graphics.setDefaultFilter( "nearest", "nearest")
+  love.graphics.setDefaultFilter( "nearest", "nearest") -- set nearest pixel distance
 
   -- load level
   loadLevel(levelName, world)
+
+  -- load tilemap
   map = sti.new("tiled/Level 1-1.lua", {"bump"})
   map:bump_init(world)
 
+  -- populate world collision (bump)
   for _, object in ipairs(map.objects) do
     if object.properties.collidable then
       world:add(object, object.x, object.y, object.width, object.height)
     end
   end
 
+  -- set level bounds
   bounds = level.bounds
 
+  -- adjust window
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
+  -- load player
   loadPlayer(world) -- load player and player sprites
+
+  -- load boss
+  waterWalker:load()
+
+  -- load camera
   camera.setBoundary(0, 0, bounds.levelWidth, windowHeight) -- load camera
   camera.setViewport(0, 0, 320, 180)
 end
@@ -90,6 +104,15 @@ function game:update(dt)
 
   updateEnemies(dt, world)
   updateZones(player.x, player.w, bounds.left, world, dt)
+
+  if bossFight then -- if player activated boss fight, update boss
+    waterWalker:update(dt)
+  end
+
+  -- update camera
+  if checkScreenMove(bounds.left) and player.lastDir == 1 then -- if player is moving right and beyond the middle of the screen...
+    camera.lookAt(player.x + player.w / 2, 0) -- set the camera to follow the player's movement
+  end
 end
 
 function game:keyreleased(key, code)
@@ -102,10 +125,6 @@ end
 
 function game:draw()
 
-  -- update camera
-  if checkScreenMove(bounds.left) and player.lastDir == 1 then -- if player is moving right and beyond the middle of the screen...
-    camera.lookAt(player.x + player.w / 2, 0) -- set the camera to follow the player's movement
-  end
   love.graphics.scale(windowScale, windowScale)
   camera.draw(function(l,t,w,h)
     map:draw()
@@ -113,6 +132,10 @@ function game:draw()
     drawEnemies()
     drawBullets()
     drawBlocks()
+
+    if bossFight then -- if player activated boss fight, update boss
+      waterWalker:draw()
+    end
 
     if debug then
       drawZones()

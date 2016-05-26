@@ -37,6 +37,10 @@ function updateZones(x, w, left, world, dt)
   for _, newZone in ipairs(zones) do
     if x + w > newZone.x and x < newZone.x + newZone.w then
 
+        if newZone.name == "boss zone" then
+          bossFight = true
+        end
+
         newZone.active = true
 
         for _, spawn in ipairs(newZone.spawnables) do

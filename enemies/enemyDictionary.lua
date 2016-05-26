@@ -176,7 +176,7 @@ local function sBehaviour(dt, entity, world)
       end
 
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.5, "shoot", entity.timers) -- add timer
+      resetTimer(love.math.random(1.3, 1.5), "shoot", entity.timers) -- add timer between 1.3 and 1.5
       resetTimer(0.1, "secondShot", entity.timers)
     elseif updateTimer(dt, "secondShot", entity.timers) then
       angle = getAngle(player.x, player.y, entity.x, entity.y)
@@ -227,14 +227,14 @@ local function cctvBehaviour(dt, entity, world)
       if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
         angle = (math.pi * 5)/6
         entity.curAnim = 1 -- down right
-        entity.shootPoint.x, entity.shootPoint.y = 30, 48
+        entity.shootPoint.x, entity.shootPoint.y = 13, 18
       elseif angle == math.pi/6 or angle == 0 then
         angle = math.pi/6
         entity.curAnim = 2 -- down left
-        entity.shootPoint.x, entity.shootPoint.y = 15, 48
+        entity.shootPoint.x, entity.shootPoint.y = 0, 18
       elseif angle == math.pi/2 then
         entity.curAnim = 3 -- down
-        entity.shootPoint.x, entity.shootPoint.y = 22, 55
+        entity.shootPoint.x, entity.shootPoint.y = 8, 18
       end
 
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
@@ -246,14 +246,14 @@ local function cctvBehaviour(dt, entity, world)
       if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
         angle = (math.pi * 5)/6
         entity.curAnim = 1 -- down right
-        entity.shootPoint.x, entity.shootPoint.y = 30, 48
+        entity.shootPoint.x, entity.shootPoint.y = 13, 18
       elseif angle == math.pi/6 or angle == 0 then
         angle = math.pi/6
         entity.curAnim = 2 -- down left
-        entity.shootPoint.x, entity.shootPoint.y = 15, 48
+        entity.shootPoint.x, entity.shootPoint.y = 0, 18
       elseif angle == math.pi/2 then
         entity.curAnim = 3 -- down
-        entity.shootPoint.x, entity.shootPoint.y = 22, 55
+        entity.shootPoint.x, entity.shootPoint.y = 8, 18
       end
 
       addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
@@ -319,7 +319,7 @@ local dictionary = {
 
   {
     name = "static-shooter",
-    hp = 1,
+    hp = 2,
     w = 16,
     h = 36,
     update = sBehaviour,
@@ -343,10 +343,10 @@ local dictionary = {
   {
     name = "camera-turret",
     hp = 4,
-    w = 50,
-    h = 50,
+    w = 16,
+    h = 16,
     update = cctvBehaviour,
-    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    scale = {x = 0.35, y = 0.35, offX = 7, offY = 5},
     sprite = "img/enemies/camera turret/camera turret.png",
     grid = {x = 64, y = 64, w = 192, h = 256},
     animations = function(grid)

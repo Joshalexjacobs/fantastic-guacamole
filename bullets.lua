@@ -19,13 +19,12 @@ local bullet = {
   curAnim = 1,
   spriteSheet = love.graphics.newImage("img/other/playerBullet.png"),
   spriteGrid = nil,
-  aniamtions = {},
+  animations = {},
   timers = {}
 }
 
 local playerBullets = 0 -- max is 4
 local bullets = {}
-
 
 -- filter functions --
 local playerFilter = function(item, other)
@@ -39,9 +38,7 @@ local playerFilter = function(item, other)
 end
 
 local enemyFilter = function(item, other)
-  if other.type == "enemy" then
-    return 'cross'
-  elseif other.type == "player" then
+  if other.type == "player" then
     return 'cross'
   elseif other.type == "block" or other.type == "ground" then
     return 'cross'
@@ -66,7 +63,7 @@ local enemyBullet = function(entity, cols, len)
       entity.isDead = true -- destroy bullet
       cols[j].other.killPlayer(world)
       break
-    elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then -- !!! when a bullet collides with the ground it isn't being destroyed... definitely a bug !!!
+    elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then
       entity.isDead = true
       break
     end
@@ -92,11 +89,10 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
   end
 
   -- animations --
-  --newBullet.spriteSheet =
   newBullet.spriteGrid = anim8.newGrid(16, 16, 48, 32, 0, 0, 0)
   newBullet.animations = {
     anim8.newAnimation(newBullet.spriteGrid('1-2', 1), 0.04, 'pauseAtEnd'), -- shot
-    anim8.newAnimation(newBullet.spriteGrid(3, 1, 1, 1), 0.05) -- dead
+    anim8.newAnimation(newBullet.spriteGrid(3, 1, 1, 2), 0.05) -- dead
   }
 
   world:add(newBullet, newBullet.x, newBullet.y, newBullet.w, newBullet.h) -- add all bullets to world...
@@ -127,6 +123,7 @@ function updateBullets(dt, left, viewportWidth, world) -- add world as a paramet
       end
 
       if updateTimer(dt, "dead", newBullet.timers) then
+
         table.remove(bullets, i) -- ...and the bullets table
         if newBullet.owner == "player" then
           playerBullets = playerBullets - 1
