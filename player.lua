@@ -4,7 +4,7 @@
 local player = {
   type = "player", -- or "invincible"
   lives = 600,
-  x = 100,
+  x = 2450, -- 100
   y = 160,
   w = 16,
   h = 36,

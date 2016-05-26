@@ -83,7 +83,7 @@ function game:enter(menu, levelName)
   loadPlayer(world) -- load player and player sprites
 
   -- load boss
-  waterWalker:load()
+  waterWalker:load(world)
 
   -- load camera
   camera.setBoundary(0, 0, bounds.levelWidth, windowHeight) -- load camera
