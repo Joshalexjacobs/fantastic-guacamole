@@ -106,7 +106,7 @@ function game:update(dt)
   updateZones(player.x, player.w, bounds.left, world, dt)
 
   if bossFight then -- if player activated boss fight, update boss
-    waterWalker:update(dt)
+    waterWalker:update(dt, world)
   end
 
   -- update camera
@@ -143,7 +143,10 @@ function game:draw()
 
   end)
 
-  drawEnvironment()
+  if bossFight then
+    waterWalker:drawHealth()
+  end
+  --drawEnvironment()
 
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen

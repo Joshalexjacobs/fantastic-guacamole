@@ -16,13 +16,16 @@ local function findTimer(name, timerList)
   for i = 1, #timerList do
     if timerList[i].label == name then return i end
   end
+
+  return 0
 end
 
 function checkTimer(name, timerList)
   if #timerList <= 0 then return false end
 
   index = findTimer(name, timerList)
-  if timerList[index].label == name then
+  if index == 0 then return false
+  elseif timerList[index].label == name then
     return true
   end
 end

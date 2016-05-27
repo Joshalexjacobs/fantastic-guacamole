@@ -48,5 +48,5 @@ end
 
 function drawEnvironment()
   --drawScanLines()
-  drawInfoBox()
+  --drawInfoBox()
 end
