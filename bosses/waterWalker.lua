@@ -3,8 +3,8 @@
 waterWalker = {
   name = "waterWalker",
   type = "block", -- switch to enemy or boss later
-  hp = 100,
-  maxHP = 100,
+  hp = 10, -- 100
+  maxHP = 10,
   healthBar = 296,
   damageBar = 296,
   w = 75, -- 96
@@ -74,7 +74,10 @@ function waterWalker:update(dt, world)
 
   -- update healthbar
   if updateTimer(dt, "damageBar", waterWalker.timers) then
-    waterWalker.damageBar = waterWalker.healthBar
+    --waterWalker.damageBar = waterWalker.healthBar
+    if waterWalker.damageBar >= waterWalker.healthBar then
+      waterWalker.damageBar = waterWalker.damageBar - 50 * dt -- 50 is damageBar decrease speed
+    end
   end
 
   waterWalker.animations[waterWalker.curAnim]:update(dt)
