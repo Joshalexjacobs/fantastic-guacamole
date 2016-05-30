@@ -42,6 +42,8 @@ function updateTimer(dt, name, timerList) -- update all existing timers
 
   index = findTimer(name, timerList)
 
+  if index == 0 then return false end
+
   if timerList[index].time <= 0 then
     -- table.remove(timerList, i)
     return true

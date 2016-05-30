@@ -28,7 +28,7 @@ local bullets = {}
 
 -- filter functions --
 local playerFilter = function(item, other)
-  if other.type == "enemy" then
+  if other.type == "enemy" or other.type == "boss" then
     return 'cross'
   elseif other.type == "player" then
     return 'cross'
@@ -48,7 +48,7 @@ end
 -- reaction functions --
 local playerBullet = function(entity, cols, len)
   for j = 1, len do
-    if cols[j].other.type == "enemy" then
+    if cols[j].other.type == "enemy" or cols[j].other.type == "boss" then
       entity.isDead = true -- destroy bullet
       cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
     elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then

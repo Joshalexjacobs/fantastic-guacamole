@@ -138,7 +138,7 @@ function game:draw()
     end
 
     if debug then
-      drawZones()
+      --drawZones()
     end
 
   end)

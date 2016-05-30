@@ -29,7 +29,7 @@ local player = {
   filter = function(item, other)
     if other.type == "enemy" then
       return 'cross'
-    elseif other.type == "block" or other.type == "ground" then
+    elseif other.type == "block" or other.type == "ground" or other.type == "boss" then
       return 'slide'
     elseif other.type == "bullet" then
       return 'cross'
