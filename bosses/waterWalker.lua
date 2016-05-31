@@ -3,6 +3,16 @@
 waterWalker = {
   name = "waterWalker",
   type = "block", -- switch to enemy or boss later
+  filter = function(item, other)
+    return 'cross'
+    --[[if other.type == "enemy" then
+      return 'cross'
+    elseif other.type == "block" or other.type == "ground" or other.type == "boss" then
+      return 'cross'
+    elseif other.type == "bullet" then
+      return 'cross'
+    end]]
+  end,
   hp = 100,
   maxHP = 100,
   healthBar = 296,
@@ -30,6 +40,23 @@ waterWalker = {
   -- doesnt need gravity
 }
 
+
+local backZone = {x = 2530, y = 0, w = 80, h = 160}
+local frontZone = {x = 2445, y = 0, w = 5, h = 160}
+
+-- when the player touches the enemy they die
+local legs = {
+  name = "waterWalker legs",
+  type = "invisible wall",
+  filter = function(item, other)
+    return 'cross'
+  end,
+  x = 2615,
+  y = 60,
+  w = 20,
+  h = 100
+}
+
 function waterWalker:load(world)
   print("loaded waterWalker")
 
@@ -49,6 +76,9 @@ function waterWalker:load(world)
 
   -- add to world
   world:add(waterWalker, waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
+
+  -- add legs to world
+  world:add(legs, legs.x, legs.y, legs.w, legs.h) -- leg stuff
 
   -- add any needed timers
   addTimer(0.0, "damageBar", waterWalker.timers)
@@ -78,7 +108,8 @@ function waterWalker:update(dt, world)
     waterWalker.dx = math.min((waterWalker.dx - waterWalker.decel * dt), 0)
   end
 
-  waterWalker.x, waterWalker.y = world:move(waterWalker, waterWalker.x + waterWalker.dx, waterWalker.y + waterWalker.dy)
+  waterWalker.x, waterWalker.y = world:move(waterWalker, waterWalker.x + waterWalker.dx, waterWalker.y + waterWalker.dy, waterWalker.filter)
+  legs.x, legs.y = world:move(legs, legs.x + waterWalker.dx, legs.y + waterWalker.dy, legs.filter)
   -- END OF MOVEMENT --
 
   if updateTimer(dt, "begin stage 1", waterWalker.timers) and checkTimer("squat attack", waterWalker.timers) == false then -- only called once after entrance sequence
@@ -116,9 +147,21 @@ function waterWalker:update(dt, world)
     -- PACE AND SHOOT --
     if updateTimer(dt, "begin pace", waterWalker.timers) and checkTimer("pace move", waterWalker.timers) == false then
        if love.math.random(0, 1) == 1 then -- random num between 1 and 0
-         waterWalker.paceRight = true
+         if waterWalker.x + waterWalker.w / 2 < backZone.x then
+           waterWalker.paceRight = true
+           --print("going right normally")
+         else
+            --print("tried going right, no room")
+            waterWalker.paceLeft = true
+         end
        else
-         waterWalker.paceLeft = true
+         if waterWalker.x > frontZone.x then
+           --print("going left normally")
+           waterWalker.paceLeft = true
+         else
+           --print("tried going left, no room")
+           waterWalker.paceRight = true
+         end
        end
 
        addTimer(0.7, "pace move", waterWalker.timers)
@@ -187,8 +230,15 @@ end
 function waterWalker:draw()
   love.graphics.rectangle("line", waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
 
+
   waterWalker.animations[waterWalker.curAnim]:draw(waterWalker.spriteSheet, waterWalker.x, waterWalker.y, 0, 1, 1, 7, 15)
   love.graphics.print(waterWalker.hp, waterWalker.x, waterWalker.y)
+
+  --love.graphics.rectangle("line", legs.x, legs.y, legs.w, legs.h)
+
+  --love.graphics.rectangle("line", backZone.x, backZone.y, backZone.w, backZone.h)
+  --love.graphics.rectangle("line", frontZone.x, frontZone.y, frontZone.w, frontZone.h)
+
 end
 
 function waterWalker:drawHealth()
