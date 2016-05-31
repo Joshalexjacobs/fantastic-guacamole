@@ -26,6 +26,7 @@ waterWalker = {
   paceLeft = false,
   paceRight = false,
   squatShot = 0,
+  paceShot = 0,
   -- doesnt need gravity
 }
 
@@ -41,8 +42,9 @@ function waterWalker:load(world)
     anim8.newAnimation(waterWalker.spriteGrid(1, 1), 0.1), -- 1 idle
     anim8.newAnimation(waterWalker.spriteGrid(1, '2-5'), {0.2, 0.1, 0.2, 0.1}), -- 2 walk
     anim8.newAnimation(waterWalker.spriteGrid(1, '6-7'), {0.2, 0.1}, 'pauseAtEnd'), -- 3 squat tween
-    anim8.newAnimation(waterWalker.spriteGrid(1, '7-8'), {0.2, 0.2}), -- 4 squat shoot
+    anim8.newAnimation(waterWalker.spriteGrid(1, '7-8'), {0.1, 0.1}), -- 4 squat shoot
     anim8.newAnimation(waterWalker.spriteGrid(1, 6, 1, 1), 0.2, 'pauseAtEnd'), -- 5 squat stand tween to idle
+    anim8.newAnimation(waterWalker.spriteGrid(1, '5-2'), {0.2, 0.1, 0.2, 0.1}), -- 6 walk backwards
   }
 
   -- add to world
@@ -69,13 +71,15 @@ function waterWalker:update(dt, world)
     addTimer(0.3, "begin stage 1", waterWalker.timers)
   end
 
-  --if waterWalker.dx < 0 and paceLeft == false then -- deceleration for moving left
+
+  if waterWalker.paceLeft == false and waterWalker.dx < 0 then -- deceleration
     waterWalker.dx = math.min((waterWalker.dx + waterWalker.decel * dt), 0)
-  --end
+  elseif waterWalker.paceRight == false and waterWalker.dx > 0 then
+    waterWalker.dx = math.min((waterWalker.dx - waterWalker.decel * dt), 0)
+  end
 
   waterWalker.x, waterWalker.y = world:move(waterWalker, waterWalker.x + waterWalker.dx, waterWalker.y + waterWalker.dy)
   -- END OF MOVEMENT --
-
 
   if updateTimer(dt, "begin stage 1", waterWalker.timers) and checkTimer("squat attack", waterWalker.timers) == false then -- only called once after entrance sequence
     waterWalker.curAnim = 3
@@ -89,27 +93,79 @@ function waterWalker:update(dt, world)
       waterWalker.curAnim = 4
       addTimer(0.2, "squat shot", waterWalker.timers)
     elseif updateTimer(dt, "squat shot", waterWalker.timers) and waterWalker.squatShot < 4 then
-      addBullet(true, waterWalker.x, waterWalker.y + 58, 1, world, -0.523599 - .5)
-      addBullet(true, waterWalker.x, waterWalker.y + 58, 1, world, -0.523599)
-      addBullet(true, waterWalker.x, waterWalker.y + 59, 1, world, 0)
-      addBullet(true, waterWalker.x, waterWalker.y + 60, 1, world, math.pi/6)
-      addBullet(true, waterWalker.x, waterWalker.y + 61, 1, world, math.pi/6 + .5)
+      deviation = love.math.random(-1, 1) * 0.03
+      addBullet(true, waterWalker.x, waterWalker.y + 58, 1, world, -0.523599 - .5 + deviation)
+      addBullet(true, waterWalker.x, waterWalker.y + 58, 1, world, -0.523599 + deviation)
+      addBullet(true, waterWalker.x, waterWalker.y + 59, 1, world, 0 + deviation)
+      addBullet(true, waterWalker.x, waterWalker.y + 60, 1, world, math.pi/6 + deviation)
+      addBullet(true, waterWalker.x, waterWalker.y + 61, 1, world, math.pi/6 + .5 + deviation)
 
-      resetTimer(0.4, "squat shot", waterWalker.timers)
+      resetTimer(0.2, "squat shot", waterWalker.timers)
       waterWalker.squatShot = waterWalker.squatShot + 1
     elseif waterWalker.squatShot >= 4 and checkTimer("squat end", waterWalker.timers) == false then
       waterWalker.animations[4]:pauseAtEnd()
       addTimer(0.3, "squat end", waterWalker.timers)
     end
 
-    if updateTimer(dt, "squat end", waterWalker.timers) then -- and checkTimer("begin pace", waterWalker.timers) == false then
+    if updateTimer(dt, "squat end", waterWalker.timers) and checkTimer("begin pace", waterWalker.timers)  == false then
       waterWalker.curAnim = 5
-      --addTimer(0.3, "begin pace", waterWalker.timers)
+      addTimer(0.3, "begin pace", waterWalker.timers)
     end
 
 
     -- PACE AND SHOOT --
+    if updateTimer(dt, "begin pace", waterWalker.timers) and checkTimer("pace move", waterWalker.timers) == false then
+       if love.math.random(0, 1) == 1 then -- random num between 1 and 0
+         waterWalker.paceRight = true
+       else
+         waterWalker.paceLeft = true
+       end
 
+       addTimer(0.7, "pace move", waterWalker.timers)
+    elseif updateTimer(dt, "pace move", waterWalker.timers) == false then
+      if waterWalker.paceRight then
+        waterWalker.animations[6]:resume()
+        waterWalker.curAnim = 6
+        waterWalker.dx = waterWalker.speed * dt
+      elseif waterWalker.paceLeft then
+        waterWalker.animations[2]:resume()
+        waterWalker.curAnim = 2
+        waterWalker.dx = -waterWalker.speed * dt
+      end
+    elseif updateTimer(dt, "pace move", waterWalker.timers) == true and checkTimer("pace shoot", waterWalker.timers) == false then
+      if waterWalker.paceLeft then waterWalker.animations[2]:pauseAtEnd()
+      else waterWalker.animations[6]:pauseAtEnd() end
+
+      waterWalker.paceLeft, waterWalker.paceRight = false, false
+      --addTimer(0.5, "pace shoot", waterWalker.timers)
+
+
+      addTimer(0.0, "restart stage 1", waterWalker.timers) -- temporary -- used to restart stage 1 fight cycle
+    end
+  end
+
+
+  -- for cycling through stage 1
+  if updateTimer(dt, "restart stage 1", waterWalker.timers) then
+    resetTimer(0.3, "begin stage 1", waterWalker.timers)
+
+    -- delete squat timers
+    deleteTimer("squat attack", waterWalker.timers)
+    deleteTimer("squat shot", waterWalker.timers)
+    deleteTimer("squat end", waterWalker.timers)
+    waterWalker.squatShot = 0
+    waterWalker.animations[3]:gotoFrame(1)
+    waterWalker.animations[4]:resume()
+    waterWalker.animations[5]:gotoFrame(1)
+
+    -- delete pace timers
+    deleteTimer("begin pace", waterWalker.timers)
+    deleteTimer("pace move", waterWalker.timers)
+    waterWalker.animations[2]:resume()
+    waterWalker.animations[6]:resume()
+
+    deleteTimer("restart stage 1", waterWalker.timers)
+    waterWalker.curAnim = 1
   end
 
   -- elseif stage 2...

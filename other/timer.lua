@@ -52,3 +52,8 @@ function updateTimer(dt, name, timerList) -- update all existing timers
     return false
   end
 end
+
+function deleteTimer(name, timerList)
+  --index = findTimer(name, timerList)
+  table.remove(timerList, findTimer(name, timerList))
+end
