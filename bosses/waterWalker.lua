@@ -18,7 +18,7 @@ waterWalker = {
   healthBar = 296,
   damageBar = 296,
   w = 75, -- 96
-  h = 37,
+  h = 50,
   x = 2605, -- 2605
   y = 40, -- 35
   dx = 0,
@@ -121,6 +121,7 @@ function waterWalker:update(dt, world)
     -- SQUAT ATTACK --
 
     if updateTimer(dt, "squat attack", waterWalker.timers) and checkTimer("squat shot", waterWalker.timers) == false then
+
       waterWalker.curAnim = 4
       addTimer(0.2, "squat shot", waterWalker.timers)
     elseif updateTimer(dt, "squat shot", waterWalker.timers) and waterWalker.squatShot < 4 then
@@ -135,6 +136,10 @@ function waterWalker:update(dt, world)
       waterWalker.squatShot = waterWalker.squatShot + 1
     elseif waterWalker.squatShot >= 4 and checkTimer("squat end", waterWalker.timers) == false then
       waterWalker.animations[4]:pauseAtEnd()
+
+      world:remove(waterWalker)
+      world:add(waterWalker, waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
+
       addTimer(0.3, "squat end", waterWalker.timers)
     end
 
@@ -228,6 +233,7 @@ function waterWalker:update(dt, world)
 end
 
 function waterWalker:draw()
+  --love.graphics.rectangle("line", waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
   love.graphics.rectangle("line", waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
 
 
