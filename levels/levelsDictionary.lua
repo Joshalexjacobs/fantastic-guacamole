@@ -17,8 +17,8 @@ local dictionary = {
         w = 2000,
         h = 100,
         enemies = {
-          {name = "runner", count = 0, max = 1000, side = "left", x = 800, y = 110, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
-          {name = "runner", count = 0, max = 1000, side = "right", x = -450, y = 110, dynamic = true, spawnTimer = 0, spawnTimerMax = 4.5},
+          {name = "runner", count = 0, max = 1000, side = "left", x = 800, y = 110, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
+          {name = "runner", count = 0, max = 1000, side = "right", x = -450, y = 110, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
         }
       },
       {
@@ -88,6 +88,30 @@ local dictionary = {
     } -- end of zones
   }, -- end of level
 
+  {
+      name = "1-2",
+      bounds = { -- camera boundaries
+        levelWidth = 1000, -- 8000
+        levelHeight = 600,
+        left = 0,
+        top = 0
+      },
+      zones = {
+        {
+          name = "dynamic runners",
+          x = 100,
+          y = 45,
+          w = 2000,
+          h = 100,
+          enemies = {
+            {name = "runner", count = 0, max = 1000, side = "left", x = 200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "runner", count = 0, max = 1000, side = "right", x = -200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "grenade", count = 0, max = 1000, side = "left", x = 400, y = 85, dynamic = false, spawnTimer = 0, spawnTimerMax = 2},
+            {name = "grenade", count = 0, max = 1000, side = "right", x = 401, y = 85, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
+          }
+        },
+      } -- end of zones
+  } -- end of level
 } -- end of dictionary
 
 function getLevel(levelName, level)

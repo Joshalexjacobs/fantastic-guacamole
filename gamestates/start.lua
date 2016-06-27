@@ -13,7 +13,6 @@ function menu:enter()
   -- other
   loadController()
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
-  loadEnvironment()
 
 end
 

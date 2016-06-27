@@ -5,10 +5,9 @@
 anim8 = require 'other/anim8' -- this should be local in the future
 local sti = require "sti"
 
-require 'collision/blocks'
 require 'enemies/enemyDictionary'
 require 'enemies/enemies'
-require 'other/environment'
+
 require 'other/controller'
 require 'other/timer'
 
@@ -18,7 +17,9 @@ require 'bullets'
 
 local bump   = require 'collision/bump'
 local math   = require "math"
-local camera = require "camera"
+
+local Camera = require "humpCamera"
+
 player = require 'player'
 
 require 'levels/zones'
@@ -34,8 +35,6 @@ game = {}
 local debug = true
 bossFight = false
 
---windowWidth, windowHeight = 800, 600
-
 --windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
 windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
 --windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
@@ -48,12 +47,9 @@ local bounds = {
   levelWidth   = 5000,
   levelHeight  = windowHeight, -- windowHeight at minimum
   left = 0,
-  top = 0,
-  viewportWidth = 0,
-  viewportHeight = 0,
+  top = 0
 }
 
--- game:enter(previous state, parameter being passed)
 function game:enter(menu, levelName)
   -- seed math.random
   math.randomseed(os.time())
@@ -62,8 +58,12 @@ function game:enter(menu, levelName)
   -- load level
   loadLevel(levelName, world)
 
+  -- load bullet
+  loadBullet()
+
   -- load tilemap
-  map = sti.new("tiled/Level 1-1.lua", {"bump"})
+  --map = sti.new("tiled/Level 1-1.lua", {"bump"})
+  map = sti.new("tiled/New Level.lua", {"bump"})
   map:bump_init(world)
 
   -- populate world collision (bump)
@@ -86,8 +86,8 @@ function game:enter(menu, levelName)
   waterWalker:load(world)
 
   -- load camera
-  camera.setBoundary(0, 0, bounds.levelWidth, windowHeight) -- load camera
-  camera.setViewport(0, 0, 320, 180)
+  camera = Camera(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale, 1, 0, Camera.smooth.linear(100))
+  camera.smoother = Camera.smooth.forwardDamped(3)
 end
 
 
@@ -96,11 +96,13 @@ function game:update(dt)
   if love.keyboard.isDown('escape') then love.event.quit() end -- if player hits esc then quit
 
   -- update bounds
-  bounds.left, bounds.top, bounds.viewportWidth, bounds.viewportHeight = camera.getViewport()
+  local left, right = camera:position()
+  bounds.left = left - ((180 * windowScale) - (20 * windowScale))
 
   -- update everything
   updatePlayer(dt, world)
-  updateBullets(dt, bounds.left, bounds.viewportWidth, world)
+
+  updateBullets(dt, bounds.left, 320, world)
 
   updateEnemies(dt, world)
   updateZones(player.x, player.w, bounds.left, world, dt)
@@ -109,10 +111,7 @@ function game:update(dt)
     waterWalker:update(dt, world)
   end
 
-  -- update camera
-  if checkScreenMove(bounds.left) and player.lastDir == 1 then -- if player is moving right and beyond the middle of the screen...
-    camera.lookAt(player.x + player.w / 2, 0) -- set the camera to follow the player's movement
-  end
+  camera:lockPosition(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale)
 end
 
 function game:keyreleased(key, code)
@@ -126,12 +125,12 @@ end
 function game:draw()
 
   love.graphics.scale(windowScale, windowScale)
-  camera.draw(function(l,t,w,h)
+
+  camera:attach()
     map:draw()
     drawPlayer()
     drawEnemies()
     drawBullets()
-    drawBlocks()
 
     if bossFight then -- if player activated boss fight, update boss
       waterWalker:draw()
@@ -141,18 +140,16 @@ function game:draw()
       --drawZones()
     end
 
-  end)
+  camera:detach()
 
   if bossFight then
     waterWalker:drawHealth()
   end
-  --drawEnvironment()
 
   if debug then
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
     love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
     love.graphics.print(player.lives, 5, 35)
-    -- love.graphics.print(level.name, 700, 5)
     if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
   end
 end

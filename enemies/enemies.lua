@@ -19,7 +19,7 @@ local enemy = {
   y = 0,
   w = 0,
   h = 0,
-  speed = 110,
+  speed = 100, -- 110
   gravity = 9.8,
   dx = 0,
   dy = 0,
@@ -36,6 +36,13 @@ local enemy = {
       return 'cross'
     elseif other.type == "block" or other.type == "ground" or other.type == "enemyPlatform" then
       return 'slide'
+    end
+  end,
+  collision = function(cols, len, entity)
+    for i = 1, len do
+      if cols[i].other.type == "player" and entity.isDead == false then
+        cols[i].other.killPlayer(world)
+      end
     end
   end,
   color = {255, 0, 0, 255}
@@ -56,15 +63,12 @@ function enemy.update(dt, newEnemy, world)
   -- constant force of gravity --
   newEnemy.dy = newEnemy.dy + (newEnemy.gravity * dt)
 
-  if not newEnemy.isDead then
+  if newEnemy.playDead == false then
     newEnemy.x, newEnemy.y, cols, len = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
   end
 
-  for i = 1, len do
-    if cols[i].other.type == "player" then
-      cols[i].other.killPlayer(world)
-    end
-  end
+  newEnemy.collision(cols, len, newEnemy)
+
 end
 
 function enemy.draw(newEnemy)
@@ -104,13 +108,13 @@ function updateEnemies(dt, world) -- include world here?
       newEnemy.isDead = true
     end
 
-    if newEnemy.isDead and world:hasItem(newEnemy) then
-      world:remove(newEnemy) -- remove from world...
-    end
+    --if newEnemy.isDead and world:hasItem(newEnemy) then
+      --world:remove(newEnemy) -- remove from world...
+    --end
 
-    if newEnemy.playDead then
+    if newEnemy.playDead and world:hasItem(newEnemy) then
+      world:remove(newEnemy) -- remove from world...
       table.remove(enemies, i)
-      --print("RIP ENEMY", newEnemy.name)
     end
   end
 end

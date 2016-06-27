@@ -1,7 +1,7 @@
 -- enemyDictionary.lua --
 
 -- general enemy functions --
-local function getAngle(pX, pY, eX, eY)
+local function getAngle(pX, pY, eX, eY) -- need to rewrite this bullshit function...
   angle = math.atan2(pY - eY, pX - eX)
   if angle > -0.40 and angle < 0.40 then -- right
     return math.pi
@@ -28,16 +28,50 @@ end
 
 -- RUNNER --
 local function runBehaviour(dt, entity, world)
-    if entity.direction == "right" then
+    if entity.direction == "right" and entity.isDead == false then
       entity.dx = entity.speed * dt
-    elseif entity.direction == "left" then
+    elseif entity.direction == "left" and entity.isDead == false then
       entity.dx = -(entity.speed * dt)
     end
 
-    if entity.isDead then entity.playDead = true end
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(0.3, "death", entity.timers)
+      entity.curAnim = 2
+      entity.dy = -3.75
+      entity.dx = 0
+    elseif  entity.isDead and updateTimer(dt, "death", entity.timers) then
+      entity.playDead = true
+    end
 
     -- handle/update current animation running
     entity.animations[entity.curAnim]:update(dt)
+end
+
+-- GRENADE --
+local function grenadeBehaviour(dt, entity, world)
+  if checkTimer("start", entity.timers) == false then
+    entity.dy = -3.75
+    entity.type = "invincible"
+    addTimer(0.0, "start", entity.timers)
+  end
+
+  if entity.direction == "right" and entity.isDead == false then
+    entity.dx = entity.speed * dt
+  elseif entity.direction == "left" and entity.isDead == false then
+    entity.dx = -(entity.speed * dt)
+  end
+
+  if entity.isDead and checkTimer("death", entity.timers) == false then
+    addTimer(0.3, "death", entity.timers)
+    entity.curAnim = 2
+    entity.gravity = 0
+    entity.dx, entity.dy = 0, 0
+  elseif  entity.isDead and updateTimer(dt, "death", entity.timers) then
+    entity.playDead = true
+  end
+
+  -- handle/update current animation running
+  entity.animations[entity.curAnim]:update(dt)
 end
 
 -- TARGET --
@@ -278,19 +312,54 @@ local dictionary = {
   {
     name = "runner",
     hp = 1,
-    w = 16,
-    h = 36,
+    w = 10,
+    h = 42,
     update = runBehaviour,
-    scale = {x = 1, y = 1, offX = 10, offY = 12},
-    sprite = "img/enemies/runner.png",
-    grid = {x = 34, y = 48, w = 102, h = 96},
+    scale = {x = 1, y = 1, offX = 10, offY = 15},
+    sprite = "img/enemies/runner2BIG.png",
+    grid = {x = 32, y = 64, w = 96, h = 256},
     animations = function(grid)
       animations = {
-        anim8.newAnimation(grid('1-3', '1-2'), 0.1) -- running
+        anim8.newAnimation(grid(3, 1, '1-3', 2, '1-2', 3), 0.1), -- 1 running
+        anim8.newAnimation(grid(3, 3, 1, 4), 0.15), -- 2 dying
       }
       return animations
     end,
     filter = nil,
+    gravity = 9.8
+  },
+
+  {
+    name = "grenade",
+    hp = 1,
+    w = 10,
+    h = 10,
+    update = grenadeBehaviour,
+    scale = {x = 1, y = 1, offX = 11, offY = 11},
+    sprite = "img/enemies/grenades/grenade.png",
+    grid = {x = 32, y = 32, w = 96, h = 64},
+    animations = function(grid)
+      local animations = {
+        anim8.newAnimation(grid('1-3', 1, 1, 2), 0.1), -- 1 thrown
+        anim8.newAnimation(grid('2-3', 2), 0.1), -- 2 exploding
+      }
+      return animations
+    end,
+    filter = function(item, other)
+      if other.type == "player" or other.type == "block" or other.type == "ground" then
+        return 'cross'
+      end
+    end,
+    collision = function(cols, len, entity)
+      for i = 1, len do
+        if cols[i].other.type == "ground" or cols[i].other.type == "block" then
+          entity.isDead = true
+        elseif cols[i].other.type == "player" then
+          cols[i].other.killPlayer()
+          entity.isDead = true
+        end
+      end
+    end,
     gravity = 9.8
   },
 
@@ -396,6 +465,13 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
       newEnemy.spriteGrid = anim8.newGrid(dictionary[i].grid.x, dictionary[i].grid.y, dictionary[i].grid.w, dictionary[i].grid.h, 0, 0, 0)
       newEnemy.animations = dictionary[i].animations(newEnemy.spriteGrid)
       newEnemy.gravity = dictionary[i].gravity
+
+      -- filter
+      if dictionary[i].filter ~= nil then
+        newEnemy.filter = dictionary[i].filter
+        newEnemy.collision = dictionary[i].collision
+      end
+
     end
   end
 end

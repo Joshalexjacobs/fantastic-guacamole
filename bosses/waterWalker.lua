@@ -5,13 +5,6 @@ waterWalker = {
   type = "block", -- switch to enemy or boss later
   filter = function(item, other)
     return 'cross'
-    --[[if other.type == "enemy" then
-      return 'cross'
-    elseif other.type == "block" or other.type == "ground" or other.type == "boss" then
-      return 'cross'
-    elseif other.type == "bullet" then
-      return 'cross'
-    end]]
   end,
   hp = 100,
   maxHP = 100,
@@ -36,8 +29,7 @@ waterWalker = {
   paceLeft = false,
   paceRight = false,
   squatShot = 0,
-  paceShot = 0,
-  -- doesnt need gravity
+  paceShot = 0
 }
 
 
@@ -154,17 +146,13 @@ function waterWalker:update(dt, world)
        if love.math.random(0, 1) == 1 then -- random num between 1 and 0
          if waterWalker.x + waterWalker.w / 2 < backZone.x then
            waterWalker.paceRight = true
-           --print("going right normally")
          else
-            --print("tried going right, no room")
             waterWalker.paceLeft = true
          end
        else
          if waterWalker.x > frontZone.x then
-           --print("going left normally")
            waterWalker.paceLeft = true
          else
-           --print("tried going left, no room")
            waterWalker.paceRight = true
          end
        end
@@ -217,6 +205,8 @@ function waterWalker:update(dt, world)
   end
 
   -- elseif stage 2...
+
+  -- waterWalker death code might be on my pc... or on github? I shouldn't push/pull until i know for sure
 
   -- if dead then start death anim and death anim timer
   -- if death anim timer is finished end level

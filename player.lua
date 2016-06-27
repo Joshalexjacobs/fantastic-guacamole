@@ -4,14 +4,14 @@
 local player = {
   type = "player", -- or "invincible"
   lives = 600,
-  x = 2400, -- 100
+  x = 140, -- 2400
   y = 160,
-  w = 16,
-  h = 36,
+  w = 10,
+  h = 42,
   dx = 0,
   dy = 0,
-  speed = 90, -- 200 120
-  initVel = 3, -- 6
+  speed = 80,
+  initVel = 3,
   termVel = -3,
   isJumping = false,
   jumpLock = false,
@@ -20,6 +20,7 @@ local player = {
   isDead = false,
   prevDir = 1, -- used for mirroring animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
+  shootPoint = {x = 0, y = 0},
   controls = {0, {x = 0, y = 0}, true},
   spriteSheet = nil,
   spiteGrid = nil,
@@ -42,6 +43,10 @@ local player = {
   end
 }
 
+local playerSounds = {
+  shoot = nil
+}
+
 respawnTimer = 0
 respawnTimerMax = 1.0 -- 1 second
 
@@ -61,26 +66,32 @@ end
 
 -- general functions
 
-local midpoint = 160
-
 function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
-  --midpoint = 320 / 2 -- 160
 
   -- load player sprites
-  player.spriteSheet = love.graphics.newImage('img/player/player.png')
-  player.spriteGrid = anim8.newGrid(34, 48, 102, 480, 0, 0, 0) --432
+  --player.spriteSheet = love.graphics.newImage('img/player/marine.png') -- new marine
+  --player.spriteSheet = love.graphics.newImage('img/player/marineMED.png') -- medium marine
+  player.spriteSheet = love.graphics.newImage('img/player/marineBIG.png') -- big marine
+
+  --player.spriteGrid = anim8.newGrid(16, 32, 48, 384, 0, 0, 0) -- regular marine
+  --player.spriteGrid = anim8.newGrid(24, 48, 72, 576, 0, 0, 0) -- marineMEDium
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 768, 0, 0, 0) -- marineBIG
 
   player.animations = {                -- col, row
-    anim8.newAnimation(player.spriteGrid('2-3', 7), 0.6), -- 1 idle
-    anim8.newAnimation(player.spriteGrid('1-3', '1-2'), 0.1), -- 2 idleRun
-    anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- 3 horizontalShotRun
-    anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- 4 diagShotRun
-    anim8.newAnimation(player.spriteGrid(1, 7), 0.1), -- 5 lookUp
-    anim8.newAnimation(player.spriteGrid('1-3', 8, 1, 9), 0.1), -- 6 jump/fall
-    anim8.newAnimation(player.spriteGrid('2-3', 9, 1, 10), 0.1 ), -- 7 diagShotRunDown
-    anim8.newAnimation(player.spriteGrid(3, 10), 0.1 ) -- 8 blinking
+    anim8.newAnimation(player.spriteGrid('1-2', 1), 0.6), -- 1 idle
+    anim8.newAnimation(player.spriteGrid('1-3', '3-4'), 0.1), -- 2 idleRun
+    anim8.newAnimation(player.spriteGrid('1-3', '5-6'), 0.1), -- 3 horizontalShotRun
+    anim8.newAnimation(player.spriteGrid('1-3', '7-8'), 0.1), -- 4 diagShotRun
+    anim8.newAnimation(player.spriteGrid(1, 11), 0.1), -- 5 lookUp
+    anim8.newAnimation(player.spriteGrid(3, 11, '1-3', 12), 0.1), -- 6 jump/fall
+    anim8.newAnimation(player.spriteGrid('1-3', '9-10'), 0.1 ), -- 7 diagShotRunDown
+    -- look up shoot anim,
+    -- idle shoot anim
   }
+
+  playerSounds.shoot = love.audio.newSource("sound/player sound/machinegun.wav", static)
+  playerSounds.shoot:setVolume(10)
 
 end
 
@@ -88,7 +99,7 @@ end
 local shootTimerMax = 0.15 -- 0.2
 local shootTimer = 0
 
-local animTimerMax = 0.5
+local animTimerMax = 0.2
 local animTimer = 0
 
 local jumpTimerMax = 0.2 -- 0.4
@@ -104,16 +115,16 @@ local function playerInput(dt, world)
     player.lastDir = 1
 
     if love.keyboard.isDown("w") then -- UpRight
-      player.controls[1] = (math.pi * 7)/6
-      player.controls[2].x, player.controls[2].y = 16, -4
+      player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y - 50
+      player.controls[2].x, player.controls[2].y = 9, 0 -- 20 5
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
-      player.controls[1] = (math.pi * 5)/6
-      player.controls[2].x, player.controls[2].y = 18, 16
+      player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y + 50
+      player.controls[2].x, player.controls[2].y = 9, 9
       player.controls[3] = true
-    else
-      player.controls[1] = math.pi -- Right
-      player.controls[2].x, player.controls[2].y = 20, 12
+    else                                  -- Right
+      player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
+      player.controls[2].x, player.controls[2].y = 9, 9 -- 20 12
       player.controls[3] = true
     end
 
@@ -122,45 +133,47 @@ local function playerInput(dt, world)
     player.lastDir = 0
 
     if love.keyboard.isDown("w") then -- UpLeft
-      player.controls[1] = -0.523599
-      player.controls[2].x, player.controls[2].y = 0, 0
+      player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y - 50
+      player.controls[2].x, player.controls[2].y = -2, 6
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
-      player.controls[1] = math.pi/6
-      player.controls[2].x, player.controls[2].y = -5, 15 -- -10
+      player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y + 50
+      player.controls[2].x, player.controls[2].y = 0, 9
       player.controls[3] = true
-    else
-      player.controls[1] = 0 -- Left
-      player.controls[2].x, player.controls[2].y = -8, 12
+    else                                  -- Left
+      player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
+      player.controls[2].x, player.controls[2].y = 0, 9
       player.controls[3] = true
     end
 
   elseif love.keyboard.isDown("w") then -- Up
-    player.controls[1] = (math.pi * 3)/2
+    player.shootPoint.x, player.shootPoint.y = player.x, player.y - 50
     player.controls[3] = true
     if player.lastDir == 1 then
-      player.controls[2].x, player.controls[2].y = 8, -10
+      player.controls[2].x, player.controls[2].y = 2, -6
     else
-      player.controls[2].x, player.controls[2].y = 4, -10
+      player.controls[2].x, player.controls[2].y = 4, -7
     end
 
   elseif love.keyboard.isDown("s") then -- Down
-    player.controls[1] = math.pi/2
-    player.controls[2].x, player.controls[2].y = 5, 15
+    player.shootPoint.x, player.shootPoint.y = player.x, player.y + 50
+    player.controls[2].x, player.controls[2].y = 7, 25
     if player.isJumping or player.isGrounded == false then player.controls[3] = true
     else player.controls[3] = false end
 
   else -- else player isn't hitting any of these keys so default them back to left/right
     if player.lastDir == 1 then
-      player.controls[1] = math.pi
-      player.controls[2].x, player.controls[2].y = 20, 12 -- right
+      player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
+      player.controls[2].x, player.controls[2].y = 9, 9 -- Static right
       player.controls[3] = true
     else
-      player.controls[1] = 0
-      player.controls[2].x, player.controls[2].y = -8, 12 -- left
+      player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
+      player.controls[2].x, player.controls[2].y = 0, 9 -- Static left
       player.controls[3] = true
     end
   end
+
+  player.controls[1] = math.atan2(player.shootPoint.y - player.y, player.shootPoint.x - player.x) + love.math.random(-1, 1) * 0.04
 
   -- deceleration
   if (dPadRight() == false or love.keyboard.isDown("d") == false) and player.dx > 0 then
@@ -227,7 +240,9 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   jumpTimer = jumpTimer - (1 * dt)
 
   -- constant force of gravity --
-  player.dy = player.dy + (gravity * dt)
+  if player.isGrounded == false then
+    player.dy = player.dy + (gravity * dt)
+  end
 
   if player.dx ~= 0 or player.dy ~= 0 then
 
@@ -259,8 +274,10 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false then
     if player.controls[3] then
-      addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1])
-      player.shootLock = true
+      if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1]) then
+        love.audio.play(playerSounds.shoot)
+        player.shootLock = true
+      end
     end
 
     shootTimer = shootTimerMax
@@ -310,23 +327,15 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   player.animations[player.curAnim]:update(dt)
 end
 
-function checkScreenMove(left)
-  if player.x + player.w / 2 > midpoint + left then
-    return true
-  else
-    return false
-  end
-end
-
 function drawPlayer()
     --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
 
     if player.isDead == false then
       setColor({255, 255, 255, 255})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 10, 12) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
     elseif player.lives > 0 then
       setColor({255, 255, 255, 25})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 10, 12) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       setColor({255, 255, 255, 255})
     end
 end
