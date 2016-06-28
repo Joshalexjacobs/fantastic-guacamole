@@ -74,6 +74,25 @@ local function grenadeBehaviour(dt, entity, world)
   entity.animations[entity.curAnim]:update(dt)
 end
 
+-- PRONE SHOOTER --
+local function proneShooterBehaviour(dt, entity, world)
+  -- prone shooter starts shooting? lol
+  -- if entity.direction == right then shoot right
+  -- else shoot left
+
+  -- dont start shooting until the player is within range
+    -- if player in range, shoot, set anim to shooting
+
+  if entity.isDead and checkTimer("death", entity.timers) == false then
+    addTimer(0.5, "death", entity.timers)
+    entity.curAnim = 3
+  elseif  entity.isDead and updateTimer(dt, "death", entity.timers) then
+    entity.playDead = true
+  end
+
+  entity.animations[entity.curAnim]:update(dt)
+end
+
 -- TARGET --
 local function targetBehaviour(dt, entity, world)
   -- static
@@ -360,6 +379,27 @@ local dictionary = {
         end
       end
     end,
+    gravity = 9.8
+  },
+
+  {
+    name = "prone-shooter",
+    hp = 1,
+    w = 52,
+    h = 12,
+    update = proneShooterBehaviour,
+    scale = {x = 1, y = 1, offX = 6, offY = 20},
+    sprite = "img/enemies/prone-shooter/prone-shooterBIG.png",
+    grid = {x = 64, y = 32, w = 192, h = 32},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
+        anim8.newAnimation(grid('1-2', 1), 0.1), -- 2 shooting
+        anim8.newAnimation(grid(3, 1), 0.15), -- 3 dying -- should have another empty frame for blinking?
+      }
+      return animations
+    end,
+    filter = nil,
     gravity = 9.8
   },
 

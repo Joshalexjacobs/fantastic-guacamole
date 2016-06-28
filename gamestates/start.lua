@@ -33,6 +33,9 @@ function menu:draw()
       love.graphics.setColor(255, 255, 255, 250)
       love.graphics.print(dictionary[i].name, 10, i * 15)
     end
+
+    love.graphics.print("Controls:\n WASD to move\n M to shoot\n N to jump", 100, 0)
+    
 end
 
 function menu:keyreleased(key, code)
