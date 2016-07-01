@@ -39,7 +39,7 @@ local function runBehaviour(dt, entity, world)
       entity.curAnim = 2
       entity.dy = -3.75
       entity.dx = 0
-    elseif  entity.isDead and updateTimer(dt, "death", entity.timers) then
+    elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
       entity.playDead = true
     end
 
@@ -76,17 +76,31 @@ end
 
 -- PRONE SHOOTER --
 local function proneShooterBehaviour(dt, entity, world)
-  -- prone shooter starts shooting? lol
-  -- if entity.direction == right then shoot right
-  -- else shoot left
+  if player.x > entity.x - 160 and checkTimer("beginShooting", entity.timers) == false then
+    addTimer(0.5, "beginShooting", entity.timers)
+  elseif checkTimer("beginShooting", entity.timers) == true and updateTimer(dt, "beginShooting", entity.timers) == true and entity.isDead == false then
+    --entity.curAnim = 2
+    --local deviation = love.math.random(0.1, 1) * 0.02
+    --addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, math.pi + deviation)
+    --resetTimer(1.5, "beginShooting", entity.timers)
+    addTimer(0.0, "shoot", entity.timers)
+    addTimer(0.2, "resetShot", entity.timers)
+  end
 
-  -- dont start shooting until the player is within range
-    -- if player in range, shoot, set anim to shooting
+  if checkTimer("shoot", entity.timers) and updateTimer(dt, "shoot", entity.timers) and entity.isDead == false then
+    entity.curAnim = 2
+    local deviation = love.math.random(0.1, 1) * 0.02
+    addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, math.pi + deviation)
+    resetTimer(1.5, "shoot", entity.timers)
+    resetTimer(0.2, "resetShot", entity.timers)
+  elseif entity.curAnim == 2 and updateTimer(dt, "resetShot", entity.timers) then
+    entity.curAnim = 1
+  end
 
   if entity.isDead and checkTimer("death", entity.timers) == false then
     addTimer(0.5, "death", entity.timers)
     entity.curAnim = 3
-  elseif  entity.isDead and updateTimer(dt, "death", entity.timers) then
+  elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
     entity.playDead = true
   end
 
@@ -337,6 +351,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 10, offY = 15},
     sprite = "img/enemies/runner2BIG.png",
     grid = {x = 32, y = 64, w = 96, h = 256},
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(3, 1, '1-3', 2, '1-2', 3), 0.1), -- 1 running
@@ -357,6 +372,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 11, offY = 11},
     sprite = "img/enemies/grenades/grenade.png",
     grid = {x = 32, y = 32, w = 96, h = 64},
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       local animations = {
         anim8.newAnimation(grid('1-3', 1, 1, 2), 0.1), -- 1 thrown
@@ -384,17 +400,18 @@ local dictionary = {
 
   {
     name = "prone-shooter",
-    hp = 1,
+    hp = 5,
     w = 52,
     h = 12,
     update = proneShooterBehaviour,
     scale = {x = 1, y = 1, offX = 6, offY = 20},
     sprite = "img/enemies/prone-shooter/prone-shooterBIG.png",
     grid = {x = 64, y = 32, w = 192, h = 32},
+    shootPoint = {x = -20, y = 2},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
-        anim8.newAnimation(grid('1-2', 1), 0.1), -- 2 shooting
+        anim8.newAnimation(grid(2, 1), .2), -- 2 shooting
         anim8.newAnimation(grid(3, 1), 0.15), -- 3 dying -- should have another empty frame for blinking?
       }
       return animations
@@ -412,6 +429,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
@@ -435,6 +453,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
@@ -458,6 +477,7 @@ local dictionary = {
     scale = {x = 0.35, y = 0.35, offX = 7, offY = 5},
     sprite = "img/enemies/camera turret/camera turret.png",
     grid = {x = 64, y = 64, w = 192, h = 256},
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(1, 1), 0.1), -- face left 1
@@ -480,6 +500,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 96, h = 32},
+    shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(1, 1), 0.1),     -- idle - 1
@@ -505,6 +526,9 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
       newEnemy.spriteGrid = anim8.newGrid(dictionary[i].grid.x, dictionary[i].grid.y, dictionary[i].grid.w, dictionary[i].grid.h, 0, 0, 0)
       newEnemy.animations = dictionary[i].animations(newEnemy.spriteGrid)
       newEnemy.gravity = dictionary[i].gravity
+
+      -- shootPoint
+      newEnemy.shootPoint = dictionary[i].shootPoint
 
       -- filter
       if dictionary[i].filter ~= nil then

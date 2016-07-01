@@ -17,9 +17,9 @@ local pbullet = {
   color = {255, 255, 255, 255},
   filter = function(item, other)
     if other.type == "enemy" or other.type == "boss" then
-      return 'cross'
+      return 'touch' -- used to be cross
     elseif other.type == "block" or other.type == "ground" then
-      return 'cross'
+      return 'touch' -- used to be cross
     end
   end,
   reaction = function(entity, cols, len)
@@ -56,9 +56,9 @@ local ebullet = {
   color = {255, 255, 255, 255},
   filter = function(item, other)
     if other.type == "player" then
-      return 'cross'
+      return 'touch' -- used to be cross
     elseif other.type == "block" or other.type == "ground" then
-      return 'cross'
+      return 'touch' -- used to be cross
     end
   end,
   reaction = function(entity, cols, len)
@@ -66,7 +66,6 @@ local ebullet = {
       if cols[j].other.type == "player" then
         entity.isDead = true -- destroy bullet
         cols[j].other.killPlayer(world)
-        print("awdawd")
         break
       elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then
         entity.isDead = true
@@ -98,12 +97,12 @@ function loadBullet()
   }
 
   -- load enemy bullets
-  ebullet.spriteSheet = love.graphics.newImage("img/other/newBullet.png")
+  ebullet.spriteSheet = love.graphics.newImage("img/other/enemy bullet.png")
 
   ebullet.spriteGrid = anim8.newGrid(16, 8, 48, 32, 0, 0, 0)
   ebullet.animations = {
     anim8.newAnimation(ebullet.spriteGrid('1-2', 1), 0.005, 'pauseAtEnd'), -- 1 muzzle flash
-    anim8.newAnimation(ebullet.spriteGrid(3, 1, '1-3', 2), 0.08), -- 2 shot
+    anim8.newAnimation(ebullet.spriteGrid(3, 1, 1, 2), 0.25), -- 2 shot
     anim8.newAnimation(ebullet.spriteGrid('1-3', '3-4'), 0.02, 'pauseAtEnd'), -- 3 dead
   }
 end
@@ -178,10 +177,11 @@ end
 function drawBullets()
   for _, newBullet in ipairs(pBullets) do
     newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, newBullet.actualDir, 1, 1, 0, newBullet.actualDir + 3)
+    --love.graphics.rectangle("line", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
   end
 
   for _, newBullet in ipairs(eBullets) do
-    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, newBullet.actualDir, 1, 1, 0, 0)
-    --love.graphics.rectangle("fill", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
+    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, newBullet.actualDir, 1, 1, newBullet.actualDir + 14, newBullet.actualDir + 5)
+    --love.graphics.rectangle("line", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
   end
 end

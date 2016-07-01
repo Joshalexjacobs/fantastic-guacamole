@@ -90,7 +90,7 @@ function loadPlayer(world)
     -- idle shoot anim
   }
 
-  playerSounds.shoot = love.audio.newSource("sound/player sound/machinegun.wav", static)
+  playerSounds.shoot = love.audio.newSource("sound/player sound/machinegunBASS.wav", static)
   playerSounds.shoot:setVolume(10)
 
 end
