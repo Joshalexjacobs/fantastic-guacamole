@@ -35,7 +35,7 @@ function menu:draw()
     end
 
     love.graphics.print("Controls:\n WASD to move\n M to shoot\n N to jump", 100, 0)
-    
+
 end
 
 function menu:keyreleased(key, code)

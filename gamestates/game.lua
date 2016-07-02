@@ -34,6 +34,7 @@ game = {}
 -- Globals: --
 local debug = true
 bossFight = false
+maxFPS = 60
 
 --windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
 windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
@@ -92,6 +93,8 @@ end
 
 
 function game:update(dt)
+  dt = math.min(dt, 1/maxFPS)
+
   -- if player wants to quit
   if love.keyboard.isDown('escape') then love.event.quit() end -- if player hits esc then quit
 

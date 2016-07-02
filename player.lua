@@ -3,7 +3,7 @@
 -- Player Class: --
 local player = {
   type = "player", -- or "invincible"
-  lives = 600,
+  lives = 10,
   x = 140, -- 2400
   y = 160,
   w = 10,
@@ -48,10 +48,10 @@ local playerSounds = {
 }
 
 respawnTimer = 0
-respawnTimerMax = 1.0 -- 1 second
+respawnTimerMax = 4.0 -- 4 seconds
 
 invinceTimer = 0
-invinceTimerMax = 1.0
+invinceTimerMax = 2.0
 
 -- player functions
 function player.killPlayer(world)
@@ -60,11 +60,21 @@ function player.killPlayer(world)
     respawnTimer = respawnTimerMax
     player.isDead = true
 
+    if player.lastDir == 1 then
+      player.dx = -2
+      player.dy = -5
+    else
+      player.dx = 2
+      player.dy = -5
+    end
+
+    player.curAnim = 8
+    player.isGrounded = false
     player.type = "invincible"
   end
 end
 
--- general functions
+--------- GENERAL FUNCTIONS ---------
 
 function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
@@ -72,11 +82,16 @@ function loadPlayer(world)
   -- load player sprites
   --player.spriteSheet = love.graphics.newImage('img/player/marine.png') -- new marine
   --player.spriteSheet = love.graphics.newImage('img/player/marineMED.png') -- medium marine
-  player.spriteSheet = love.graphics.newImage('img/player/marineBIG.png') -- big marine
+
+
+  --player.spriteSheet = love.graphics.newImage('img/player/marineBIG.png') -- marineBIG
+  player.spriteSheet = love.graphics.newImage('img/player/marine2BIG.png') -- marine2BIG
 
   --player.spriteGrid = anim8.newGrid(16, 32, 48, 384, 0, 0, 0) -- regular marine
   --player.spriteGrid = anim8.newGrid(24, 48, 72, 576, 0, 0, 0) -- marineMEDium
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 768, 0, 0, 0) -- marineBIG
+
+  --player.spriteGrid = anim8.newGrid(32, 64, 96, 768, 0, 0, 0) -- marineBIG
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 960, 0, 0, 0) -- marine2BIG
 
   player.animations = {                -- col, row
     anim8.newAnimation(player.spriteGrid('1-2', 1), 0.6), -- 1 idle
@@ -86,6 +101,8 @@ function loadPlayer(world)
     anim8.newAnimation(player.spriteGrid(1, 11), 0.1), -- 5 lookUp
     anim8.newAnimation(player.spriteGrid(3, 11, '1-3', 12), 0.1), -- 6 jump/fall
     anim8.newAnimation(player.spriteGrid('1-3', '9-10'), 0.1 ), -- 7 diagShotRunDown
+    anim8.newAnimation(player.spriteGrid('1-3', '13-14'), 0.1, "pauseAtEnd"), -- 8 dead fall
+    anim8.newAnimation(player.spriteGrid('1-2', 15), 0.1 ), -- 9 dead
     -- look up shoot anim,
     -- idle shoot anim
   }
@@ -95,7 +112,7 @@ function loadPlayer(world)
 
 end
 
--- Player Globals: --
+--------- PLAYER GLOBAL ---------
 local shootTimerMax = 0.15 -- 0.2
 local shootTimer = 0
 
@@ -110,7 +127,7 @@ local gravity, damping, maxVel, decel = 9.8, 0.5, 6.0, 8
 local function playerInput(dt, world)
 
   -- left/right movement
-  if love.keyboard.isDown("d") or dPadRight() then
+  if love.keyboard.isDown("d") or dPadRight() and player.isDead == false then
     player.dx = player.speed * dt
     player.lastDir = 1
 
@@ -128,7 +145,7 @@ local function playerInput(dt, world)
       player.controls[3] = true
     end
 
-  elseif love.keyboard.isDown("a") or dPadLeft() then
+  elseif love.keyboard.isDown("a") or dPadLeft() and player.isDead == false then
     player.dx = -player.speed * dt
     player.lastDir = 0
 
@@ -201,28 +218,38 @@ local function playerInput(dt, world)
 end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
-  -- DEATH/LIFE/DEATH --
+
+  --------- DEATH/LIFE/DEATH ---------
 
   if player.isDead then
     respawnTimer = respawnTimer - (1 * dt) -- decrement respawnTimer
 
-    if respawnTimer <= 0 and player.lives > 0 then
+    if player.isGrounded and player.isDead then
+      player.curAnim = 9
+      player.dx = 0
+    end
+
+    if respawnTimer <= 0 then
       -- revive player
       player.isDead = false
+      player.curAnim = 1
 
       -- start invincibility timer
       invinceTimer = invinceTimerMax
+      if player.lives == 0 then
+        player.lives = -1
+        player.type = "dead"
+      end
     end
-
-    --do return end -- skip rest of updatePlayer
   end
 
   -- decrement invincibility timer
   if invinceTimer > 0 then invinceTimer = invinceTimer - (1 * dt) end
-  if invinceTimer <= 0 and player.type ~= "player" then player.type = "player" end
+  if respawnTimer <= 0 and invinceTimer <= 0 and player.type == "invincible" then player.type = "player" end
 
-  -- MOVEMENT --
-  playerInput(dt, world)
+
+  --------- MOVEMENT ---------
+  if player.isDead == false then playerInput(dt, world) end
 
   -- this block locks in our velocity to maxVel --
   local v = math.sqrt(player.dx^2 + player.dy^2)
@@ -244,35 +271,33 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     player.dy = player.dy + (gravity * dt)
   end
 
-  if player.dx ~= 0 or player.dy ~= 0 then
+  if player.dx ~= 0 and player.lives > -1 or player.dy ~= 0 and player.lives > -1 then
+    -- check if player has temporary invincibility
+    if player.type == "invincible" then player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.respawnFilter)
+    else player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.filter) end
 
-    if player.lives > 0 then
-      -- check if player has temporary invincibility
-      if player.type == "invincible" then player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.respawnFilter)
-      else player.x, player.y, cols, len = world:move(player, player.x + player.dx, player.y + player.dy, player.filter) end
-
-      if len > 0 then
-        for i = 1, len do
-          if cols[i].other.type == "ground" then
-            player.isGrounded = true
-            break
-          end
+    -- check if player is grounded
+    if len > 0 then
+      for i = 1, len do
+        if cols[i].other.type == "ground" then
+          player.isGrounded = true
+          break
         end
-      else
-        player.isGrounded = false
       end
+    else
+      player.isGrounded = false
     end
-
   end
 
 
-  -- SHOOTING --
+  --------- SHOOTING ---------
+
   -- decrement shootTimer and animTimer--
   if shootTimer > 0 then shootTimer = shootTimer - (1 * dt) end
 
   if animTimer > 0 then animTimer = animTimer - (1 * dt) end
 
-  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false then
+  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false and player.isDead == false and player.lives > -1 then
     if player.controls[3] then
       if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1]) then
         love.audio.play(playerSounds.shoot)
@@ -284,7 +309,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     animTimer = animTimerMax
   end
 
-  -- ANIMATIONS --
+  --------- ANIMATIONS ---------
   -- flip animations based on player's direction --
   if player.lastDir ~= player.prevDir then
     for i=1, table.getn(player.animations) do
@@ -294,33 +319,35 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   end
 
   -- set the player's current animation based on their movement
-  if player.isJumping or not player.isGrounded then
-    player.curAnim = 6 -- [JUMPING]
-  elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w') == false
-    then player.curAnim = 1 -- [IDLE]
-  elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w')
-    then player.curAnim = 5 -- [LOOKING UP]
-  elseif animTimer <= 0 then
-    player.curAnim = 2 -- [IDLE RUN]
-    player.animations[3]:update(dt) -- update the shotting+running anim at the same time
-    player.animations[4]:update(dt)
-    player.animations[7]:update(dt)
+  if player.isDead == false then
+    if player.isJumping or not player.isGrounded then
+      player.curAnim = 6 -- [JUMPING]
+    elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w') == false
+      then player.curAnim = 1 -- [IDLE]
+    elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w')
+      then player.curAnim = 5 -- [LOOKING UP]
+    elseif animTimer <= 0 then
+      player.curAnim = 2 -- [IDLE RUN]
+      player.animations[3]:update(dt) -- update the shotting+running anim at the same time
+      player.animations[4]:update(dt)
+      player.animations[7]:update(dt)
 
-  elseif animTimer > 0 and love.keyboard.isDown('s') then
-    player.curAnim = 7 -- [SHOOT N RUN DIAGONAL DOWN]
-    player.animations[3]:update(dt)
-    player.animations[2]:update(dt)
-    player.animations[4]:update(dt)
-  elseif animTimer > 0 and love.keyboard.isDown('w') then
-    player.curAnim = 4-- [SHOOT N RUN DIAGONAL]
-    player.animations[3]:update(dt)
-    player.animations[2]:update(dt)
-    player.animations[7]:update(dt)
-  elseif animTimer > 0 then
-    player.curAnim = 3 -- [SHOOT N RUN HORIZONTAL]
-    player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
-    player.animations[4]:update(dt)
-    player.animations[7]:update(dt)
+    elseif animTimer > 0 and love.keyboard.isDown('s') then
+      player.curAnim = 7 -- [SHOOT N RUN DIAGONAL DOWN]
+      player.animations[3]:update(dt)
+      player.animations[2]:update(dt)
+      player.animations[4]:update(dt)
+    elseif animTimer > 0 and love.keyboard.isDown('w') then
+      player.curAnim = 4-- [SHOOT N RUN DIAGONAL]
+      player.animations[3]:update(dt)
+      player.animations[2]:update(dt)
+      player.animations[7]:update(dt)
+    elseif animTimer > 0 then
+      player.curAnim = 3 -- [SHOOT N RUN HORIZONTAL]
+      player.animations[2]:update(dt) -- update the running and not shooting anim at the same time
+      player.animations[4]:update(dt)
+      player.animations[7]:update(dt)
+    end
   end
 
   -- update the player's current animation --
@@ -329,15 +356,16 @@ end
 
 function drawPlayer()
     --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
-
-    if player.isDead == false then
+  if player.lives > -1 then
+    if player.type == "player" or player.isDead then
       setColor({255, 255, 255, 255})
       player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
-    elseif player.lives > 0 then
-      setColor({255, 255, 255, 25})
+    elseif player.type == "invincible" then -- if the player just respawned, apply transparency
+      setColor({255, 255, 255, 100})
       player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       setColor({255, 255, 255, 255})
     end
+  end
 end
 
 return player
