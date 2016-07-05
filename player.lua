@@ -20,6 +20,7 @@ local player = {
   isDead = false,
   prevDir = 1, -- used for mirroring animations
   lastDir = 1, -- 1 player is facing right, 0 player is facing left
+  isProne = false,
   shootPoint = {x = 0, y = 0},
   controls = {0, {x = 0, y = 0}, true},
   spriteSheet = nil,
@@ -126,10 +127,11 @@ local function playerInput(dt, world)
 
   -- left/right movement
   if love.keyboard.isDown("d") or dPadRight() and player.isDead == false then
+    player.isProne = false
     player.dx = player.speed * dt
     player.lastDir = 1
 
-    if love.keyboard.isDown("w") then -- UpRight
+    if love.keyboard.isDown("w") then    -- UpRight
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y - 50
       player.controls[2].x, player.controls[2].y = 9, 0 -- 20 5
       player.controls[3] = true
@@ -137,13 +139,14 @@ local function playerInput(dt, world)
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y + 50
       player.controls[2].x, player.controls[2].y = 9, 9
       player.controls[3] = true
-    else                                  -- Right
+    else                                   -- Right
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
       player.controls[2].x, player.controls[2].y = 9, 9 -- 20 12
       player.controls[3] = true
     end
 
   elseif love.keyboard.isDown("a") or dPadLeft() and player.isDead == false then
+    player.isProne = false
     player.dx = -player.speed * dt
     player.lastDir = 0
 
@@ -162,6 +165,7 @@ local function playerInput(dt, world)
     end
 
   elseif love.keyboard.isDown("w") then -- Up
+    player.isProne = false
     player.shootPoint.x, player.shootPoint.y = player.x, player.y - 50
     player.controls[3] = true
     if player.lastDir == 1 then
@@ -171,12 +175,26 @@ local function playerInput(dt, world)
     end
 
   elseif love.keyboard.isDown("s") then -- Down
-    player.shootPoint.x, player.shootPoint.y = player.x, player.y + 50
-    player.controls[2].x, player.controls[2].y = 7, 25
-    if player.isJumping or player.isGrounded == false then player.controls[3] = true
-    else player.controls[3] = false end
+    if player.isJumping or player.isGrounded == false then
+      player.isProne = false
+      player.controls[3] = true
+      player.shootPoint.x, player.shootPoint.y = player.x, player.y + 50
+      player.controls[2].x, player.controls[2].y = 7, 25
+    else
+      if player.lastDir == 1 then    -- right
+        player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
+        player.controls[2].x, player.controls[2].y = 40, 41 -- 20 12
+      elseif player.lastDir == 0 then -- left
+        player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
+        player.controls[2].x, player.controls[2].y = -34, 40
+      end
+      player.isProne = true
+      player.controls[3] = true
+    end
 
   else -- else player isn't hitting any of these keys so default them back to left/right
+    player.isProne = false
+
     if player.lastDir == 1 then
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
       player.controls[2].x, player.controls[2].y = 9, 9 -- Static right
@@ -188,7 +206,8 @@ local function playerInput(dt, world)
     end
   end
 
-  player.controls[1] = math.atan2(player.shootPoint.y - player.y, player.shootPoint.x - player.x) + love.math.random(-1, 1) * 0.04
+  local deviation = love.math.random(-1, 1) * 0.03
+  player.controls[1] = math.atan2(player.shootPoint.y - player.y, player.shootPoint.x - player.x) + deviation
 
   -- deceleration
   if (dPadRight() == false or love.keyboard.isDown("d") == false) and player.dx > 0 then
@@ -299,11 +318,9 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if animTimer > 0 then animTimer = animTimer - (1 * dt) end
 
   if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false and player.isDead == false and player.lives > -1 then
-    if player.controls[3] then
-      if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1]) then
-        love.audio.play(playerSounds.shoot)
-        player.shootLock = true
-      end
+    if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1], player.isProne) then
+      love.audio.play(playerSounds.shoot)
+      player.shootLock = true
     end
 
     shootTimer = shootTimerMax
@@ -358,7 +375,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 end
 
 function drawPlayer()
-  --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
+  love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
 
   if player.lives > -1 then
     if player.type == "player" or player.isDead then

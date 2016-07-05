@@ -79,10 +79,6 @@ local function proneShooterBehaviour(dt, entity, world)
   if player.x > entity.x - 160 and checkTimer("beginShooting", entity.timers) == false then
     addTimer(0.5, "beginShooting", entity.timers)
   elseif checkTimer("beginShooting", entity.timers) == true and updateTimer(dt, "beginShooting", entity.timers) == true and entity.isDead == false then
-    --entity.curAnim = 2
-    --local deviation = love.math.random(0.1, 1) * 0.02
-    --addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, math.pi + deviation)
-    --resetTimer(1.5, "beginShooting", entity.timers)
     addTimer(0.0, "shoot", entity.timers)
     addTimer(0.2, "resetShot", entity.timers)
   end

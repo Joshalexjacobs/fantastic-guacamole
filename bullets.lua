@@ -5,8 +5,8 @@ local pbullet = {
   owner = "player",
   x = nil,
   y = nil,
-  w = 8,
-  h = 8,
+  w = 4, -- 8
+  h = 4, -- 8
   dx = 0,
   dy = 0,
   speed = 400,
@@ -38,6 +38,14 @@ local pbullet = {
   animations = {},
   timers = {}
 }
+
+pProneFilter = function(item, other)
+  if other.type == "enemy" or other.type == "boss" then
+    return 'touch'
+  elseif other.type == "block" then
+    return 'touch'
+  end
+end
 
 local ebullet = {
   type = "invincible",
@@ -107,7 +115,9 @@ function loadBullet()
   }
 end
 
-function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- add world as parameter
+function addBullet(danger, xPos, yPos, direction, world, newDir, isProne) -- add world as parameter
+
+  isProne = isProne or false
 
   if pBulletsCount >= 4 and danger == false then
     return false
@@ -115,6 +125,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, bulColor) -- ad
     newBullet = copy(pbullet, newBullet)
     newBullet.x, newBullet.y, newBullet.dir, newBullet.actualDir = xPos, yPos, direction, newDir
     pBulletsCount = pBulletsCount + 1
+    if isProne then newBullet.filter = pProneFilter end
   elseif danger == true then
     newBullet = copy(ebullet, newBullet)
     newBullet.x, newBullet.y, newBullet.dir, newBullet.actualDir = xPos, yPos, direction, newDir
@@ -176,7 +187,7 @@ end
 
 function drawBullets()
   for _, newBullet in ipairs(pBullets) do
-    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, newBullet.actualDir, 1, 1, 0, newBullet.actualDir + 3)
+    newBullet.animations[newBullet.curAnim]:draw(newBullet.spriteSheet, newBullet.x, newBullet.y, newBullet.actualDir, 1, 1, 10, newBullet.actualDir + 3)
     --love.graphics.rectangle("line", newBullet.x, newBullet.y, newBullet.w, newBullet.h)
   end
 
