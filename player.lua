@@ -23,7 +23,9 @@ local player = {
   shootPoint = {x = 0, y = 0},
   controls = {0, {x = 0, y = 0}, true},
   spriteSheet = nil,
-  spiteGrid = nil,
+  spriteSheetHorizontal = nil,
+  spriteGrid = nil,
+  spriteGirdHorizontal = nil,
   animations = {},
   curAnim = 1,
   timers = {},
@@ -48,7 +50,7 @@ local playerSounds = {
 }
 
 respawnTimer = 0
-respawnTimerMax = 4.0 -- 4 seconds
+respawnTimerMax = 2.0 -- 4 seconds
 
 invinceTimer = 0
 invinceTimerMax = 2.0
@@ -80,18 +82,11 @@ function loadPlayer(world)
   world:add(player, player.x, player.y, player.w, player.h)
 
   -- load player sprites
-  --player.spriteSheet = love.graphics.newImage('img/player/marine.png') -- new marine
-  --player.spriteSheet = love.graphics.newImage('img/player/marineMED.png') -- medium marine
-
-
-  --player.spriteSheet = love.graphics.newImage('img/player/marineBIG.png') -- marineBIG
   player.spriteSheet = love.graphics.newImage('img/player/marine2BIG.png') -- marine2BIG
+  player.spriteSheetHorizontal = love.graphics.newImage('img/player/marineHorizontalBIG.png') -- marineHorizontalBIG
 
-  --player.spriteGrid = anim8.newGrid(16, 32, 48, 384, 0, 0, 0) -- regular marine
-  --player.spriteGrid = anim8.newGrid(24, 48, 72, 576, 0, 0, 0) -- marineMEDium
-
-  --player.spriteGrid = anim8.newGrid(32, 64, 96, 768, 0, 0, 0) -- marineBIG
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 960, 0, 0, 0) -- marine2BIG
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 960, 0, 0, 0) -- marine2BIG grid
+  player.spriteGirdHorizontal = anim8.newGrid(64, 32, 192, 64, 0, 0, 0) -- marineHorizontalBIG grid
 
   player.animations = {                -- col, row
     anim8.newAnimation(player.spriteGrid('1-2', 1), 0.6), -- 1 idle
@@ -102,9 +97,11 @@ function loadPlayer(world)
     anim8.newAnimation(player.spriteGrid(3, 11, '1-3', 12), 0.1), -- 6 jump/fall
     anim8.newAnimation(player.spriteGrid('1-3', '9-10'), 0.1 ), -- 7 diagShotRunDown
     anim8.newAnimation(player.spriteGrid('1-3', '13-14'), 0.1, "pauseAtEnd"), -- 8 dead fall
-    anim8.newAnimation(player.spriteGrid('1-2', 15), 0.1 ), -- 9 dead
+    --anim8.newAnimation(player.spriteGrid('1-2', 15), 0.1 ), -- 9 dead
     -- look up shoot anim,
     -- idle shoot anim
+    anim8.newAnimation(player.spriteGirdHorizontal('1-2', 2), 0.1 ), -- 9 dead
+    anim8.newAnimation(player.spriteGirdHorizontal('1-2', 1), 0.1 ), -- 10 prone
   }
 
   playerSounds.shoot = love.audio.newSource("sound/player sound/machinegunBASS.wav", static)
@@ -234,6 +231,9 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
       player.isDead = false
       player.curAnim = 1
 
+      player.animations[8]:gotoFrame(1)
+      player.animations[8]:resume()
+
       -- start invincibility timer
       invinceTimer = invinceTimerMax
       if player.lives == 0 then
@@ -355,14 +355,23 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 end
 
 function drawPlayer()
-    --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
+  --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
+  
   if player.lives > -1 then
     if player.type == "player" or player.isDead then
       setColor({255, 255, 255, 255})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      if player.curAnim < 9 then
+        player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      else
+        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 22, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      end
     elseif player.type == "invincible" then -- if the player just respawned, apply transparency
       setColor({255, 255, 255, 100})
-      player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      if player.curAnim < 9 then
+        player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      else
+        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 22, -10) -- SCALED UP 2.5, 11 and 18.5 are offsets
+      end
       setColor({255, 255, 255, 255})
     end
   end
