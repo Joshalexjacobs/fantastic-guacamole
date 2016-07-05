@@ -101,7 +101,8 @@ function loadPlayer(world)
     -- look up shoot anim,
     -- idle shoot anim
     anim8.newAnimation(player.spriteGirdHorizontal('1-2', 2), 0.1 ), -- 9 dead
-    anim8.newAnimation(player.spriteGirdHorizontal('1-2', 1), 0.1 ), -- 10 prone
+    anim8.newAnimation(player.spriteGirdHorizontal(1, 1), 0.1 ), -- 10 prone
+    anim8.newAnimation(player.spriteGirdHorizontal(2, 1), 0.1 ), -- 11 prone-shot
   }
 
   playerSounds.shoot = love.audio.newSource("sound/player sound/machinegunBASS.wav", static)
@@ -322,6 +323,8 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if player.isDead == false then
     if player.isJumping or not player.isGrounded then
       player.curAnim = 6 -- [JUMPING]
+    elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('s')
+      then player.curAnim = 10 -- [PRONE]
     elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w') == false
       then player.curAnim = 1 -- [IDLE]
     elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w')
@@ -356,21 +359,21 @@ end
 
 function drawPlayer()
   --love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
-  
+
   if player.lives > -1 then
     if player.type == "player" or player.isDead then
       setColor({255, 255, 255, 255})
       if player.curAnim < 9 then
         player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       else
-        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 22, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
+        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 30, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       end
     elseif player.type == "invincible" then -- if the player just respawned, apply transparency
       setColor({255, 255, 255, 100})
       if player.curAnim < 9 then
         player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       else
-        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 22, -10) -- SCALED UP 2.5, 11 and 18.5 are offsets
+        player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 30, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       end
       setColor({255, 255, 255, 255})
     end
