@@ -108,10 +108,6 @@ function updateEnemies(dt, world) -- include world here?
       newEnemy.isDead = true
     end
 
-    --if newEnemy.isDead and world:hasItem(newEnemy) then
-      --world:remove(newEnemy) -- remove from world...
-    --end
-
     if newEnemy.playDead and world:hasItem(newEnemy) then
       world:remove(newEnemy) -- remove from world...
       table.remove(enemies, i)
