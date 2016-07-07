@@ -38,7 +38,7 @@ local enemy = {
       return 'slide'
     end
   end,
-  collision = function(cols, len, entity)
+  collision = function(cols, len, entity, world)
     for i = 1, len do
       if cols[i].other.type == "player" and entity.isDead == false then
         cols[i].other.killPlayer(world)
@@ -67,7 +67,7 @@ function enemy.update(dt, newEnemy, world)
     newEnemy.x, newEnemy.y, cols, len = world:move(newEnemy, newEnemy.x + newEnemy.dx, newEnemy.y + newEnemy.dy, newEnemy.filter)
   end
 
-  newEnemy.collision(cols, len, newEnemy)
+  newEnemy.collision(cols, len, newEnemy, world)
 
 end
 

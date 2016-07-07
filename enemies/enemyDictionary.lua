@@ -381,7 +381,7 @@ local dictionary = {
         return 'cross'
       end
     end,
-    collision = function(cols, len, entity)
+    collision = function(cols, len, entity, world)
       for i = 1, len do
         if cols[i].other.type == "ground" or cols[i].other.type == "block" then
           entity.isDead = true

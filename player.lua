@@ -2,7 +2,7 @@
 
 -- Player Class: --
 local player = {
-  type = "player", -- or "invincible"
+  type = "player", -- or "invincible" -- or "invincibleProne"
   lives = 10,
   x = 140, -- 2400
   y = 160,
@@ -43,7 +43,47 @@ local player = {
     if other.type == "block" or other.type == "ground" then
       return 'slide'
     end
+  end,
+  killPlayer = function(world)
+    if respawnTimer <= 0 then
+      player.lives = player.lives - 1
+      respawnTimer = respawnTimerMax
+      player.isDead = true
+
+      if player.isProne then
+        player.isProne = false
+      end
+
+      if player.lastDir == 1 then
+        player.dx = -2
+        player.dy = -5
+      else
+        player.dx = 2
+        player.dy = -5
+      end
+
+      player.curAnim = 8
+      player.isGrounded = false
+      player.type = "invincible"
+    end
   end
+}
+
+-- rects
+local proneRect = {
+  w = 40,
+  h = 10,
+  x = 0,
+  y = 0,
+  offX = -18,
+  offY = 35,
+  filter = function(item, other)
+    if other.type == "enemy" or other.type == "bullet" then
+      return 'cross'
+    end
+  end,
+  type = "player",
+  killPlayer = player.killPlayer
 }
 
 local playerSounds = {
@@ -55,27 +95,6 @@ respawnTimerMax = 2.0 -- 4 seconds
 
 invinceTimer = 0
 invinceTimerMax = 2.0
-
--- player functions
-function player.killPlayer(world)
-  if respawnTimer <= 0 then
-    player.lives = player.lives - 1
-    respawnTimer = respawnTimerMax
-    player.isDead = true
-
-    if player.lastDir == 1 then
-      player.dx = -2
-      player.dy = -5
-    else
-      player.dx = 2
-      player.dy = -5
-    end
-
-    player.curAnim = 8
-    player.isGrounded = false
-    player.type = "invincible"
-  end
-end
 
 --------- GENERAL FUNCTIONS ---------
 
@@ -98,17 +117,19 @@ function loadPlayer(world)
     anim8.newAnimation(player.spriteGrid(3, 11, '1-3', 12), 0.1), -- 6 jump/fall
     anim8.newAnimation(player.spriteGrid('1-3', '9-10'), 0.1 ), -- 7 diagShotRunDown
     anim8.newAnimation(player.spriteGrid('1-3', '13-14'), 0.1, "pauseAtEnd"), -- 8 dead fall
-    --anim8.newAnimation(player.spriteGrid('1-2', 15), 0.1 ), -- 9 dead
+    anim8.newAnimation(player.spriteGirdHorizontal(3, 1, '1-3', 2), 0.1 ), -- 9 idle shoot anim
     -- look up shoot anim,
-    -- idle shoot anim
-    anim8.newAnimation(player.spriteGirdHorizontal('1-2', 2), 0.1 ), -- 9 dead
-    anim8.newAnimation(player.spriteGirdHorizontal(1, 1), 0.1 ), -- 10 prone
-    anim8.newAnimation(player.spriteGirdHorizontal(2, 1), 0.1 ), -- 11 prone-shot
+    anim8.newAnimation(player.spriteGirdHorizontal('1-2', 2), 0.1 ), -- 9 dead -- 10
+    anim8.newAnimation(player.spriteGirdHorizontal(1, 1), 0.1 ), -- 10 prone -- 11
+    anim8.newAnimation(player.spriteGirdHorizontal(2, 1), 0.1 ), -- 11 prone-shot -- 12
   }
 
   playerSounds.shoot = love.audio.newSource("sound/player sound/machinegunBASS.wav", static)
   playerSounds.shoot:setVolume(10)
 
+  --------- LOAD PLAYER TIMERS ---------
+  addTimer(0.0, "proneShot", player.timers)
+  addTimer(0.0, "idleShot", player.timers)
 end
 
 --------- PLAYER GLOBAL ---------
@@ -133,15 +154,15 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then    -- UpRight
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y - 50
-      player.controls[2].x, player.controls[2].y = 9, 0 -- 20 5
+      player.controls[2].x, player.controls[2].y = 15, -3
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownRight
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y + 50
-      player.controls[2].x, player.controls[2].y = 9, 9
+      player.controls[2].x, player.controls[2].y = 16, 17
       player.controls[3] = true
     else                                   -- Right
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
-      player.controls[2].x, player.controls[2].y = 9, 9 -- 20 12
+      player.controls[2].x, player.controls[2].y = 21, 9
       player.controls[3] = true
     end
 
@@ -152,15 +173,15 @@ local function playerInput(dt, world)
 
     if love.keyboard.isDown("w") then -- UpLeft
       player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y - 50
-      player.controls[2].x, player.controls[2].y = -2, 6
+      player.controls[2].x, player.controls[2].y = -6, 0
       player.controls[3] = true
     elseif love.keyboard.isDown("s") then -- DownLeft
       player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y + 50
-      player.controls[2].x, player.controls[2].y = 0, 9
+      player.controls[2].x, player.controls[2].y = -7, 17
       player.controls[3] = true
     else                                  -- Left
       player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
-      player.controls[2].x, player.controls[2].y = 0, 9
+      player.controls[2].x, player.controls[2].y = -10, 9
       player.controls[3] = true
     end
 
@@ -169,9 +190,9 @@ local function playerInput(dt, world)
     player.shootPoint.x, player.shootPoint.y = player.x, player.y - 50
     player.controls[3] = true
     if player.lastDir == 1 then
-      player.controls[2].x, player.controls[2].y = 2, -6
+      player.controls[2].x, player.controls[2].y = 2, -16
     else
-      player.controls[2].x, player.controls[2].y = 4, -7
+      player.controls[2].x, player.controls[2].y = 4, -16
     end
 
   elseif love.keyboard.isDown("s") then -- Down
@@ -179,7 +200,7 @@ local function playerInput(dt, world)
       player.isProne = false
       player.controls[3] = true
       player.shootPoint.x, player.shootPoint.y = player.x, player.y + 50
-      player.controls[2].x, player.controls[2].y = 7, 25
+      player.controls[2].x, player.controls[2].y = 5, 30
     else
       if player.lastDir == 1 then    -- right
         player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
@@ -188,6 +209,7 @@ local function playerInput(dt, world)
         player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
         player.controls[2].x, player.controls[2].y = -34, 40
       end
+
       player.isProne = true
       player.controls[3] = true
     end
@@ -197,16 +219,25 @@ local function playerInput(dt, world)
 
     if player.lastDir == 1 then
       player.shootPoint.x, player.shootPoint.y = player.x + 50, player.y
-      player.controls[2].x, player.controls[2].y = 9, 9 -- Static right
+      player.controls[2].x, player.controls[2].y = 21, 9 -- Static right
       player.controls[3] = true
     else
       player.shootPoint.x, player.shootPoint.y = player.x - 50, player.y
-      player.controls[2].x, player.controls[2].y = 0, 9 -- Static left
+      player.controls[2].x, player.controls[2].y = -10, 9 -- Static left
       player.controls[3] = true
     end
   end
 
-  local deviation = love.math.random(-1, 1) * 0.03
+  if player.isProne then
+    if player.lastDir == 1 then
+      deviation = love.math.random(-1, -2) * 0.03
+    else
+      deviation = love.math.random(1, 2) * 0.03
+    end
+  else
+    deviation = love.math.random(-1, 1) * 0.03
+  end
+
   player.controls[1] = math.atan2(player.shootPoint.y - player.y, player.shootPoint.x - player.x) + deviation
 
   -- deceleration
@@ -235,14 +266,13 @@ local function playerInput(dt, world)
 end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
-
   --------- DEATH/LIFE/DEATH ---------
 
   if player.isDead then
     respawnTimer = respawnTimer - (1 * dt) -- decrement respawnTimer
 
     if player.isGrounded and player.isDead then
-      player.curAnim = 9
+      player.curAnim = 10
       player.dx = 0
     end
 
@@ -263,10 +293,22 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     end
   end
 
+  --------- RECTS AND TYPES ---------
+  proneRect.x, proneRect.y = player.x + proneRect.offX, player.y + proneRect.offY
+
   -- decrement invincibility timer
   if invinceTimer > 0 then invinceTimer = invinceTimer - (1 * dt) end
   if respawnTimer <= 0 and invinceTimer <= 0 and player.type == "invincible" then player.type = "player" end
 
+  if player.isProne and world:hasItem(proneRect) == false and player.isDead == false then
+    player.type = "invincibleProne"
+    world:add(proneRect, proneRect.x, proneRect.y, proneRect.w, proneRect.h)
+  elseif player.isProne == false and world:hasItem(proneRect) == true then
+    world:remove(proneRect)
+    if player.isDead == false then
+      player.type = "player"
+    end
+  end
 
   --------- MOVEMENT ---------
   if player.isDead == false then playerInput(dt, world) end
@@ -309,7 +351,6 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     end
   end
 
-
   --------- SHOOTING ---------
 
   -- decrement shootTimer and animTimer--
@@ -321,6 +362,10 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1], player.isProne) then
       love.audio.play(playerSounds.shoot)
       player.shootLock = true
+
+      if player.isProne then
+        resetTimer(0.05, "proneShot", player.timers)
+      end
     end
 
     shootTimer = shootTimerMax
@@ -340,8 +385,12 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
   if player.isDead == false then
     if player.isJumping or not player.isGrounded then
       player.curAnim = 6 -- [JUMPING]
-    elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('s')
-      then player.curAnim = 10 -- [PRONE]
+    elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('s') then
+      if updateTimer(dt, "proneShot", player.timers) == false then
+        player.curAnim = 12 -- [PRONE SHOOTING]
+      else
+        player.curAnim = 11 -- [PRONE]
+      end
     elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w') == false
       then player.curAnim = 1 -- [IDLE]
     elseif player.dx <= 0.8 and player.dx >= -0.8 and love.keyboard.isDown('w')
@@ -375,19 +424,19 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 end
 
 function drawPlayer()
-  love.graphics.rectangle("line", player.x, player.y, player.w, player.h)
-
+  -- love.graphics.rectangle("line", player.x, player.y, player.w, player.h) -- player
+  -- love.graphics.rectangle("line", proneRect.x, proneRect.y, proneRect.w, proneRect.h) -- prone
   if player.lives > -1 then
-    if player.type == "player" or player.isDead then
+    if player.type == "player" or player.isDead or player.type == "invincibleProne" then
       setColor({255, 255, 255, 255})
-      if player.curAnim < 9 then
+      if player.curAnim < 10 then
         player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       else
         player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 30, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       end
     elseif player.type == "invincible" then -- if the player just respawned, apply transparency
       setColor({255, 255, 255, 100})
-      if player.curAnim < 9 then
+      if player.curAnim < 10 then
         player.animations[player.curAnim]:draw(player.spriteSheet, player.x, player.y, 0, 1, 1, 11, 15) -- SCALED UP 2.5, 11 and 18.5 are offsets
       else
         player.animations[player.curAnim]:draw(player.spriteSheetHorizontal, player.x, player.y, 0, 1, 1, 30, -15) -- SCALED UP 2.5, 11 and 18.5 are offsets
