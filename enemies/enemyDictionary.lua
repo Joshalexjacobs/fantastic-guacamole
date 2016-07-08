@@ -103,17 +103,49 @@ local function proneShooterBehaviour(dt, entity, world)
   entity.animations[entity.curAnim]:update(dt)
 end
 
+--local laserRect = {
+--  w = 5,
+--  h = 5,
+--  x = 10,
+--  y = 10
+--}
+
 -- LASER WALL --
 local function laserWallBehaviour(dt, entity, world)
+    if entity.isDead == false and world:hasItem(laserRect) == false then
+      laserRect = {
+        hp = 0, -- just so pBullet has something to subtract
+        type = "enemy",
+        filter = function(item, other) if other.type == "player" then return 'cross' end end,
+        w = 2,
+        h = 170,
+        x = entity.x + entity.shootPoint.x,
+        y = entity.y + entity.shootPoint.y
+      }
+
+      world:add(laserRect, laserRect.x, laserRect.y, laserRect.w, laserRect.h)
+    end
+
+    if world:hasItem(laserRect) then
+      laserRect.x, laserRect.y, cols, len = world:move(laserRect, laserRect.x, laserRect.y, laserRect.filter)
+
+      for i = 1, len do
+        if cols[i].other.type == "player" and entity.isDead == false then
+          cols[i].other.killPlayer(world)
+        end
+      end
+    end
+
     if entity.isDead and checkTimer("death", entity.timers) == false then
       addTimer(0.3, "death", entity.timers)
       entity.curAnim = 2
-      -- remove laser from world
-    elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
+      world:remove(laserRect) -- remove laser from world
+    end
+
+    --elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
       --entity.playDead = true -- get rid of this so laserWall doesnt disappear after death ... or make a new bool called permanence
       -- .. if permanence set to true body stays after death animation and is only removed from the world
       -- .. if enemy is no longer visible in the playing field remove this player from the enemy list
-    end
 
     -- handle/update current animation running
     entity.animations[entity.curAnim]:update(dt)
@@ -122,19 +154,29 @@ end
 -- LASER WALL SPECIAL DRAW --
 local function laserWallDraw(entity, world) -- not sure if i'll need world or not?
 
-  if entity.isDead then return false end
+  if entity.isDead then -- if laserWall is dead, draw burn mark and return false
+    setColor({ 0, 0, 0, 50})
+    love.graphics.rectangle("fill", entity.x + entity.shootPoint.x - 1, entity.y + 170 + 5, 4.5, 2)
+    setColor({ 255, 255, 255, 255})
+    return false
+  end
 
   local drawing, index, groundLevel = true, 0, 155
 
   while drawing do
+      --setColor({ 255, 0, 0, 50})
       --love.graphics.rectangle("fill", entity.x + entity.shootPoint.x - 1, entity.y + entity.shootPoint.y + index, 4.5, 10) -- transparent
+
       setColor({ love.math.random(200, 255), 0, 0, 255})
-      love.graphics.rectangle("fill", entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y + index, 2.5, 10)
+      love.graphics.rectangle("fill", entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y + index, 2.5, 10) -- laser segments
 
-      if index >= groundLevel then drawing = false end
+      if index >= groundLevel then drawing = false end -- stop drawing upon reaching the ground
 
-      index = index + 10
+      index = index + 10 -- increase the index after each segment
   end
+
+  love.graphics.rectangle("fill", entity.x + entity.shootPoint.x - 1, entity.y + index + 5, 2.5, 2)
+  love.graphics.rectangle("fill", entity.x + entity.shootPoint.x + 1, entity.y + index + 5, 2.5, 2)
 
   setColor({ 255, 255, 255, 255})
 end
