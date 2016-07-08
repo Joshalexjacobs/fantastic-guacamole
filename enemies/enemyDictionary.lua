@@ -24,7 +24,7 @@ local function getAngle(pX, pY, eX, eY) -- need to rewrite this bullshit functio
   end
 end
 
--- enemy functions
+--------- BEHAVIOURS ---------
 
 -- RUNNER --
 local function runBehaviour(dt, entity, world)
@@ -102,6 +102,52 @@ local function proneShooterBehaviour(dt, entity, world)
 
   entity.animations[entity.curAnim]:update(dt)
 end
+
+-- LASER WALL --
+local function laserWallBehaviour(dt, entity, world)
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(0.3, "death", entity.timers)
+      entity.curAnim = 2
+      -- remove laser from world
+    elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
+      --entity.playDead = true -- get rid of this so laserWall doesnt disappear after death ... or make a new bool called permanence
+      -- .. if permanence set to true body stays after death animation and is only removed from the world
+      -- .. if enemy is no longer visible in the playing field remove this player from the enemy list
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
+-- LASER WALL SPECIAL DRAW --
+local function laserWallDraw(entity, world) -- not sure if i'll need world or not?
+
+  if entity.isDead then return false end
+
+  local drawing, index, groundLevel = true, 0, 155
+
+  while drawing do
+      --love.graphics.rectangle("fill", entity.x + entity.shootPoint.x - 1, entity.y + entity.shootPoint.y + index, 4.5, 10) -- transparent
+      setColor({ love.math.random(200, 255), 0, 0, 255})
+      love.graphics.rectangle("fill", entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y + index, 2.5, 10)
+
+      if index >= groundLevel then drawing = false end
+
+      index = index + 10
+  end
+
+  setColor({ 255, 255, 255, 255})
+end
+
+--[[
+******************************************************
+******************************************************
+******************************************************
+********* UNUSED BEHAVIOUR FUNCTIONS BELOW ***********
+******************************************************
+******************************************************
+******************************************************
+]]
 
 -- TARGET --
 local function targetBehaviour(dt, entity, world)
@@ -344,6 +390,7 @@ local dictionary = {
     w = 10,
     h = 42,
     update = runBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 15},
     sprite = "img/enemies/runner2BIG.png",
     grid = {x = 32, y = 64, w = 96, h = 256},
@@ -365,6 +412,7 @@ local dictionary = {
     w = 10,
     h = 10,
     update = grenadeBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 11, offY = 11},
     sprite = "img/enemies/grenades/grenade.png",
     grid = {x = 32, y = 32, w = 96, h = 64},
@@ -400,6 +448,7 @@ local dictionary = {
     w = 52,
     h = 12,
     update = proneShooterBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 6, offY = 20},
     sprite = "img/enemies/prone-shooter/prone-shooterBIG.png",
     grid = {x = 64, y = 32, w = 192, h = 32},
@@ -417,11 +466,36 @@ local dictionary = {
   },
 
   {
+    name = "laser-wall",
+    hp = 10,
+    w = 24,
+    h = 20,
+    update = laserWallBehaviour,
+    specialDraw = laserWallDraw,
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    sprite = "img/enemies/laser-wall/laser-wallBIG.png",
+    grid = {x = 64, y = 32, w = 192, h = 160},
+    shootPoint = {x = 48, y = 6},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 active
+        anim8.newAnimation(grid('1-3', '2-4', '1-2', 5), 0.1, "pauseAtEnd"), -- 2 dying
+      }
+      return animations
+    end,
+    filter = nil,
+    gravity = 0
+  },
+
+-------- LEGACY ENEMIES BELOW
+
+  {
     name = "shooter/run",
     hp = 1,
     w = 16,
     h = 36,
     update = srBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
@@ -446,6 +520,7 @@ local dictionary = {
     w = 16,
     h = 36,
     update = sBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 12},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
@@ -470,6 +545,7 @@ local dictionary = {
     w = 16,
     h = 16,
     update = cctvBehaviour,
+    specialDraw = nil,
     scale = {x = 0.35, y = 0.35, offX = 7, offY = 5},
     sprite = "img/enemies/camera turret/camera turret.png",
     grid = {x = 64, y = 64, w = 192, h = 256},
@@ -493,6 +569,7 @@ local dictionary = {
     w = 56,
     h = 56,
     update = targetBehaviour,
+    specialDraw = nil,
     scale = {x = 1, y = 1, offX = 0, offY = 0},
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 96, h = 32},
@@ -514,8 +591,11 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
 
     if newEnemy.name == dictionary[i].name then
       newEnemy.hp, newEnemy.w, newEnemy.h = dictionary[i].hp, dictionary[i].w, dictionary[i].h
-      newEnemy.behaviour = dictionary[i].update
       newEnemy.scale = dictionary[i].scale
+
+      -- functions
+      newEnemy.behaviour = dictionary[i].update
+      newEnemy.specialDraw = dictionary[i].specialDraw
 
       -- animation stuff
       newEnemy.spriteSheet = love.graphics.newImage(dictionary[i].sprite)

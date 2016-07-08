@@ -31,6 +31,7 @@ local enemy = {
   playDead = false,
   timers = {},
   behaviour = defaultBehaviour,
+  specialDraw = nil,
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
       return 'cross'
@@ -73,6 +74,7 @@ end
 
 function enemy.draw(newEnemy)
   newEnemy.animations[newEnemy.curAnim]:draw(newEnemy.spriteSheet, newEnemy.x, newEnemy.y, 0, newEnemy.scale.x, newEnemy.scale.y, newEnemy.scale.offX, newEnemy.scale.offY)
+  if newEnemy.specialDraw ~= nil then newEnemy.specialDraw(newEnemy) end
 end
 
 -- Create Globals Table --
