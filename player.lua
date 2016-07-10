@@ -125,7 +125,8 @@ function loadPlayer(world)
   }
 
   playerSounds.shoot = love.audio.newSource("sound/player sound/machinegunBASS.wav", static)
-  playerSounds.shoot:setVolume(10)
+  --playerSounds.shoot:setVolume(10)
+  playerSounds.shoot:setVolume(0.1)
 
   --------- LOAD PLAYER TIMERS ---------
   addTimer(0.0, "proneShot", player.timers)

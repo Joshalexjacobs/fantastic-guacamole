@@ -39,6 +39,7 @@ local function runBehaviour(dt, entity, world)
       entity.curAnim = 2
       entity.dy = -3.75
       entity.dx = 0
+      entity.type = "dead"
     elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
       entity.playDead = true
     end
@@ -78,6 +79,7 @@ end
 local function proneShooterBehaviour(dt, entity, world)
   if player.x > entity.x - 160 and checkTimer("beginShooting", entity.timers) == false then
     addTimer(0.8, "beginShooting", entity.timers)
+    --entity.type = "enemy" -- shooter cannot be hit until within range of the player
   elseif checkTimer("beginShooting", entity.timers) == true and updateTimer(dt, "beginShooting", entity.timers) == true and entity.isDead == false then
     addTimer(0.0, "shoot", entity.timers)
     addTimer(0.2, "resetShot", entity.timers)
@@ -96,19 +98,13 @@ local function proneShooterBehaviour(dt, entity, world)
   if entity.isDead and checkTimer("death", entity.timers) == false then
     addTimer(0.5, "death", entity.timers)
     entity.curAnim = 3
+    entity.type = "dead"
   elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
     entity.playDead = true
   end
 
   entity.animations[entity.curAnim]:update(dt)
 end
-
---local laserRect = {
---  w = 5,
---  h = 5,
---  x = 10,
---  y = 10
---}
 
 -- LASER WALL --
 local function laserWallBehaviour(dt, entity, world)
@@ -179,6 +175,37 @@ local function laserWallDraw(entity, world) -- not sure if i'll need world or no
   love.graphics.rectangle("fill", entity.x + entity.shootPoint.x + 1, entity.y + index + 5, 2.5, 2)
 
   setColor({ 255, 255, 255, 255})
+end
+
+-- WIZARD --
+local function wizardBehaviour(dt, entity, world)
+    -- if player is within 320 pixels start movement -- only call this once
+    -- wizard always faces player
+    -- wizard floats towards player if not within 100 pixels of player
+    -- once wizard has started movement shoot at player every X seconds
+    -- inbetween each shot idle for X seconds -- in the future this might change to a teleport?
+
+    if entity.direction == "right" and entity.isDead == false then
+      entity.dx = 10 * dt
+      entity.dy = 0.25 * math.sin(love.timer.getTime() * 4.1 * math.pi)
+    elseif entity.direction == "left" and entity.isDead == false then
+      entity.dx = -(10 * dt)
+      entity.dy = 0.25 * math.sin(love.timer.getTime() * 4.1 * math.pi)
+    end
+
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(1.0, "death", entity.timers)
+      entity.curAnim = 3
+      entity.dy = -2
+      entity.dx = 0
+      entity.gravity = 9.8
+      entity.type = "dead"
+    elseif entity.isDead and updateTimer(dt, "death 2", entity.timers) then
+      entity.playDead = true
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
 end
 
 --[[
@@ -445,6 +472,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 9.8
   },
 
@@ -504,6 +532,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 9.8
   },
 
@@ -526,6 +555,48 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
+    gravity = 0
+  },
+
+  {
+    name = "wizard",
+    hp = 2,
+    w = 10,
+    h = 35,
+    update = wizardBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 10.75, offY = 20},
+    sprite = "img/enemies/wizard/wizardBIG.png",
+    grid = {x = 32, y = 64, w = 96, h = 512},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid('1-2', 1), 0.8), -- 1 floating
+        anim8.newAnimation(grid('1-3', '2-5'), 0.1, "pauseAtEnd"), -- 2 shooting
+        anim8.newAnimation(grid('1-3', '6-7'), 0.1, "pauseAtEnd"), -- 3 dying
+        anim8.newAnimation(grid('2-3', 8), 0.1), -- 4 ded
+      }
+      return animations
+    end,
+    filter = function(item, other)
+      if other.type == "ground" then
+        return 'slide'
+      --elseif other.type == "player" then
+        --return 'cross'
+      end
+    end,
+    collision = function(cols, len, entity, world)
+      for i = 1, len do
+        if cols[i].other.type == "ground" and entity.isDead and checkTimer("death 2", entity.timers) == false then
+          entity.curAnim = 4
+          addTimer(0.5, "death 2", entity.timers)
+        end
+
+        -- elseif cols[i].other.type == "player" and entity.isDead == false then
+          -- cols[i].other.killPlayer
+      end
+    end, -- put stuff here lol
     gravity = 0
   },
 
@@ -553,6 +624,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 9.8
   },
 
@@ -578,6 +650,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 9.8
   },
 
@@ -602,6 +675,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 0
   },
 
@@ -624,6 +698,7 @@ local dictionary = {
       return animations
     end,
     filter = nil,
+    collision = nil,
     gravity = 0
   }
 }

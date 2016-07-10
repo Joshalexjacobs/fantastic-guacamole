@@ -37,8 +37,8 @@ bossFight = false
 maxFPS = 60
 
 --windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
-windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
---windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
+--windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
+windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
 --windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
 --windowWidth, windowHeight, windowScale = 1600, 900, 5  -- 5:5
 --windowWidth, windowHeight, windowScale = 1920, 1080, 6 -- 6:6
