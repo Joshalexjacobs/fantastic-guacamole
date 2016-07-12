@@ -179,19 +179,84 @@ end
 
 -- WIZARD --
 local function wizardBehaviour(dt, entity, world)
-    -- if player is within 320 pixels start movement -- only call this once
-    -- wizard always faces player
-    -- wizard floats towards player if not within 100 pixels of player
-    -- once wizard has started movement shoot at player every X seconds
-    -- inbetween each shot idle for X seconds -- in the future this might change to a teleport?
+    if checkTimer("followPlayer", entity.timers) == false and player.x > entity.x - 320 and player.x < entity.x + 320 then
+      addTimer(0.0, "followPlayer", entity.timers)
+      addTimer(0.0, "buffer", entity.timers)
+      addTimer(2.0, "shoot", entity.timers)
 
-    if entity.direction == "right" and entity.isDead == false then
-      entity.dx = 10 * dt
-      entity.dy = 0.25 * math.sin(love.timer.getTime() * 4.1 * math.pi)
-    elseif entity.direction == "left" and entity.isDead == false then
-      entity.dx = -(10 * dt)
+      frames = {
+        x = nil,
+        y = nil,
+        curFrame = 0 -- for wizard's shoot animation
+      }
+    elseif checkTimer("followPlayer", entity.timers) and entity.isDead == false then
+      if player.x > entity.x + 50 and entity.isDead == false then
+        entity.dx = 10 * dt
+
+        if entity.direction == "left" then
+          entity.direction = "right"
+          for i = 1, #entity.animations do
+            entity.animations[i]:flipH()
+          end
+        end
+
+      elseif player.x < entity.x - 50 and entity.isDead == false then
+        entity.dx = -(10 * dt)
+
+        if entity.direction == "right" then
+          entity.direction = "left"
+          for i = 1, #entity.animations do
+            entity.animations[i]:flipH()
+          end
+        end
+
+      elseif entity.isDead == false then -- apply deceleration
+        if entity.direction == "right" then -- moving right
+          entity.dx = math.max((entity.dx - 0.2 * dt), 0)
+        else -- moving left
+          entity.dx = math.min((entity.dx + 0.2 * dt), 0)
+        end
+      end
+
+      if updateTimer(dt, "shoot", entity.timers) and entity.curAnim ~= 2 then
+        entity.curAnim = 2
+        entity.animations[2]:gotoFrame(1)
+        entity.animations[2]:resume()
+      end
+
+      if entity.curAnim == 2 and updateTimer(dt, "shoot", entity.timers) then
+        local quad = entity.animations[entity.curAnim]:getFrameInfo()
+        local x, y = quad:getViewport()
+
+        if frames.x ~= x or frames.y ~= y then
+          frames.x, frames.y = x, y
+          frames.curFrame = frames.curFrame + 1
+        end
+
+        if updateTimer(dt, "buffer", entity.timers) and frames.curFrame == 9 then
+          local deviation = love.math.random(25, 30) * 0.01
+          local destination = math.atan2(player.y + 30 - entity.y, player.x + 5 - entity.x)
+
+          if entity.direction == "right" then
+            addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, destination)
+            addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, destination + deviation)
+            addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, destination - deviation)
+          else
+            addBullet(true, entity.x - entity.shootPoint.x, entity.y - entity.shootPoint.y, "right", world, destination)
+            addBullet(true, entity.x - entity.shootPoint.x, entity.y - entity.shootPoint.y, "right", world, destination + deviation)
+            addBullet(true, entity.x - entity.shootPoint.x, entity.y - entity.shootPoint.y, "right", world, destination - deviation)
+          end
+          resetTimer(0.2, "buffer", entity.timers)
+        elseif frames.curFrame == 13 then
+          frames.x, frames.y, frames.curFrame = nil, nil, 0
+          resetTimer(2.0, "shoot", entity.timers)
+          entity.curAnim = 1
+        end
+      end
+
       entity.dy = 0.25 * math.sin(love.timer.getTime() * 4.1 * math.pi)
     end
+
 
     if entity.isDead and checkTimer("death", entity.timers) == false then
       addTimer(1.0, "death", entity.timers)
@@ -569,11 +634,11 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 10.75, offY = 20},
     sprite = "img/enemies/wizard/wizardBIG.png",
     grid = {x = 32, y = 64, w = 96, h = 512},
-    shootPoint = {x = 0, y = 0},
+    shootPoint = {x = 16, y = 0},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid('1-2', 1), 0.8), -- 1 floating
-        anim8.newAnimation(grid('1-3', '2-5'), 0.1, "pauseAtEnd"), -- 2 shooting
+        anim8.newAnimation(grid('1-3', '2-5', 1, 1), 0.1, "pauseAtEnd"), -- 2 shooting
         anim8.newAnimation(grid('1-3', '6-7'), 0.1, "pauseAtEnd"), -- 3 dying
         anim8.newAnimation(grid('2-3', 8), 0.1), -- 4 ded
       }

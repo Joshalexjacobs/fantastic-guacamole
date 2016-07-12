@@ -18,14 +18,14 @@ local dictionary = {
           w = 2000,
           h = 100,
           enemies = {
-            {name = "runner", count = 0, max = 1000, side = "left", x = 200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
-            {name = "runner", count = 0, max = 1000, side = "right", x = -200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
+            --{name = "runner", count = 0, max = 1000, side = "left", x = 200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
+            --{name = "runner", count = 0, max = 1000, side = "right", x = -200, y = 120, dynamic = true, spawnTimer = 0, spawnTimerMax = 3},
             --{name = "grenade", count = 0, max = 1000, side = "left", x = 400, y = 85, dynamic = false, spawnTimer = 0, spawnTimerMax = 2},
-            {name = "grenade", count = 0, max = 1000, side = "right", x = 401, y = 85, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
-            {name = "prone-shooter", count = 0, max = 1, side = "right", x = 325, y = 160, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
-            {name = "laser-wall", count = 0, max = 1, side = "right", x = 150, y = 0, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
-            {name = "wizard", count = 0, max = 1, side = "left", x = 190, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
-            {name = "wizard", count = 0, max = 1, side = "right", x = 130, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
+            --{name = "grenade", count = 0, max = 1000, side = "right", x = 401, y = 85, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
+            --{name = "prone-shooter", count = 0, max = 1, side = "right", x = 325, y = 160, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
+            --{name = "laser-wall", count = 0, max = 1, side = "right", x = 150, y = 0, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
+            {name = "wizard", count = 0, max = 1, side = "left", x = 500, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2}, -- x = 190
+            --{name = "wizard", count = 0, max = 1, side = "right", x = 130, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
             -- add the laser wall joshy
           }
         },

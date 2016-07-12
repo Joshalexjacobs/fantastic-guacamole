@@ -242,9 +242,9 @@ local function playerInput(dt, world)
   player.controls[1] = math.atan2(player.shootPoint.y - player.y, player.shootPoint.x - player.x) + deviation
 
   -- deceleration
-  if (dPadRight() == false or love.keyboard.isDown("d") == false) and player.dx > 0 then
+  if (dPadRight() == false or love.keyboard.isDown("d") == false) and player.dx > 0 then -- moving right
     player.dx = math.max((player.dx - decel * dt), 0)
-  elseif (dPadLeft() == false or love.keyboard.isDown("a") == false) and player.dx < 0 then
+  elseif (dPadLeft() == false or love.keyboard.isDown("a") == false) and player.dx < 0 then -- moving left
     player.dx = math.min((player.dx + decel * dt), 0)
   end
 
