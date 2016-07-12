@@ -234,8 +234,8 @@ local function wizardBehaviour(dt, entity, world)
         end
 
         if updateTimer(dt, "buffer", entity.timers) and frames.curFrame == 9 then
-          local deviation = love.math.random(25, 30) * 0.01
-          local destination = math.atan2(player.y + 30 - entity.y, player.x + 5 - entity.x)
+          local deviation = love.math.random(40, 50) * 0.01
+          local destination = math.atan2(player.y + 30 - entity.y + entity.shootPoint.y, player.x + 5 - entity.x + entity.shootPoint.y)
 
           if entity.direction == "right" then
             addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, destination)
@@ -626,7 +626,7 @@ local dictionary = {
 
   {
     name = "wizard",
-    hp = 2,
+    hp = 15,
     w = 10,
     h = 35,
     update = wizardBehaviour,

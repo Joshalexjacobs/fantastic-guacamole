@@ -3,7 +3,7 @@
 -- Player Class: --
 local player = {
   type = "player", -- or "invincible" -- or "invincibleProne"
-  lives = 10,
+  lives = 3,
   x = 140, -- 2400
   y = 160,
   w = 10,
