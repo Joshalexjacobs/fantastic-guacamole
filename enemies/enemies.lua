@@ -15,6 +15,7 @@ local enemy = {
   curAnim = 1,
   shootPoint = {x = 0, y = 0}, -- point that determines where bullets spawn (in relation to enemy.x and enemy.y)
   scale = {x = nil, y = nil, offX = nil, offY = nil},
+  worldOffSet = {offX = 0, offY = 0},
   x = 0,
   y = 0,
   w = 0,
@@ -43,6 +44,7 @@ local enemy = {
     for i = 1, len do
       if cols[i].other.type == "player" and entity.isDead == false then
         cols[i].other.killPlayer(world)
+        print(entity.name)
       end
     end
   end,
@@ -86,6 +88,9 @@ function addEnemy(name, x, y, dir, world)
   newEnemy.name, newEnemy.x, newEnemy.y, newEnemy.direction = name, x, y, dir
 
   getEnemy(newEnemy) -- update newEnemy depending on it's name
+
+  newEnemy.x = newEnemy.x + newEnemy.worldOffSet.offX
+  newEnemy.y = newEnemy.y + newEnemy.worldOffSet.offY
 
   -- flip all starting animations, any other flips must be done in enemy behaviour function
   if newEnemy.direction == "left" then

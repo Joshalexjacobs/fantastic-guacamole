@@ -112,6 +112,7 @@ local function laserWallBehaviour(dt, entity, world)
       laserRect = {
         hp = 0, -- just so pBullet has something to subtract
         type = "enemy",
+        name = "laserRect",
         filter = function(item, other) if other.type == "player" then return 'cross' end end,
         w = 2,
         h = 170,
@@ -128,11 +129,13 @@ local function laserWallBehaviour(dt, entity, world)
       for i = 1, len do
         if cols[i].other.type == "player" and entity.isDead == false then
           cols[i].other.killPlayer(world)
+          print(laserRect.name)
         end
       end
     end
 
     if entity.isDead and checkTimer("death", entity.timers) == false then
+      laserRect.type = "dead"
       addTimer(0.3, "death", entity.timers)
       entity.curAnim = 2
       world:remove(laserRect) -- remove laser from world
@@ -267,6 +270,83 @@ local function wizardBehaviour(dt, entity, world)
       entity.type = "dead"
     elseif entity.isDead and updateTimer(dt, "death 2", entity.timers) then
       entity.playDead = true
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
+-- GROUND SLIME --
+local function gSlimeBehaviour(dt, entity, world)
+    if entity.direction == "right" and entity.isDead == false then
+      entity.dx = 50 * dt
+    elseif entity.direction == "left" and entity.isDead == false then
+      entity.dx = -(50 * dt)
+    end
+
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(0.3, "death", entity.timers)
+      entity.curAnim = 2
+      entity.dx = 0
+
+      entity.type = "dead"
+      entity.filter = function(item, other)
+        if other.type == "block" or other.type == "ground" or other.type == "enemyPlatform" then
+          return 'slide'
+        end
+      end
+    elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
+      --entity.playDead = true -- so slime stays after dying
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
+-- CEILING SLIME --
+local function cSlimeBehaviour(dt, entity, world)
+    if entity.isDead == false and world:hasItem(groundRect) == false then -- on entity load
+      groundRect = {
+        type = "slimeBuffer",
+        name = "groundRect",
+        filter = function(item, other) if other.type == "ground" then return 'slide' end end,
+        w = entity.w,
+        h = 30,
+        x = entity.x + entity.w / 2,
+        y = entity.y + entity.h + 5
+      }
+
+      world:add(groundRect, groundRect.x, groundRect.y, groundRect.w, groundRect.h)
+    end
+
+    if world:hasItem(groundRect) then
+      groundRect.x, groundRect.y, cols, len = world:move(groundRect, entity.x + entity.w / 2, entity.y + entity.h + 5, groundRect.filter)
+
+      for i = 1, len do
+        if cols[i].other.type == "ground" then
+          entity.curAnim = 3
+        end
+      end
+    end
+
+    if entity.direction == "right" and entity.isDead == false then
+      entity.dx = 50 * dt
+    elseif entity.direction == "left" and entity.isDead == false then
+      entity.dx = -(50 * dt)
+    end
+
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(0.3, "death", entity.timers)
+      entity.curAnim = 2
+      entity.dx = 0
+      entity.gravity = 9.8
+
+      entity.type = "dead"
+      entity.filter = function(item, other)
+        if other.type == "block" or other.type == "ground" or other.type == "slimeBuffer" then
+          return 'slide'
+        end
+      end
     end
 
     -- handle/update current animation running
@@ -526,6 +606,7 @@ local dictionary = {
     update = runBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 15},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/runner2BIG.png",
     grid = {x = 32, y = 64, w = 96, h = 256},
     shootPoint = {x = 0, y = 0},
@@ -549,6 +630,7 @@ local dictionary = {
     update = grenadeBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 11, offY = 11},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/grenades/grenade.png",
     grid = {x = 32, y = 32, w = 96, h = 64},
     shootPoint = {x = 0, y = 0},
@@ -585,6 +667,7 @@ local dictionary = {
     update = proneShooterBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 6, offY = 20},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/prone-shooter/prone-shooterBIG.png",
     grid = {x = 64, y = 32, w = 192, h = 32},
     shootPoint = {x = -20, y = 2},
@@ -609,6 +692,7 @@ local dictionary = {
     update = laserWallBehaviour,
     specialDraw = laserWallDraw,
     scale = {x = 1, y = 1, offX = 0, offY = 0},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/laser-wall/laser-wallBIG.png",
     grid = {x = 64, y = 32, w = 192, h = 160},
     shootPoint = {x = 48, y = 6},
@@ -632,6 +716,7 @@ local dictionary = {
     update = wizardBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10.75, offY = 20},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/wizard/wizardBIG.png",
     grid = {x = 32, y = 64, w = 96, h = 512},
     shootPoint = {x = 16, y = 0},
@@ -665,6 +750,69 @@ local dictionary = {
     gravity = 0
   },
 
+  {
+    name = "gSlime",
+    hp = 3,
+    w = 35,
+    h = 30,
+    update = gSlimeBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 10, offY = 27},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/enemies/slime/slimeBIG.png",
+    grid = {x = 64, y = 64, w = 192, h = 256},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid('1-3', 1, 1, 2), 0.12), -- 1 running
+        anim8.newAnimation(grid('1-3', '3-4'), 0.15, "pauseAtEnd"), -- 2 dying
+      }
+      return animations
+    end,
+    filter = nil,
+    collision = nil,
+    gravity = 9.8
+  },
+
+  {
+    name = "cSlime",
+    hp = 3,
+    w = 35,
+    h = 25,
+    update = cSlimeBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 10, offY = 0},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/enemies/slime/cSlimeBIG.png",
+    grid = {x = 64, y = 64, w = 192, h = 384},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid('1-3', 1, 1, 2), 0.12), -- 1 running
+        anim8.newAnimation(grid('1-3', 3), 0.15, "pauseAtEnd"), -- 2 dying
+        anim8.newAnimation(grid('1-3', '5-6'), 0.15, "pauseAtEnd"), -- 3 ded
+      }
+      return animations
+    end,
+    filter = function(item, other) -- default enemy filter
+      if other.type == "player" then
+        return 'cross'
+      elseif other.type == "block" or other.type == "ground" or other.type == "slimeBuffer" then
+        return 'slide'
+      end
+    end,
+    collision = function(cols, len, entity, world)
+      for i = 1, len do
+        if cols[i].other.type == "player" and entity.isDead == false then
+          cols[i].other.killPlayer(world)
+          print(entity.name)
+        end
+      end
+    end,
+    gravity = 0
+  },
+
+  
 -------- LEGACY ENEMIES BELOW
 
   {
@@ -675,6 +823,7 @@ local dictionary = {
     update = srBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 12},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     shootPoint = {x = 0, y = 0},
@@ -701,6 +850,7 @@ local dictionary = {
     update = sBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 10, offY = 12},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/shooter-run/shooter-run.png",
     grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
     shootPoint = {x = 0, y = 0},
@@ -727,6 +877,7 @@ local dictionary = {
     update = cctvBehaviour,
     specialDraw = nil,
     scale = {x = 0.35, y = 0.35, offX = 7, offY = 5},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/camera turret/camera turret.png",
     grid = {x = 64, y = 64, w = 192, h = 256},
     shootPoint = {x = 0, y = 0},
@@ -752,6 +903,7 @@ local dictionary = {
     update = targetBehaviour,
     specialDraw = nil,
     scale = {x = 1, y = 1, offX = 0, offY = 0},
+    worldOffSet = {offX = 0, offY = 0},
     sprite = "img/enemies/target/target.png",
     grid = {x = 32, y = 32, w = 96, h = 32},
     shootPoint = {x = 0, y = 0},
@@ -774,6 +926,8 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
     if newEnemy.name == dictionary[i].name then
       newEnemy.hp, newEnemy.w, newEnemy.h = dictionary[i].hp, dictionary[i].w, dictionary[i].h
       newEnemy.scale = dictionary[i].scale
+
+      newEnemy.worldOffSet = dictionary[i].worldOffSet
 
       -- functions
       newEnemy.behaviour = dictionary[i].update
