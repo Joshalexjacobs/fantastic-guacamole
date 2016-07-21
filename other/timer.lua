@@ -36,7 +36,7 @@ end
 
 function updateTimer(dt, name, timerList) -- update all existing timers
   if #timerList <= 0 then
-    print("no timers found")
+    --print("no timers found")
     return false
   end -- if timerList does not contain any timers
 

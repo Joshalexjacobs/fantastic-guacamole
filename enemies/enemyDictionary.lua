@@ -353,6 +353,24 @@ local function cSlimeBehaviour(dt, entity, world)
     entity.animations[entity.curAnim]:update(dt)
 end
 
+local function turretWallBehaviour(dt, entity, world)
+  if player.x > entity.x - 120 and checkTimer("wakeUp1", entity.timers) == false then
+    addTimer(0.3, "wakeUp1", entity.timers)
+    entity.curAnim = 2
+  elseif checkTimer("wakeUp2", entity.timers) == false and updateTimer(dt, "wakeUp1", entity.timers) then
+    addTimer(0.9, "wakeUp2", entity.timers)
+    entity.curAnim = 3
+  elseif checkTimer("wakeUp3", entity.timers) == false and updateTimer(dt, "wakeUp2", entity.timers) then
+    addTimer(0.5, "wakeUp3", entity.timers)
+    entity.curAnim = 4
+  elseif checkTimer("wakeUp4", entity.timers) == false and updateTimer(dt, "wakeUp3", entity.timers) then
+    addTimer(0.0, "wakeUp4", entity.timers)
+    entity.curAnim = 5
+  end
+
+  entity.animations[entity.curAnim]:update(dt)
+end
+
 --[[
 ******************************************************
 ******************************************************
@@ -742,11 +760,8 @@ local dictionary = {
           entity.curAnim = 4
           addTimer(0.5, "death 2", entity.timers)
         end
-
-        -- elseif cols[i].other.type == "player" and entity.isDead == false then
-          -- cols[i].other.killPlayer
       end
-    end, -- put stuff here lol
+    end,
     gravity = 0
   },
 
@@ -776,7 +791,7 @@ local dictionary = {
 
   {
     name = "cSlime",
-    hp = 3,
+    hp = 1, -- 3
     w = 35,
     h = 25,
     update = cSlimeBehaviour,
@@ -790,7 +805,7 @@ local dictionary = {
       animations = {
         anim8.newAnimation(grid('1-3', 1, 1, 2), 0.12), -- 1 running
         anim8.newAnimation(grid('1-3', 3), 0.15, "pauseAtEnd"), -- 2 dying
-        anim8.newAnimation(grid('1-3', '5-6'), 0.15, "pauseAtEnd"), -- 3 ded
+        anim8.newAnimation(grid('1-3', '5-6'), 0.07, "pauseAtEnd"), -- 3 ded
       }
       return animations
     end,
@@ -812,7 +827,48 @@ local dictionary = {
     gravity = 0
   },
 
-  
+  {
+    name = "turret-wall",
+    hp = 10,
+    w = 16,
+    h = 148,
+    update = turretWallBehaviour, -- nil
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 10, offY = 0},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/mini-bosses/turret-wall/newTurret-wallBIG.png",
+    grid = {x = 32, y = 160, w = 96, h = 1760},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
+
+        -- Waking:
+        anim8.newAnimation(grid('1-3', 2), 0.1, "pauseAtEnd"), -- 2  stage-1
+        anim8.newAnimation(grid('1-2', 3), 0.1), -- 3  stage-2
+        anim8.newAnimation(grid(3, 3, '1-3', 4, 1, 5), 0.1, "pauseAtEnd"), -- 4  stage-3
+
+        anim8.newAnimation(grid('1-3', '6-7'), 0.1), -- 5 idle
+        anim8.newAnimation(grid(3, 8, '1-3', '9-11'), 0.1), -- 6 bubble attack
+      }
+      return animations
+    end,
+    filter = function(item, other) -- default enemy filter
+      if other.type == "player" then
+        return 'cross'
+      end
+    end,
+    collision = function(cols, len, entity, world)
+      for i = 1, len do
+        if cols[i].other.type == "player" and entity.isDead == false then
+          cols[i].other.killPlayer(world)
+          print(entity.name)
+        end
+      end
+    end,
+    gravity = 0
+  },
+
 -------- LEGACY ENEMIES BELOW
 
   {

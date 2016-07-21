@@ -64,7 +64,7 @@ function game:enter(menu, levelName)
 
   -- load tilemap
   --map = sti.new("tiled/Level 1-1.lua", {"bump"})
-  map = sti.new("tiled/New Level.lua", {"bump"})
+  map = sti.new("tiled/New Level2.lua", {"bump"})
   map:bump_init(world)
 
   -- populate world collision (bump)
