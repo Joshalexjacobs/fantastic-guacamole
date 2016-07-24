@@ -16,7 +16,7 @@ local pbullet = {
   isDead = false,
   color = {255, 255, 255, 255},
   filter = function(item, other)
-    if other.type == "enemy" or other.type == "boss" then
+    if other.type == "enemy" or other.type == "boss" or other.type == "bubble" then
       return 'touch' -- used to be cross
     elseif other.type == "block" or other.type == "ground" then
       return 'touch' -- used to be cross
@@ -24,7 +24,7 @@ local pbullet = {
   end,
   reaction = function(entity, cols, len)
     for j = 1, len do
-      if cols[j].other.type == "enemy" or cols[j].other.type == "boss" then
+      if cols[j].other.type == "enemy" or cols[j].other.type == "boss" or cols[j].other.type == "bubble" then
         entity.isDead = true -- destroy bullet
         cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
       elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then

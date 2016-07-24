@@ -14,6 +14,7 @@ require 'other/timer'
 require 'levels/levelsDictionary'
 require 'cflux'
 require 'bullets'
+require 'bubble'
 
 local bump   = require 'collision/bump'
 local math   = require "math"
@@ -59,9 +60,9 @@ function game:enter(menu, levelName)
   -- load level
   loadLevel(levelName, world)
 
-  -- load bullet
+  -- load bullet and bubble
   loadBullet()
-
+  loadBubbles()
   -- load tilemap
   --map = sti.new("tiled/Level 1-1.lua", {"bump"})
   map = sti.new("tiled/New Level2.lua", {"bump"})
@@ -106,6 +107,7 @@ function game:update(dt)
   updatePlayer(dt, world)
 
   updateBullets(dt, bounds.left, 320, world)
+  updateBubbles(dt, world)
 
   updateEnemies(dt, world)
   updateZones(player.x, player.w, bounds.left, world, dt)
@@ -134,6 +136,7 @@ function game:draw()
     drawPlayer()
     drawEnemies()
     drawBullets()
+    drawBubbles()
 
     if bossFight then -- if player activated boss fight, update boss
       waterWalker:draw()

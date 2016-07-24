@@ -353,6 +353,7 @@ local function cSlimeBehaviour(dt, entity, world)
     entity.animations[entity.curAnim]:update(dt)
 end
 
+-- TURRET WALL --
 local function turretWallBehaviour(dt, entity, world)
   if player.x > entity.x - 120 and checkTimer("wakeUp1", entity.timers) == false then
     addTimer(0.3, "wakeUp1", entity.timers)
@@ -366,6 +367,16 @@ local function turretWallBehaviour(dt, entity, world)
   elseif checkTimer("wakeUp4", entity.timers) == false and updateTimer(dt, "wakeUp3", entity.timers) then
     addTimer(0.0, "wakeUp4", entity.timers)
     entity.curAnim = 5
+    addBubble(2, entity.x - 150, entity.y + 50, 0, world)
+  end
+
+  if entity.isDead and checkTimer("death", entity.timers) == false then
+    entity.curAnim = 7
+    addTimer(0.8, "death", entity.timers)
+  end
+
+  if updateTimer(dt, "death", entity.timers) and entity.isDead then
+    entity.curAnim = 8
   end
 
   entity.animations[entity.curAnim]:update(dt)
@@ -829,7 +840,7 @@ local dictionary = {
 
   {
     name = "turret-wall",
-    hp = 10,
+    hp = 50,
     w = 16,
     h = 148,
     update = turretWallBehaviour, -- nil
@@ -837,7 +848,7 @@ local dictionary = {
     scale = {x = 1, y = 1, offX = 10, offY = 0},
     worldOffSet = {offX = 0, offY = 0},
     sprite = "img/mini-bosses/turret-wall/newTurret-wallBIG.png",
-    grid = {x = 32, y = 160, w = 96, h = 1760},
+    grid = {x = 32, y = 160, w = 96, h = 2560},
     shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
@@ -850,6 +861,8 @@ local dictionary = {
 
         anim8.newAnimation(grid('1-3', '6-7'), 0.1), -- 5 idle
         anim8.newAnimation(grid(3, 8, '1-3', '9-11'), 0.1), -- 6 bubble attack
+        anim8.newAnimation(grid('1-3', '12-13', '1-2', 14), 0.1, "pauseAtEnd"), -- 7 dying
+        anim8.newAnimation(grid('1-3', '15-16'), 0.1), -- 8 death idle
       }
       return animations
     end,
