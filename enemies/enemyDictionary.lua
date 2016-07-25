@@ -364,19 +364,54 @@ local function turretWallBehaviour(dt, entity, world)
   elseif checkTimer("wakeUp3", entity.timers) == false and updateTimer(dt, "wakeUp2", entity.timers) then
     addTimer(0.5, "wakeUp3", entity.timers)
     entity.curAnim = 4
-  elseif checkTimer("wakeUp4", entity.timers) == false and updateTimer(dt, "wakeUp3", entity.timers) then
-    addTimer(0.0, "wakeUp4", entity.timers)
+  elseif checkTimer("idle", entity.timers) == false and updateTimer(dt, "wakeUp3", entity.timers) then
+    addTimer(1.0, "idle", entity.timers)
+    addTimer(1.0, "bubbleIdle", entity.timers)
     entity.curAnim = 5
-    addBubble(2, entity.x - 150, entity.y + 50, 0, world)
+  end
+
+  if updateTimer(dt, "idle", entity.timers) and checkTimer("bubble1", entity.timers) == false and entity.isDead == false then
+    addTimer(0.4, "bubble1", entity.timers)
+    entity.curAnim = 6
+  elseif checkTimer("bubble2", entity.timers) == false and updateTimer(dt, "bubble1", entity.timers) and entity.isDead == false then
+    addTimer(2.0, "bubble2", entity.timers)
+    addTimer(0.2, "shoot", entity.timers)
+    entity.curAnim = 7
+  elseif checkTimer("bubble3", entity.timers) == false and updateTimer(dt, "bubble2", entity.timers) and entity.isDead == false then
+    addTimer(0.4, "bubble3", entity.timers)
+    deleteTimer("shoot", entity.timers)
+    entity.curAnim = 8
+  elseif entity.curAnim == 8 and updateTimer(dt, "bubble3", entity.timers) and entity.isDead == false then
+    addTimer(4.0, "bubbleIdle", entity.timers)
+    entity.curAnim = 5
+
+    entity.animations[6]:gotoFrame(1)
+    entity.animations[6]:resume()
+    entity.animations[8]:gotoFrame(1)
+    entity.animations[8]:resume()
+  end
+
+  if checkTimer("bubbleIdle", entity.timers) and updateTimer(dt, "bubbleIdle", entity.timers) and entity.isDead == false then
+    deleteTimer("bubble1", entity.timers)
+    deleteTimer("bubble2", entity.timers)
+    deleteTimer("bubble3", entity.timers)
+    deleteTimer("bubbleIdle", entity.timers)
+  end
+
+  if entity.curAnim == 7 and updateTimer(dt, "shoot", entity.timers) then
+    local direction = math.atan2(love.math.random(0, 100) - entity.y, entity.shootPoint.x - entity.x) -- entity.shootPoint.y
+    local deviation = love.math.random(-1.0, 1.0) * 0.15
+    addBubble(2, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, direction + deviation, world)
+    resetTimer(0.2, "shoot", entity.timers)
   end
 
   if entity.isDead and checkTimer("death", entity.timers) == false then
-    entity.curAnim = 7
+    entity.curAnim = 9
     addTimer(0.8, "death", entity.timers)
   end
 
   if updateTimer(dt, "death", entity.timers) and entity.isDead then
-    entity.curAnim = 8
+    entity.curAnim = 10
   end
 
   entity.animations[entity.curAnim]:update(dt)
@@ -849,7 +884,7 @@ local dictionary = {
     worldOffSet = {offX = 0, offY = 0},
     sprite = "img/mini-bosses/turret-wall/newTurret-wallBIG.png",
     grid = {x = 32, y = 160, w = 96, h = 2560},
-    shootPoint = {x = 0, y = 0},
+    shootPoint = {x = -15, y = 110},
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
@@ -860,9 +895,14 @@ local dictionary = {
         anim8.newAnimation(grid(3, 3, '1-3', 4, 1, 5), 0.1, "pauseAtEnd"), -- 4  stage-3
 
         anim8.newAnimation(grid('1-3', '6-7'), 0.1), -- 5 idle
-        anim8.newAnimation(grid(3, 8, '1-3', '9-11'), 0.1), -- 6 bubble attack
-        anim8.newAnimation(grid('1-3', '12-13', '1-2', 14), 0.1, "pauseAtEnd"), -- 7 dying
-        anim8.newAnimation(grid('1-3', '15-16'), 0.1), -- 8 death idle
+
+        anim8.newAnimation(grid(3, 8, '1-3', 9), 0.1, "pauseAtEnd"), -- 6 bubble-attack1
+        anim8.newAnimation(grid('1-3', 10), 0.1), -- 7 bubble-attack2
+        anim8.newAnimation(grid('1-3', 11), 0.1, "pauseAtEnd"), -- 8 bubble-attack3
+
+
+        anim8.newAnimation(grid('1-3', '12-13', '1-2', 14), 0.1, "pauseAtEnd"), -- 7 dying 9
+        anim8.newAnimation(grid('1-3', '15-16'), 0.1), -- 8 death idle 10
       }
       return animations
     end,

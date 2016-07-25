@@ -10,12 +10,29 @@ local bubble = {
   dx = 0,
   dy = 0,
   offset = {x = 10, y = 2},
-  speed = nil,
+  speed = 30,
   dir = nil,
   isDead = false,
-  filter = nil,
-  collision = nil,
-  curAnim = 2,
+  filter = function(item, other)
+    if other.type == "player" then
+      return 'cross'
+    elseif other.type == "block" or other.type == "ground" then
+      return 'cross'
+    end
+  end,
+  collision = function(entity, cols, len)
+    for j = 1, len do
+      if cols[j].other.type == "player" and entity.isDead == false then
+        entity.isDead = true -- destroy bullet
+        cols[j].other.killPlayer(world)
+        break
+      elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then
+        entity.isDead = true
+        break
+      end
+    end
+  end,
+  curAnim = 1,
   spriteSheet = nil,
   spriteGrid = nil,
   animations = {},
@@ -39,7 +56,7 @@ end
 function addBubble(health, xPos, yPos, direction, world)
   newBubble = copy(bubble, newBubble)
 
-  newBubble.x, newBubble.y, newBubble.dir = xPos, yPos, direction
+  newBubble.hp, newBubble.x, newBubble.y, newBubble.dir = health, xPos, yPos, direction
   addTimer(0.4, "spawn", newBubble.timers)
 
   world:add(newBubble, newBubble.x, newBubble.y, newBubble.w, newBubble.h) -- add all bubbles to world...
@@ -49,9 +66,25 @@ end
 function updateBubbles(dt, world)
   for i, newBubble in ipairs(bubbles) do
 
-    if newBubble.hp <= 0 and newBubble.isDead == false then
-      newBubble.dx, newBubble.dy = 0, 0
+    if updateTimer(dt, "spawn", newBubble.timers) and newBubble.isDead == false then
+      newBubble.curAnim = 2
+      newBubble.speed = 30
+    else
+      newBubble.speed = 150
+    end
+
+    if newBubble.isDead == false then
+      newBubble.dy = math.sin(newBubble.dir) * newBubble.speed * dt
+      newBubble.dy = newBubble.dy + (0.25 * math.sin(love.timer.getTime() * 4.1 * math.pi))
+      newBubble.dx = math.cos(newBubble.dir) * newBubble.speed * dt
+    end
+
+    if newBubble.hp <= 0 then
       newBubble.isDead = true
+    end
+
+    if newBubble.isDead then
+      newBubble.dx, newBubble.dy = 0, 0
       newBubble.curAnim = 3
       newBubble.type = "invincible"
 
@@ -63,13 +96,19 @@ function updateBubbles(dt, world)
       table.remove(bubbles, i)
     end
 
+    if world:hasItem(newBubble) then
+      newBubble.x, newBubble.y, cols, len = world:move(newBubble, newBubble.x + newBubble.dx, newBubble.y + newBubble.dy, newBubble.filter) -- update world
+
+      newBubble.collision(newBubble, cols, len)
+    end
+
     newBubble.animations[newBubble.curAnim]:update(dt) -- update animations
   end
 end
 
 function drawBubbles()
   for _, newBubble in ipairs(bubbles) do
-    newBubble.animations[newBubble.curAnim]:draw(newBubble.spriteSheet, newBubble.x + newBubble.offset.x, newBubble.y + newBubble.offset.y, newBubble.dir, 1, 1, 10, newBubble.dir + 3)
+    newBubble.animations[newBubble.curAnim]:draw(newBubble.spriteSheet, newBubble.x + newBubble.offset.x, newBubble.y + newBubble.offset.y, 0, 1, 1, 10, newBubble.dir + 3)
     --love.graphics.rectangle("line", newBubble.x, newBubble.y, newBubble.w, newBubble.h)
   end
 end
