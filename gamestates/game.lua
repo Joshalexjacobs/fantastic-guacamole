@@ -58,14 +58,15 @@ function game:enter(menu, levelName)
   love.graphics.setDefaultFilter( "nearest", "nearest") -- set nearest pixel distance
 
   -- load level
-  loadLevel(levelName, world)
+  local pSkinV, pSkinH, tilemap, startPos = loadLevel(levelName, world)
 
   -- load bullet and bubble
   loadBullet()
   loadBubbles()
+
   -- load tilemap
-  --map = sti.new("tiled/Level 1-1.lua", {"bump"})
-  map = sti.new("tiled/New Level2.lua", {"bump"})
+  map = sti.new(tilemap, {"bump"})
+
   map:bump_init(world)
 
   -- populate world collision (bump)
@@ -82,7 +83,9 @@ function game:enter(menu, levelName)
   love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   -- load player
-  loadPlayer(world) -- load player and player sprites
+  player.x = startPos -- set player starting position
+  loadPlayer(world, pSkinV, pSkinH) -- load player and player sprites
+
 
   -- load boss
   waterWalker:load(world)

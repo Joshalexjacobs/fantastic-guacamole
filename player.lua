@@ -4,7 +4,7 @@
 local player = {
   type = "player", -- or "invincible" -- or "invincibleProne"
   lives = 3,
-  x = 740, -- 140
+  x = 0,
   y = 160,
   w = 10,
   h = 42,
@@ -98,15 +98,15 @@ invinceTimerMax = 2.0
 
 --------- GENERAL FUNCTIONS ---------
 
-function loadPlayer(world)
+function loadPlayer(world, playerSkinV, playerSkinH)
   world:add(player, player.x, player.y, player.w, player.h)
 
   -- load player sprites
-  player.spriteSheet = love.graphics.newImage('img/player/marine2BIG.png') -- marine2BIG
-  player.spriteSheetHorizontal = love.graphics.newImage('img/player/marineHorizontalBIG.png') -- marineHorizontalBIG
+  player.spriteSheet = love.graphics.newImage(playerSkinV)
+  player.spriteSheetHorizontal = love.graphics.newImage(playerSkinH)
 
-  player.spriteGrid = anim8.newGrid(32, 64, 96, 960, 0, 0, 0) -- marine2BIG grid
-  player.spriteGirdHorizontal = anim8.newGrid(64, 32, 192, 64, 0, 0, 0) -- marineHorizontalBIG grid
+  player.spriteGrid = anim8.newGrid(32, 64, 96, 960, 0, 0, 0) -- vertical grid
+  player.spriteGirdHorizontal = anim8.newGrid(64, 32, 192, 64, 0, 0, 0) -- horizontal grid
 
   player.animations = {                -- col, row
     anim8.newAnimation(player.spriteGrid('1-2', 1), 0.6), -- 1 idle

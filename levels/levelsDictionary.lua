@@ -4,6 +4,10 @@ local dictionary = {
 
   {
       name = "1-2",
+      playerSkinV = "img/player/marine2BIG.png", -- vertical
+      playerSkinH = "img/player/marineHorizontalBIG.png", -- horizontal
+      tilemap = "tiled/New Level2.lua",
+      startPos = 140, -- player's starting position
       bounds = { -- camera boundaries
         levelWidth = 1000, -- 8000
         levelHeight = 600,
@@ -38,6 +42,10 @@ local dictionary = {
 
   {
       name = "wall turret",
+      playerSkinV = "img/player/marine2BIG.png", -- vertical
+      playerSkinH = "img/player/marineHorizontalBIG.png", -- horizontal
+      tilemap = "tiled/New Level2.lua",
+      startPos = 740, -- player's starting position
       bounds = { -- camera boundaries
         levelWidth = 1000, -- 8000
         levelHeight = 600,
@@ -46,7 +54,7 @@ local dictionary = {
       },
       zones = {
         {
-          name = "dynamic runners",
+          name = "wall turret",
           x = 100,
           y = 45,
           w = 2000,
@@ -58,6 +66,31 @@ local dictionary = {
       } -- end of zones
   }, -- end of level
 
+  {
+      name = "tutorial",
+      playerSkinV = "img/player/matrix player.png", -- vertical
+      playerSkinH = "img/player/matrix prone.png", -- horizontal
+      tilemap = "tiled/matrix.lua",
+      startPos = 140, -- player's starting position
+      bounds = { -- camera boundaries
+        levelWidth = 1000, -- 8000
+        levelHeight = 600,
+        left = 0,
+        top = 0
+      },
+      zones = {
+        {
+          name = "empty",
+          x = 100,
+          y = 45,
+          w = 2000,
+          h = 100,
+          enemies = {
+            --{name = "turret-wall", count = 0, max = 1, side = "right", x = 985, y = 5, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
+          }
+        },
+      } -- end of zones
+  }, -- end of level
 
 } -- end of dictionary
 
@@ -67,6 +100,10 @@ function getLevel(levelName, level)
       level.name = dictionary[i].name
       level.bounds = dictionary[i].bounds
       level.zones = dictionary[i].zones
+      level.playerSkinV = dictionary[i].playerSkinV
+      level.playerSkinH = dictionary[i].playerSkinH
+      level.tilemap = dictionary[i].tilemap
+      level.startPos = dictionary[i].startPos
     end
   end
 end

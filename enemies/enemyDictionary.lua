@@ -391,6 +391,8 @@ local function turretWallBehaviour(dt, entity, world)
     entity.animations[8]:resume()
   end
 
+  -- !!! ADD LASER SHOWER TO THIS FIGHT (THE ONE FROM SUPER C)
+
   if checkTimer("bubbleIdle", entity.timers) and updateTimer(dt, "bubbleIdle", entity.timers) and entity.isDead == false then
     deleteTimer("bubble1", entity.timers)
     deleteTimer("bubble2", entity.timers)
