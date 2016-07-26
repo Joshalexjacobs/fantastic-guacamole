@@ -1,5 +1,7 @@
 -- levelsDictionary.lua --
 
+fairies = {}
+
 local dictionary = {
 
   {
@@ -37,7 +39,10 @@ local dictionary = {
             {name = "cSlime", count = 0, max = 1, side = "left", x = 460, y = 0, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2},
           }
         },
-      } -- end of zones
+      }, -- end of zones
+      levelLoad = nil,
+      levelUpdate = nil,
+      levelDraw = nil
   }, -- end of level
 
   {
@@ -63,7 +68,10 @@ local dictionary = {
             {name = "turret-wall", count = 0, max = 1, side = "right", x = 985, y = 5, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
           }
         },
-      } -- end of zones
+      }, -- end of zones
+      levelLoad = nil,
+      levelUpdate = nil,
+      levelDraw = nil
   }, -- end of level
 
   {
@@ -89,7 +97,108 @@ local dictionary = {
             --{name = "turret-wall", count = 0, max = 1, side = "right", x = 985, y = 5, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
           }
         },
-      } -- end of zones
+      }, -- end of zones
+
+      -- level specific functions
+      -- LEVEL LOAD --
+      levelLoad = function()
+        fairy = {
+          x = nil,
+          y = nil,
+          w = nil,
+          h = nil,
+          dx = 0,
+          dy = 0,
+          speed = 10,
+          range = 0,
+          sinSpeed = 0,
+          tails = {}
+        }
+
+        for i = 1, 35 do
+          newFairy = copy(fairy, newFairy)
+
+          newFairy.x = love.math.random(player.x - 200, player.x + 200)
+          newFairy.y = love.math.random(0, 300)
+          newFairy.w = 2
+          newFairy.h = 2
+          newFairy.range = love.math.random(7, 15) * 0.01
+          newFairy.sinSpeed = love.math.random(1, 8) * 0.1
+
+          for i = 1, love.math.random(1, 6) do
+            tail = copy(newFairy, tail)
+            tail.x = newFairy.x
+            tail.y = newFairy.y + 2
+
+            if i == 1 then
+              tail.w = newFairy.w / 2
+              tail.h = newFairy.w / 2
+              tail.speed = newFairy.speed
+            else
+              tail.w = newFairy.tails[i-1].w / 2
+              tail.h = newFairy.tails[i-1].w / 2
+              tail.speed = newFairy.tails[i-1].speed - 1
+            end
+
+            table.insert(newFairy.tails, tail)
+          end
+
+          table.insert(fairies, newFairy)
+        end
+      end,
+
+      -- LEVEL UPDATE --
+      levelUpdate = function(dt)
+        for _, newFairy in ipairs(fairies) do
+          newFairy.dx = newFairy.range * math.cos(love.timer.getTime() * newFairy.sinSpeed * math.pi)
+          newFairy.dy = -newFairy.speed * dt
+
+          newFairy.x = newFairy.x + newFairy.dx
+          newFairy.y = newFairy.y + newFairy.dy
+
+          for _, tail in ipairs(newFairy.tails) do
+            local direction = nil
+
+            direction = math.atan2(newFairy.y - tail.y, newFairy.x - tail.x)
+
+            tail.dx = math.cos(direction) * tail.speed * dt
+            tail.dy = math.sin(direction) * tail.speed * dt
+
+            tail.x = tail.x + tail.dx
+            tail.y = tail.y + tail.dy
+          end
+
+          if newFairy.tails[#newFairy.tails].y < -2 then
+            newFairy.x = love.math.random(player.x - 200, player.x + 200)
+            newFairy.y = 200
+            newFairy.range = love.math.random(7, 15) * 0.01
+            newFairy.sinSpeed = love.math.random(1, 8) * 0.1
+
+            for i, tail in ipairs(newFairy.tails) do
+              tail.x = newFairy.x
+              tail.y = newFairy.y + 2
+
+              if i == 1 then
+                tail.speed = newFairy.speed
+              else
+                tail.speed = newFairy.tails[i-1].speed - 1
+              end
+            end
+          end
+        end
+      end,
+
+      -- LEVEL DRAW --
+      levelDraw = function()
+        for _, newFairy in ipairs(fairies) do
+          love.graphics.rectangle("fill", newFairy.x, newFairy.y, newFairy.w, newFairy.h, 1, 1)
+
+          for _, tail in ipairs(newFairy.tails) do
+            love.graphics.rectangle("fill", tail.x, tail.y, tail.w, tail.h, 1, 1)
+          end
+        end
+      end
+
   }, -- end of level
 
 } -- end of dictionary
@@ -100,10 +209,17 @@ function getLevel(levelName, level)
       level.name = dictionary[i].name
       level.bounds = dictionary[i].bounds
       level.zones = dictionary[i].zones
+
+      -- player skins, location, and tilemap
       level.playerSkinV = dictionary[i].playerSkinV
       level.playerSkinH = dictionary[i].playerSkinH
       level.tilemap = dictionary[i].tilemap
       level.startPos = dictionary[i].startPos
+
+      -- level functions
+      level.levelLoad = dictionary[i].levelLoad
+      level.levelUpdate = dictionary[i].levelUpdate
+      level.levelDraw = dictionary[i].levelDraw
     end
   end
 end

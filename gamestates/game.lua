@@ -52,13 +52,16 @@ local bounds = {
   top = 0
 }
 
+-- Level specific functions
+local levelFunctions = {}
+
 function game:enter(menu, levelName)
   -- seed math.random
   math.randomseed(os.time())
   love.graphics.setDefaultFilter( "nearest", "nearest") -- set nearest pixel distance
 
   -- load level
-  local pSkinV, pSkinH, tilemap, startPos = loadLevel(levelName, world)
+  local pSkinV, pSkinH, tilemap, startPos = loadLevel(levelName, world, levelFunctions)
 
   -- load bullet and bubble
   loadBullet()
@@ -86,6 +89,8 @@ function game:enter(menu, levelName)
   player.x = startPos -- set player starting position
   loadPlayer(world, pSkinV, pSkinH) -- load player and player sprites
 
+  -- run level specific load
+  if levelFunctions.load ~= nil then levelFunctions.load() end
 
   -- load boss
   waterWalker:load(world)
@@ -105,6 +110,9 @@ function game:update(dt)
   -- update bounds
   local left, right = camera:position()
   bounds.left = left - ((180 * windowScale) - (20 * windowScale))
+
+  -- run level specific update
+  if levelFunctions.update ~= nil then levelFunctions.update(dt) end
 
   -- update everything
   updatePlayer(dt, world)
@@ -148,6 +156,9 @@ function game:draw()
     if debug then
       --drawZones()
     end
+
+    -- run level specific draw
+    if levelFunctions.draw ~= nil then levelFunctions.draw() end
 
   camera:detach()
 
