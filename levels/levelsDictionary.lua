@@ -94,7 +94,8 @@ local dictionary = {
           w = 300,
           h = 100,
           enemies = {
-            {name = "tutMsg", count = 0, max = 1, side = "right", x = 400, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 140, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Welcome to the tutorial level!\nUse the WASD keys to move to the next screen!"},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 300, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "SECOND ONE"} -- uniqueParam
           }
         },
       }, -- end of zones
@@ -192,10 +193,10 @@ local dictionary = {
       -- LEVEL DRAW --
       levelDraw = function()
         for _, newFairy in ipairs(fairies) do
-          love.graphics.rectangle("fill", newFairy.x, newFairy.y, newFairy.w, newFairy.h, 1, 1)
+          love.graphics.rectangle("fill", newFairy.x, newFairy.y, newFairy.w, newFairy.h, 0.95, 0.95)
 
           for _, tail in ipairs(newFairy.tails) do
-            love.graphics.rectangle("fill", tail.x, tail.y, tail.w, tail.h, 1, 1)
+            love.graphics.rectangle("fill", tail.x, tail.y, tail.w, tail.h, 0.95, 0.95)
           end
         end
       end

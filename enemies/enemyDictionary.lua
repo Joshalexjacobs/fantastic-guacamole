@@ -399,43 +399,66 @@ end
 local function tutMsgBehaviour(dt, entity, world)
   if checkTimer("start", entity.timers) == false then
     loadBlockRect = {
-      x = entity.x - 50,
-      y = entity.y - 7,
-      w = 164.5,
+      x = entity.x + 31,
+      y = entity.y + 16,
+      w = 2,
       h = 2
     }
+
+    entity.uniqueStorage = copy(loadBlockRect, entity.uniqueStorage)
+
+    ogY = entity.y
 
     addTimer(0.0, "start", entity.timers)
   end
     --timers:
     -- deleteBlock
 
+  if entity.y > ogY + 12 or entity.y < ogY - 6 then entity.y = ogY end -- due to alt-tab bug, this is a temporary fix
 
-  entity.dy = 0.15 * math.sin(love.timer.getTime() * .75 * math.pi)
+  entity.dy = 0.05 * math.sin(love.timer.getTime() * .35 * math.pi)
 
   if player.x < entity.x + entity.w + 50 and player.x > entity.x - 50 then
     if entity.curAnim ~= 2 then
       if checkTimer("loadBlock", entity.timers) == false then
+
         addTimer(0.0, "loadBlock", entity.timers)
+        deleteTimer("deleteBlock", entity.timers)
       end
       entity.curAnim = 2
+      entity.animations[3]:gotoFrame(1)
+      entity.animations[3]:resume()
     end
   else
     if entity.curAnim == 2 then
-      -- resume anim 2
-      -- set frame to 1
-      entity.curAnim = 1
+      entity.animations[2]:gotoFrame(1)
+      entity.animations[2]:resume()
+
+      entity.curAnim = 3
       if checkTimer("loadBlock", entity.timers) then
         deleteTimer("loadBlock", entity.timers)
+        addTimer(0.0, "deleteBlock", entity.timers)
       end
     end
   end
 
   if updateTimer(dt, "loadBlock", entity.timers) then
     if loadBlockRect.h ~= 50 then
-      loadBlockRect.h = loadBlockRect.h + 1
-    --elseif loadBlockRect.w ~= 164.5 then
-      --loadBlockRect.w = loadBlockRect.w + 2.5
+      loadBlockRect.y = loadBlockRect.y - 1
+      loadBlockRect.h = loadBlockRect.h + 2
+    elseif loadBlockRect.w ~= 164.5 then
+      loadBlockRect.x = loadBlockRect.x - 1.25
+      loadBlockRect.w = loadBlockRect.w + 2.5
+    end
+  end
+
+  if updateTimer(dt, "deleteBlock", entity.timers) then
+    if loadBlockRect.w ~= 2 then
+      loadBlockRect.x = loadBlockRect.x + 1.25
+      loadBlockRect.w = loadBlockRect.w - 2.5
+    elseif loadBlockRect.h ~= 2 then
+      loadBlockRect.y = loadBlockRect.y + 1
+      loadBlockRect.h = loadBlockRect.h - 2
     end
   end
 
@@ -445,10 +468,34 @@ end
 
 -- TUTORIAL MESSAGE --
 local function tutMsgDraw(entity, world)
-
   if entity.curAnim == 2 then
     setColor({255, 255, 255, 175})
-    love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h)
+    love.graphics.rectangle("line", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+    love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+
+    if loadBlockRect.w > 160 then
+      love.graphics.setFont(bigFont)
+      setColor({0, 0, 0, 255})
+      love.graphics.printf(entity.uniqueParam, loadBlockRect.x + 2, loadBlockRect.y + 2, loadBlockRect.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.setFont(smallFont)
+    end
+
+    setColor({255, 255, 255, 255})
+
+  elseif entity.curAnim == 3 and checkTimer("deleteBlock", entity.timers) == true then
+    if loadBlockRect.w > 2 and loadBlockRect.h > 2 then
+      setColor({255, 255, 255, 175})
+      love.graphics.rectangle("line", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+      love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+    end
+
+    if loadBlockRect.w > 160 then
+      love.graphics.setFont(bigFont)
+      setColor({0, 0, 0, 255})
+      love.graphics.printf(entity.uniqueParam, loadBlockRect.x + 2, loadBlockRect.y + 2, loadBlockRect.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.setFont(smallFont)
+    end
+
     setColor({255, 255, 255, 255})
   end
 end
@@ -730,8 +777,8 @@ local dictionary = {
     animations = function(grid)
       animations = {
         anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
-        anim8.newAnimation(grid('2-3', 1), 0.2, "pauseAtEnd"), -- 2 morph
-        anim8.newAnimation(grid(3, 1, 2, 1), 0.2, "pauseAtEnd"), -- 3 morph back
+        anim8.newAnimation(grid('2-3', 1), 0.4, "pauseAtEnd"), -- 2 morph
+        anim8.newAnimation(grid(3, 1, 2, 1, 1, 1), 0.4, "pauseAtEnd"), -- 3 morph back
       }
       return animations
     end,

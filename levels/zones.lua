@@ -48,9 +48,9 @@ function updateZones(x, w, left, world, dt)
             spawn.spawnTimer = spawn.spawnTimerMax
 
             if spawn.dynamic then
-              addEnemy(spawn.name, player.x + spawn.x, spawn.y, spawn.side, world)
+              addEnemy(spawn.name, player.x + spawn.x, spawn.y, spawn.side, world, spawn.uniqueParam)
             else
-              addEnemy(spawn.name, spawn.x, spawn.y, spawn.side, world)
+              addEnemy(spawn.name, spawn.x, spawn.y, spawn.side, world, spawn.uniqueParam)
             end
 
             spawn.count = spawn.count + 1

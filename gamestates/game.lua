@@ -44,6 +44,8 @@ windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
 --windowWidth, windowHeight, windowScale = 1600, 900, 5  -- 5:5
 --windowWidth, windowHeight, windowScale = 1920, 1080, 6 -- 6:6
 
+
+
 -- Camera boundaries
 local bounds = {
   levelWidth   = 5000,
@@ -168,6 +170,7 @@ function game:draw()
   end
 
   if debug then
+
     love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
     love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
     love.graphics.print(player.lives, 5, 35)

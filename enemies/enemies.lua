@@ -33,6 +33,8 @@ local enemy = {
   timers = {},
   behaviour = defaultBehaviour,
   specialDraw = nil,
+  uniqueParam = nil,
+  uniqueStorage = nil,
   filter = function(item, other) -- default enemy filter
     if other.type == "player" then
       return 'cross'
@@ -83,9 +85,11 @@ end
 enemies = {}
 
 -- General Functions --
-function addEnemy(name, x, y, dir, world)
+function addEnemy(name, x, y, dir, world, uniqueParam)
   local newEnemy = copy(enemy, newEnemy) -- create a copy of enemy
   newEnemy.name, newEnemy.x, newEnemy.y, newEnemy.direction = name, x, y, dir
+
+  if uniqueParam ~= nil then newEnemy.uniqueParam = uniqueParam end
 
   getEnemy(newEnemy) -- update newEnemy depending on it's name
 
