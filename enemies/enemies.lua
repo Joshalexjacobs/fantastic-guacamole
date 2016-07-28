@@ -77,6 +77,8 @@ function enemy.update(dt, newEnemy, world)
 end
 
 function enemy.draw(newEnemy)
+  if newEnemy.spriteSheet == nil then return false end
+
   newEnemy.animations[newEnemy.curAnim]:draw(newEnemy.spriteSheet, newEnemy.x, newEnemy.y, 0, newEnemy.scale.x, newEnemy.scale.y, newEnemy.scale.offX, newEnemy.scale.offY)
   if newEnemy.specialDraw ~= nil then newEnemy.specialDraw(newEnemy) end
 end

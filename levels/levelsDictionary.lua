@@ -95,7 +95,8 @@ local dictionary = {
           h = 100,
           enemies = {
             {name = "tutMsg", count = 0, max = 1, side = "right", x = 140, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Welcome to the tutorial level!\nUse the WASD keys to move to the next screen!"},
-            {name = "tutMsg", count = 0, max = 1, side = "right", x = 300, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "SECOND ONE"} -- uniqueParam
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 405, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To jump press the 'N' key (The longer you hold it the bigger the jump).\nJump over these pits in order to make it to the next screen!"},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 757, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To shoot press the 'M' key.\nYou can practise on the targets up ahead!"}
           }
         },
       }, -- end of zones

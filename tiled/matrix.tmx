@@ -1,33 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="6" tilewidth="32" tileheight="32" nextobjectid="3">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="22" height="6" tilewidth="32" tileheight="32" nextobjectid="16">
  <tileset firstgid="1" name="matrix" tilewidth="32" tileheight="32" tilecount="12" columns="4">
   <image source="../img/background/matrix.png" width="128" height="96"/>
  </tileset>
  <tileset firstgid="13" name="Black" tilewidth="32" tileheight="32" tilecount="1" columns="1">
   <image source="../img/background/Black.png" width="32" height="32"/>
  </tileset>
- <layer name="Black" width="16" height="6">
+ <layer name="Black" width="22" height="6">
   <data encoding="csv">
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
+13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13
 </data>
  </layer>
- <layer name="Background" width="16" height="6">
+ <layer name="Background" width="22" height="6">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,
-4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,10,
+0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,9,
+0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,9,
+0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,9,
+0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,8,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,6,0,5,6,0,0,5,4
 </data>
  </layer>
- <objectgroup name="Objects" opacity="0">
-  <object id="1" name="Ground" type="ground" x="0" y="170.67" width="512.606" height="21.3333">
+ <objectgroup name="Objects" opacity="0.75">
+  <object id="1" name="Ground" type="ground" x="0" y="170.67" width="479.795" height="21.3333">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="2" name="Ground" type="ground" x="511.967" y="170.67" width="63.6717" height="21.33">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="3" name="Ground" type="ground" x="640.098" y="170.67" width="63.6829" height="21.33">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="4" name="wall" type="block" x="480.078" y="172.042" width="0.929835" height="19.6606">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="5" name="wall" type="block" x="510.983" y="172.434" width="0.929835" height="19.6606">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="6" name="wall" type="block" x="575.867" y="172.347" width="0.929835" height="19.6606">
+   <properties>
+    <property name="collidable" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="7" name="wall" type="block" x="639.105" y="172.347" width="0.929835" height="19.6606">
    <properties>
     <property name="collidable" type="bool" value="true"/>
    </properties>

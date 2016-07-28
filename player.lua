@@ -5,7 +5,7 @@ local player = {
   type = "player", -- or "invincible" -- or "invincibleProne"
   lives = 3,
   x = 0,
-  y = 160,
+  y = 130,
   w = 10,
   h = 42,
   dx = 0,
@@ -268,6 +268,8 @@ end
 
 function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/doc/gs_platformers.html] --
   --------- DEATH/LIFE/DEATH ---------
+
+  if player.y + player.h > 220 then player.killPlayer() end -- if player falls down a pit, kill him
 
   if player.isDead then
     respawnTimer = respawnTimer - (1 * dt) -- decrement respawnTimer

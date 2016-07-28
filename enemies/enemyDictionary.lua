@@ -398,7 +398,7 @@ end
 -- TUTORIAL MESSAGE --
 local function tutMsgBehaviour(dt, entity, world)
   if checkTimer("start", entity.timers) == false then
-    loadBlockRect = {
+    local loadBlockRect = {
       x = entity.x + 31,
       y = entity.y + 16,
       w = 2,
@@ -443,22 +443,22 @@ local function tutMsgBehaviour(dt, entity, world)
   end
 
   if updateTimer(dt, "loadBlock", entity.timers) then
-    if loadBlockRect.h ~= 50 then
-      loadBlockRect.y = loadBlockRect.y - 1
-      loadBlockRect.h = loadBlockRect.h + 2
-    elseif loadBlockRect.w ~= 164.5 then
-      loadBlockRect.x = loadBlockRect.x - 1.25
-      loadBlockRect.w = loadBlockRect.w + 2.5
+    if entity.uniqueStorage.h ~= 50 then
+      entity.uniqueStorage.y = entity.uniqueStorage.y - 1
+      entity.uniqueStorage.h = entity.uniqueStorage.h + 2
+    elseif entity.uniqueStorage.w ~= 164.5 then
+      entity.uniqueStorage.x = entity.uniqueStorage.x - 1.25
+      entity.uniqueStorage.w = entity.uniqueStorage.w + 2.5
     end
   end
 
   if updateTimer(dt, "deleteBlock", entity.timers) then
-    if loadBlockRect.w ~= 2 then
-      loadBlockRect.x = loadBlockRect.x + 1.25
-      loadBlockRect.w = loadBlockRect.w - 2.5
-    elseif loadBlockRect.h ~= 2 then
-      loadBlockRect.y = loadBlockRect.y + 1
-      loadBlockRect.h = loadBlockRect.h - 2
+    if entity.uniqueStorage.w ~= 2 then
+      entity.uniqueStorage.x = entity.uniqueStorage.x + 1.25
+      entity.uniqueStorage.w = entity.uniqueStorage.w - 2.5
+    elseif entity.uniqueStorage.h ~= 2 then
+      entity.uniqueStorage.y = entity.uniqueStorage.y + 1
+      entity.uniqueStorage.h = entity.uniqueStorage.h - 2
     end
   end
 
@@ -470,29 +470,29 @@ end
 local function tutMsgDraw(entity, world)
   if entity.curAnim == 2 then
     setColor({255, 255, 255, 175})
-    love.graphics.rectangle("line", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
-    love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+    love.graphics.rectangle("line", entity.uniqueStorage.x, entity.uniqueStorage.y, entity.uniqueStorage.w, entity.uniqueStorage.h, 1, 1)
+    love.graphics.rectangle("fill", entity.uniqueStorage.x, entity.uniqueStorage.y, entity.uniqueStorage.w, entity.uniqueStorage.h, 1, 1)
 
-    if loadBlockRect.w > 160 then
+    if entity.uniqueStorage.w > 160 then
       love.graphics.setFont(bigFont)
       setColor({0, 0, 0, 255})
-      love.graphics.printf(entity.uniqueParam, loadBlockRect.x + 2, loadBlockRect.y + 2, loadBlockRect.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10, "left", 0, 0.1, 0.1)
       love.graphics.setFont(smallFont)
     end
 
     setColor({255, 255, 255, 255})
 
   elseif entity.curAnim == 3 and checkTimer("deleteBlock", entity.timers) == true then
-    if loadBlockRect.w > 2 and loadBlockRect.h > 2 then
+    if entity.uniqueStorage.w > 2 and entity.uniqueStorage.h > 2 then
       setColor({255, 255, 255, 175})
-      love.graphics.rectangle("line", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
-      love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h, 1, 1)
+      love.graphics.rectangle("line", entity.uniqueStorage.x, entity.uniqueStorage.y, entity.uniqueStorage.w, entity.uniqueStorage.h, 1, 1)
+      love.graphics.rectangle("fill", entity.uniqueStorage.x, entity.uniqueStorage.y, entity.uniqueStorage.w, entity.uniqueStorage.h, 1, 1)
     end
 
-    if loadBlockRect.w > 160 then
+    if entity.uniqueStorage.w > 160 then
       love.graphics.setFont(bigFont)
       setColor({0, 0, 0, 255})
-      love.graphics.printf(entity.uniqueParam, loadBlockRect.x + 2, loadBlockRect.y + 2, loadBlockRect.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10, "left", 0, 0.1, 0.1)
       love.graphics.setFont(smallFont)
     end
 
