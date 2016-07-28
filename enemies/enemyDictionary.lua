@@ -1,29 +1,5 @@
 -- enemyDictionary.lua --
 
--- general enemy functions --
-local function getAngle(pX, pY, eX, eY) -- need to rewrite this bullshit function...
-  angle = math.atan2(pY - eY, pX - eX)
-  if angle > -0.40 and angle < 0.40 then -- right
-    return math.pi
-  elseif angle > 2.8 or angle < -2.8 then -- left
-    return 0
-  elseif angle < -1.57 and angle > -2.8 then -- up left
-    return -0.523599
-  elseif angle < -0.40 and angle > -1.57 then -- up right
-    return (math.pi * 7)/6
-  --[[elseif angle > 0.40 and angle < 1.57 then -- down right
-    return (math.pi * 5)/6
-  elseif angle > 1.57 and angle < 2.8 then -- down left
-    return math.pi/6]]
-  elseif angle > 0.40 and angle < 1.18 then -- down right
-    return (math.pi * 5)/6
-  elseif angle > 1.18 and angle < 1.8 then -- down
-    return math.pi/2
-  elseif angle > 1.8 and angle < 2.8 then -- down left
-    return math.pi/6
-  end
-end
-
 --------- BEHAVIOURS ---------
 
 -- RUNNER --
@@ -419,249 +395,63 @@ local function turretWallBehaviour(dt, entity, world)
   entity.animations[entity.curAnim]:update(dt)
 end
 
---[[
-******************************************************
-******************************************************
-******************************************************
-********* UNUSED BEHAVIOUR FUNCTIONS BELOW ***********
-******************************************************
-******************************************************
-******************************************************
-]]
+-- TUTORIAL MESSAGE --
+local function tutMsgBehaviour(dt, entity, world)
+  if checkTimer("start", entity.timers) == false then
+    loadBlockRect = {
+      x = entity.x - 50,
+      y = entity.y - 7,
+      w = 164.5,
+      h = 2
+    }
 
--- TARGET --
-local function targetBehaviour(dt, entity, world)
-  -- static
+    addTimer(0.0, "start", entity.timers)
+  end
+    --timers:
+    -- deleteBlock
 
-  if entity.isDead then
-    -- create a timer.. etc
-    entity.curAnim = 2
-    addTimer(0.3, "death", entity.timers)
-    if updateTimer(dt, "death", entity.timers) then
-      entity.playDead = true
+
+  entity.dy = 0.15 * math.sin(love.timer.getTime() * .75 * math.pi)
+
+  if player.x < entity.x + entity.w + 50 and player.x > entity.x - 50 then
+    if entity.curAnim ~= 2 then
+      if checkTimer("loadBlock", entity.timers) == false then
+        addTimer(0.0, "loadBlock", entity.timers)
+      end
+      entity.curAnim = 2
+    end
+  else
+    if entity.curAnim == 2 then
+      -- resume anim 2
+      -- set frame to 1
+      entity.curAnim = 1
+      if checkTimer("loadBlock", entity.timers) then
+        deleteTimer("loadBlock", entity.timers)
+      end
     end
   end
 
+  if updateTimer(dt, "loadBlock", entity.timers) then
+    if loadBlockRect.h ~= 50 then
+      loadBlockRect.h = loadBlockRect.h + 1
+    --elseif loadBlockRect.w ~= 164.5 then
+      --loadBlockRect.w = loadBlockRect.w + 2.5
+    end
+  end
+
+  -- handle/update current animation running
   entity.animations[entity.curAnim]:update(dt)
 end
 
--- SHOOTER-RUNNER --
-local function srBehaviour(dt, entity, world)
-    -- set direction
-    if player.x > entity.x and entity.direction ~= "right" then
-      entity.direction = "right"
+-- TUTORIAL MESSAGE --
+local function tutMsgDraw(entity, world)
 
-      for i = 1, #entity.animations do
-        entity.animations[i]:flipH()
-      end
-
-    elseif player.x < entity.x and entity.direction ~= "left" then
-      entity.direction = "left"
-
-      for i = 1, #entity.animations do
-        entity.animations[i]:flipH()
-      end
-
-    end
-
-    -- movement/shooting
-    -- run towards player until within 200 pixels and create timer
-    if math.abs(entity.x - player.x) > 300 and not checkTimer("shoot", entity.timers) then
-      entity.curAnim = 1
-      if entity.direction == "right" then
-        entity.dx = entity.speed * dt
-      elseif entity.direction == "left" then
-        entity.dx = -(entity.speed * dt)
-      end
-    else -- once timer is created, stop and shoot at the player
-      entity.dx = 0
-
-      addTimer(0.0, "shoot", entity.timers)
-
-      if updateTimer(dt, "shoot", entity.timers) then
-        angle = getAngle(player.x, player.y, entity.x, entity.y)
-
-        if angle == math.pi or angle == 0 then
-          entity.curAnim = 2 -- left/right
-          if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
-          elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
-          end
-        elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
-          entity.curAnim = 3 -- up
-          if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 32, -20
-          elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -2, -20
-          end
-        elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
-          entity.curAnim = 4 -- down
-          if entity.direction == "right" then
-            entity.shootPoint.x, entity.shootPoint.y = 35, 25
-          elseif entity.direction == "left" then
-            entity.shootPoint.x, entity.shootPoint.y = -10, 25
-          end
-        end
-
-        addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-        resetTimer(1.2, "shoot", entity.timers) -- add timer
-      end
-    end
-
-    if entity.isDead then entity.playDead = true end
-
-    -- handle/update current animation running
-    entity.animations[entity.curAnim]:update(dt)
+  if entity.curAnim == 2 then
+    setColor({255, 255, 255, 175})
+    love.graphics.rectangle("fill", loadBlockRect.x, loadBlockRect.y, loadBlockRect.w, loadBlockRect.h)
+    setColor({255, 255, 255, 255})
+  end
 end
-
--- STATIC-SHOOTER --
-local function sBehaviour(dt, entity, world)
-    -- set direction
-    if player.x > entity.x and entity.direction ~= "right" then
-      entity.direction = "right"
-
-      for i = 1, #entity.animations do
-        entity.animations[i]:flipH()
-      end
-
-    elseif player.x < entity.x and entity.direction ~= "left" then
-      entity.direction = "left"
-
-      for i = 1, #entity.animations do
-        entity.animations[i]:flipH()
-      end
-    end
-
-    if checkTimer("shoot", entity.timers) == false then
-      addTimer(0.0, "shoot", entity.timers)
-      addTimer(0.0, "secondShot", entity.timers)
-    end
-
-    if updateTimer(dt, "shoot", entity.timers) then
-      angle = getAngle(player.x, player.y, entity.x, entity.y)
-
-      if angle == math.pi or angle == 0 then
-        entity.curAnim = 2 -- left/right
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
-        end
-      elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
-        entity.curAnim = 3 -- up
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 32, -20
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -2, -20
-        end
-      elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
-        entity.curAnim = 4 -- down
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 35, 25
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -10, 25
-        end
-      end
-
-      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(love.math.random(1.3, 1.5), "shoot", entity.timers) -- add timer between 1.3 and 1.5
-      resetTimer(0.1, "secondShot", entity.timers)
-    elseif updateTimer(dt, "secondShot", entity.timers) then
-      angle = getAngle(player.x, player.y, entity.x, entity.y)
-
-      if angle == math.pi or angle == 0 then
-        entity.curAnim = 2 -- left/right
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 45, 14 -- right
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -15, 12 -- left
-        end
-      elseif angle == (math.pi * 7)/6 or angle == -0.523599 then
-        entity.curAnim = 3 -- up
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 32, -20
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -2, -20
-        end
-      elseif angle == (math.pi * 5)/6 or angle == math.pi/6 then
-        entity.curAnim = 4 -- down
-        if entity.direction == "right" then
-          entity.shootPoint.x, entity.shootPoint.y = 35, 25
-        elseif entity.direction == "left" then
-          entity.shootPoint.x, entity.shootPoint.y = -10, 25
-        end
-      end
-
-      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.6, "secondShot", entity.timers)
-    end
-
-    if entity.isDead then entity.playDead = true end
-
-    -- handle/update current animation running
-    entity.animations[entity.curAnim]:update(dt)
-end
-
--- CAMERA-TURRET --
-local function cctvBehaviour(dt, entity, world)
-    if checkTimer("shoot", entity.timers) == false then
-      addTimer(0.0, "shoot", entity.timers)
-      addTimer(0.0, "secondShot", entity.timers)
-    end
-
-    if updateTimer(dt, "shoot", entity.timers) and entity.isDead ~= true then
-      angle = getAngle(player.x, player.y, entity.x, entity.y)
-
-      if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
-        angle = (math.pi * 5)/6
-        entity.curAnim = 1 -- down right
-        entity.shootPoint.x, entity.shootPoint.y = 13, 18
-      elseif angle == math.pi/6 or angle == 0 then
-        angle = math.pi/6
-        entity.curAnim = 2 -- down left
-        entity.shootPoint.x, entity.shootPoint.y = 0, 18
-      elseif angle == math.pi/2 then
-        entity.curAnim = 3 -- down
-        entity.shootPoint.x, entity.shootPoint.y = 8, 18
-      end
-
-      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.5, "shoot", entity.timers) -- add timer
-      resetTimer(0.1, "secondShot", entity.timers)
-    elseif updateTimer(dt, "secondShot", entity.timers) and entity.isDead ~= true then
-      angle = getAngle(player.x, player.y, entity.x, entity.y)
-
-      if angle == (math.pi * 5)/6 or angle == math.pi then --if angle == math.pi or angle == 0 then
-        angle = (math.pi * 5)/6
-        entity.curAnim = 1 -- down right
-        entity.shootPoint.x, entity.shootPoint.y = 13, 18
-      elseif angle == math.pi/6 or angle == 0 then
-        angle = math.pi/6
-        entity.curAnim = 2 -- down left
-        entity.shootPoint.x, entity.shootPoint.y = 0, 18
-      elseif angle == math.pi/2 then
-        entity.curAnim = 3 -- down
-        entity.shootPoint.x, entity.shootPoint.y = 8, 18
-      end
-
-      addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, entity.direction, world, angle)
-      resetTimer(1.6, "secondShot", entity.timers)
-    end
-
-    if entity.isDead then
-      -- create a timer.. etc
-      entity.curAnim = 4
-      addTimer(0.8, "death", entity.timers)
-      if updateTimer(dt, "death", entity.timers) then
-        entity.playDead = true
-      end
-    end
-
-    -- handle/update current animation running
-    entity.animations[entity.curAnim]:update(dt)
-end
-
 
 local dictionary = {
   {
@@ -924,111 +714,36 @@ local dictionary = {
     gravity = 0
   },
 
--------- LEGACY ENEMIES BELOW
-
   {
-    name = "shooter/run",
+    name = "tutMsg",
+    type = "message",
     hp = 1,
-    w = 16,
-    h = 36,
-    update = srBehaviour,
-    specialDraw = nil,
-    scale = {x = 1, y = 1, offX = 10, offY = 12},
-    worldOffSet = {offX = 0, offY = 0},
-    sprite = "img/enemies/shooter-run/shooter-run.png",
-    grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
-    shootPoint = {x = 0, y = 0},
-    animations = function(grid)
-      animations = {
-        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
-        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped 2
-        anim8.newAnimation(grid(2, 3), 0.1), -- shoot up 3
-        anim8.newAnimation(grid(3, 3), 0.1), -- shoot down 4
-        anim8.newAnimation(grid(2, 2), 0.1) -- falling 5
-      }
-      return animations
-    end,
-    filter = nil,
-    collision = nil,
-    gravity = 9.8
-  },
-
-  {
-    name = "static-shooter",
-    hp = 2,
-    w = 16,
-    h = 36,
-    update = sBehaviour,
-    specialDraw = nil,
-    scale = {x = 1, y = 1, offX = 10, offY = 12},
-    worldOffSet = {offX = 0, offY = 0},
-    sprite = "img/enemies/shooter-run/shooter-run.png",
-    grid = {x = 34, y = 48, w = 102, h = 144}, -- 27, 35,
-    shootPoint = {x = 0, y = 0},
-    animations = function(grid)
-      animations = {
-        anim8.newAnimation(grid('1-3', '1-2'), 0.1), -- running 1
-        anim8.newAnimation(grid(1, 3), 0.1), -- shooting/stopped 2
-        anim8.newAnimation(grid(2, 3), 0.1), -- shoot up 3
-        anim8.newAnimation(grid(3, 3), 0.1), -- shoot down 4
-        anim8.newAnimation(grid(2, 2), 0.1) -- falling 5
-      }
-      return animations
-    end,
-    filter = nil,
-    collision = nil,
-    gravity = 9.8
-  },
-
-  {
-    name = "camera-turret",
-    hp = 4,
-    w = 16,
-    h = 16,
-    update = cctvBehaviour,
-    specialDraw = nil,
-    scale = {x = 0.35, y = 0.35, offX = 7, offY = 5},
-    worldOffSet = {offX = 0, offY = 0},
-    sprite = "img/enemies/camera turret/camera turret.png",
-    grid = {x = 64, y = 64, w = 192, h = 256},
-    shootPoint = {x = 0, y = 0},
-    animations = function(grid)
-      animations = {
-        anim8.newAnimation(grid(1, 1), 0.1), -- face left 1
-        anim8.newAnimation(grid(2, 1), 0.1), -- face right 2
-        anim8.newAnimation(grid(3, 1), 0.1), -- down 3
-        anim8.newAnimation(grid('1-3', '2-4'), 0.1, 'pauseAtEnd'), -- dead 4
-      }
-      return animations
-    end,
-    filter = nil,
-    collision = nil,
-    gravity = 0
-  },
-
-  {
-    name = "target",
-    hp = 1,
-    w = 56,
-    h = 56,
-    update = targetBehaviour,
-    specialDraw = nil,
+    w = 64,
+    h = 32,
+    update = tutMsgBehaviour,
+    specialDraw = tutMsgDraw,
     scale = {x = 1, y = 1, offX = 0, offY = 0},
     worldOffSet = {offX = 0, offY = 0},
-    sprite = "img/enemies/target/target.png",
-    grid = {x = 32, y = 32, w = 96, h = 32},
+    sprite = "img/other/message indicatorBIG.png",
+    grid = {x = 64, y = 32, w = 192, h = 32},
     shootPoint = {x = 0, y = 0},
     animations = function(grid)
       animations = {
-        anim8.newAnimation(grid(1, 1), 0.1),     -- idle - 1
-        anim8.newAnimation(grid('2-3', 1), 0.15), -- hit  - 2
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 static
+        anim8.newAnimation(grid('2-3', 1), 0.2, "pauseAtEnd"), -- 2 morph
+        anim8.newAnimation(grid(3, 1, 2, 1), 0.2, "pauseAtEnd"), -- 3 morph back
       }
       return animations
     end,
-    filter = nil,
-    collision = nil,
+    filter = function(item, other)
+      -- nothing to see here
+    end,
+    collision = function(cols, len, entity, world)
+      -- or here
+    end,
     gravity = 0
-  }
+  },
+
 }
 
 function getEnemy(newEnemy) -- create some sort of clever dictionary look up function later on..if A > B etc... dictionary stuff
@@ -1036,8 +751,12 @@ function getEnemy(newEnemy) -- create some sort of clever dictionary look up fun
 
     if newEnemy.name == dictionary[i].name then
       newEnemy.hp, newEnemy.w, newEnemy.h = dictionary[i].hp, dictionary[i].w, dictionary[i].h
-      newEnemy.scale = dictionary[i].scale
 
+      -- type
+      if dictionary[i].type ~= nil then newEnemy.type = dictionary[i].type end
+
+      -- scale and offsets
+      newEnemy.scale = dictionary[i].scale
       newEnemy.worldOffSet = dictionary[i].worldOffSet
 
       -- functions

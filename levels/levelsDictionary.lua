@@ -88,13 +88,13 @@ local dictionary = {
       },
       zones = {
         {
-          name = "empty",
-          x = 100,
+          name = "tutorial messages",
+          x = 0,
           y = 45,
-          w = 2000,
+          w = 300,
           h = 100,
           enemies = {
-            --{name = "turret-wall", count = 0, max = 1, side = "right", x = 985, y = 5, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 400, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
           }
         },
       }, -- end of zones
@@ -118,11 +118,12 @@ local dictionary = {
         for i = 1, 35 do
           newFairy = copy(fairy, newFairy)
 
-          newFairy.x = love.math.random(player.x - 200, player.x + 200)
+          newFairy.x = love.math.random(player.x - 140, player.x + 400)
           newFairy.y = love.math.random(0, 300)
           newFairy.w = 2
           newFairy.h = 2
           newFairy.range = love.math.random(7, 15) * 0.01
+          newFairy.speed = love.math.random(8, 15) * 1
           newFairy.sinSpeed = love.math.random(1, 8) * 0.1
 
           for i = 1, love.math.random(1, 6) do
@@ -169,7 +170,7 @@ local dictionary = {
           end
 
           if newFairy.tails[#newFairy.tails].y < -2 then
-            newFairy.x = love.math.random(player.x - 200, player.x + 200)
+            newFairy.x = love.math.random(player.x - 300, player.x + 300)
             newFairy.y = 200
             newFairy.range = love.math.random(7, 15) * 0.01
             newFairy.sinSpeed = love.math.random(1, 8) * 0.1
