@@ -96,7 +96,16 @@ local dictionary = {
           enemies = {
             {name = "tutMsg", count = 0, max = 1, side = "right", x = 140, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Welcome to the tutorial level!\nUse the WASD keys to move to the next screen!"},
             {name = "tutMsg", count = 0, max = 1, side = "right", x = 405, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To jump press the 'N' key (The longer you hold it the bigger the jump).\nJump over these pits in order to make it to the next screen!"},
-            {name = "tutMsg", count = 0, max = 1, side = "right", x = 757, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To shoot press the 'M' key.\nYou can practise on the targets up ahead!"}
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 757, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To shoot press the 'M' key and use the WASD keys to aim.\nYou can practise on the targets up ahead!"},
+            {name = "target", count = 0, max = 1, side = "right", x = 900, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "target", count = 0, max = 1, side = "right", x = 900, y = 65, dynamic = false, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "target", count = 0, max = 1, side = "right", x = 950, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "target", count = 0, max = 1, side = "right", x = 950, y = 65, dynamic = false, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 1110, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "To crouch press the 'S' key while standing still.\nThere's a turret up ahead, destroy it by crouching and shooting!"},
+            {name = "matrix-turret", count = 0, max = 1, side = "right", x = 1340, y = 120, dynamic = false, spawnTimer = 0, spawnTimerMax = 3},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 1472.5, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Your lives are displayed in the top left corner, you start each level with 3 and only 3 so be careful! Once they're gone it's game over!"},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 1690, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Upgrades will occasionally fly across the screen during a level. To acquire them you'll have to shoot them down before they disappear! Test one out here!"},
+            {name = "tutMsg", count = 0, max = 1, side = "right", x = 2125, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Congratulations!\nYou completed the Tutorial Level!\nStep through the door to continue!"},
           }
         },
       }, -- end of zones

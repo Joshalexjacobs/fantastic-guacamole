@@ -476,7 +476,7 @@ local function tutMsgDraw(entity, world)
     if entity.uniqueStorage.w > 160 then
       love.graphics.setFont(bigFont)
       setColor({0, 0, 0, 255})
-      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10 - 5, "left", 0, 0.1, 0.1)
       love.graphics.setFont(smallFont)
     end
 
@@ -492,12 +492,75 @@ local function tutMsgDraw(entity, world)
     if entity.uniqueStorage.w > 160 then
       love.graphics.setFont(bigFont)
       setColor({0, 0, 0, 255})
-      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10, "left", 0, 0.1, 0.1)
+      love.graphics.printf(entity.uniqueParam, entity.uniqueStorage.x + 2, entity.uniqueStorage.y + 2, entity.uniqueStorage.w * 10 - 5, "left", 0, 0.1, 0.1)
       love.graphics.setFont(smallFont)
     end
 
     setColor({255, 255, 255, 255})
   end
+end
+
+-- TARGET --
+local function targetBehaviour(dt, entity, world)
+  if checkTimer("start", entity.timers) == false then
+    entity.type = "invincible"
+    addTimer(0.0, "start", entity.timers)
+  end
+
+  if player.x < entity.x + entity.w + 50 and player.x > entity.x - 50 and checkTimer("spawn", entity.timers) == false then
+    entity.curAnim = 2
+    entity.type = "enemy"
+    addTimer(0.0, "spawn", entity.timers)
+  end
+
+  if entity.isDead and checkTimer("death", entity.timers) == false then
+    addTimer(0.4, "death", entity.timers)
+    entity.curAnim = 3
+    entity.type = "dead"
+  elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
+    entity.playDead = true
+  end
+
+  -- handle/update current animation running
+  entity.animations[entity.curAnim]:update(dt)
+end
+
+-- MATRIX TURRET --
+local function matrixTurretBehaviour(dt, entity, world)
+  if checkTimer("start", entity.timers) == false then
+    entity.type = "invincible"
+    addTimer(0.0, "start", entity.timers)
+  end
+
+  if player.x < entity.x + entity.w + 180 and player.x > entity.x - 180 and checkTimer("spawn", entity.timers) == false then
+    entity.curAnim = 2
+    entity.type = "enemy"
+    addTimer(0.0, "spawn", entity.timers)
+    addTimer(1.5, "shoot", entity.timers)
+    addTimer(0.0, "shootAnim", entity.timers)
+  end
+
+  if checkTimer("shoot", entity.timers) and updateTimer(dt, "shoot", entity.timers) then
+    addBullet(true, entity.x + entity.shootPoint.x, entity.y + entity.shootPoint.y, "right", world, math.pi)
+    entity.curAnim = 3
+    resetTimer(0.3, "shoot", entity.timers)
+    resetTimer(0.1, "shootAnim", entity.timers)
+  end
+
+  if checkTimer("shootAnim", entity.timers) and updateTimer(dt, "shootAnim", entity.timers) then
+    entity.curAnim = 2
+  end
+
+  if entity.isDead and checkTimer("death", entity.timers) == false then
+    entity.curAnim = 4
+    entity.type = "invincible"
+
+    deleteTimer("shoot", entity.timers)
+    deleteTimer("shootAnim", entity.timers)
+  end
+
+  -- handle/update current animation running
+  entity.animations[entity.curAnim]:update(dt)
 end
 
 local dictionary = {
@@ -791,6 +854,71 @@ local dictionary = {
     gravity = 0
   },
 
+  {
+    name = "target",
+    hp = 2,
+    w = 30,
+    h = 30,
+    update = targetBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 1, offY = 1},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/enemies/target/target.png",
+    grid = {x = 32, y = 32, w = 96, h = 64},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(2, 2), 0.1), -- 1 invisible
+        anim8.newAnimation(grid('1-3', 1, 1, 2), 0.1, "pauseAtEnd"), -- 2 spawn
+        anim8.newAnimation(grid(2, 2, 1, 2), 0.1), -- 3 dying
+      }
+      return animations
+    end,
+    filter = function(item, other) -- default enemy filter
+      -- do nothing
+    end,
+    collision = function(cols, len, entity, world)
+      -- do nothing
+    end,
+    gravity = 0
+  },
+
+  {
+    name = "matrix-turret",
+    hp = 15,
+    w = 25,
+    h = 56,
+    update = matrixTurretBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 25, offY = 8},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/enemies/matrix turret/matrix turretBIG.png",
+    grid = {x = 64, y = 64, w = 192, h = 320},
+    shootPoint = {x = -20, y = 16},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 idle
+        anim8.newAnimation(grid('1-3', '1-4', '1-2', 5), 0.1, "pauseAtEnd"), -- 2 spawn
+        anim8.newAnimation(grid(3, 5), 0.1), -- 3 shoot
+        anim8.newAnimation(grid('2-1', 5, '3-1', '4-1'), 0.1, "pauseAtEnd"), -- 4 despawn
+
+      }
+      return animations
+    end,
+    filter = function(item, other) -- default enemy filter
+      if other.type == "player" then
+        return 'cross'
+      end
+    end,
+    collision = function(cols, len, entity, world)
+      for i = 1, len do
+        if cols[i].other.type == "player" and entity.isDead == false then
+          cols[i].other.killPlayer(world)
+        end
+      end
+    end,
+    gravity = 0
+  },
 }
 
 function getEnemy(newEnemy) -- create some sort of clever dictionary look up function later on..if A > B etc... dictionary stuff
