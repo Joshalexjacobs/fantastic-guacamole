@@ -134,7 +134,7 @@ function loadPlayer(world, playerSkinV, playerSkinH)
 end
 
 --------- PLAYER GLOBAL ---------
-local shootTimerMax = 0.15 -- 0.2
+local shootTimerMax = 0.2 -- 0.15
 local shootTimer = 0
 
 local animTimerMax = 0.2

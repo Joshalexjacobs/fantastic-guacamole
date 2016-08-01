@@ -563,6 +563,51 @@ local function matrixTurretBehaviour(dt, entity, world)
   entity.animations[entity.curAnim]:update(dt)
 end
 
+-- UPGRADE POD --
+local function upgradeBehaviour(dt, entity, world)
+    if entity.direction == "right" and entity.isDead == false then
+      --entity.dx = entity.speed * dt
+      entity.dx = 80 * dt
+    elseif entity.direction == "left" and entity.isDead == false then
+      --entity.dx = -(entity.speed * dt)
+      entity.dx = -(80 * dt)
+    end
+
+    if entity.isDead == false then
+      entity.dy = 0.17 * math.sin(love.timer.getTime() * .55 * math.pi)
+    end
+
+    if entity.isDead and checkTimer("death", entity.timers) == false then
+      addTimer(0.3, "death", entity.timers)
+      addEnemy(entity.uniqueParam, entity.x + 4, entity.y, entity.direction, world)
+      entity.curAnim = 2
+      entity.dy = 0
+      entity.dx = 0
+      entity.type = "dead"
+    elseif entity.isDead and updateTimer(dt, "death", entity.timers) then
+      entity.playDead = true
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
+-- MACHINE GUN UPGRADE --
+local function mgUPBehaviour(dt, entity, world)
+  if checkTimer("spawn", entity.timers) == false then
+    entity.dy = -2.5
+    addTimer(0.0, "spawn", entity.timers)
+  end
+
+    if entity.isDead then
+      entity.type = "dead"
+      entity.playDead = true
+    end
+
+    -- handle/update current animation running
+    entity.animations[entity.curAnim]:update(dt)
+end
+
 local dictionary = {
   {
     name = "runner",
@@ -918,6 +963,75 @@ local dictionary = {
       end
     end,
     gravity = 0
+  },
+
+  {
+    name = "upgrade",
+    type = "enemy",
+    hp = 1,
+    w = 16,
+    h = 16,
+    update = upgradeBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 0, offY = 0},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/enemies/upgrade pod/upgradePod.png",
+    grid = {x = 16, y = 16, w = 48, h = 48},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 3, '3-1', '2-1'), 0.075), -- 1 floating
+        anim8.newAnimation(grid('2-3', 3), 0.1), -- 2 dying
+      }
+      return animations
+    end,
+    filter = function(item, other)
+      -- nothing to see here
+    end,
+    collision = function(cols, len, entity, world)
+      -- or here
+    end,
+    gravity = 0
+  },
+
+  {
+    name = "machineGun",
+    type = "machineGun",
+    hp = 1,
+    w = 8,
+    h = 8,
+    update = mgUPBehaviour,
+    specialDraw = nil,
+    scale = {x = 1, y = 1, offX = 3.5, offY = 2},
+    worldOffSet = {offX = 0, offY = 0},
+    sprite = "img/upgrades/upgrades.png",
+    grid = {x = 16, y = 16, w = 16, h = 16},
+    shootPoint = {x = 0, y = 0},
+    animations = function(grid)
+      animations = {
+        anim8.newAnimation(grid(1, 1), 0.1), -- 1 alive
+      }
+      return animations
+    end,
+    filter = function(item, other)
+      if other.type == "player" then
+        return 'cross'
+      elseif other.type == "ground" then
+        return 'slide'
+      end
+    end,
+    collision = function(cols, len, entity, world)
+      for i = 1, len do
+        if cols[i].other.type == "player" and entity.isDead == false then
+          --player.upgrade = "machineGun"
+          entity.isDead = true
+        elseif cols[i].other.type == "ground" and entity.isDead == false and checkTimer("bounce", entity.timers) == false then
+          entity.dy = -1
+          addTimer(0.0, "bounce", entity.timers)
+        end
+      end
+    end,
+    gravity = 9.8
   },
 }
 

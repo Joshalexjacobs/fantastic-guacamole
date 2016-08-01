@@ -54,6 +54,17 @@ local bounds = {
   top = 0
 }
 
+local gui = {
+  livesX = 5,
+  livesY = 5,
+  livesPadding = 18, -- 15
+  livesSprite = "img/other/lives.png",
+  livesSpriteSheet = nil,
+  livesGrid = nil,
+  livesAnimations = nil,
+  livesCurAnim = 1,
+}
+
 -- Level specific functions
 local levelFunctions = {}
 
@@ -94,6 +105,16 @@ function game:enter(menu, levelName)
   -- run level specific load
   if levelFunctions.load ~= nil then levelFunctions.load() end
 
+  -- load gui
+  gui.livesSpriteSheet = love.graphics.newImage(gui.livesSprite)
+  gui.livesGrid = anim8.newGrid(16, 16, 32, 16, 0, 0, 0)
+  gui.livesAnimations = {
+    anim8.newAnimation(gui.livesGrid(1, 1), 0.1), -- 1 regular lives
+    anim8.newAnimation(gui.livesGrid(2, 1), 0.1), -- 2 tutorial lives
+  }
+
+  if level.name == "tutorial" then gui.livesCurAnim = 2 end
+
   -- load boss
   waterWalker:load(world)
 
@@ -128,6 +149,9 @@ function game:update(dt)
   if bossFight then -- if player activated boss fight, update boss
     waterWalker:update(dt, world)
   end
+
+  -- update gui
+  gui.livesAnimations[gui.livesCurAnim]:update(dt)
 
   camera:lockPosition(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale)
 end
@@ -165,15 +189,24 @@ function game:draw()
 
   camera:detach()
 
+  -- draw gui
+  setColor({255, 255, 255, 180}) -- set transparency
+
+  for i = 0, player.lives - 1 do
+    if i > 2 then break end
+    gui.livesAnimations[gui.livesCurAnim]:draw(gui.livesSpriteSheet, gui.livesX + gui.livesPadding * i, gui.livesY, 0, 1, 1, 0, 0)
+  end
+
+  setColor({255, 255, 255, 255})
+
   if bossFight then
     waterWalker:drawHealth()
   end
 
   if debug then
-
-    love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
-    love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
-    love.graphics.print(player.lives, 5, 35)
+    --love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
+    --love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
+    --love.graphics.print(player.lives, 5, 35)
     if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
   end
 end

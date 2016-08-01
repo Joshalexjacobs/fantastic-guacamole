@@ -65,6 +65,7 @@ local dictionary = {
           w = 2000,
           h = 100,
           enemies = {
+            {name = "upgrade", count = 0, max = 1, side = "left", x = 925, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2, uniqueParam = "machineGun"},
             {name = "turret-wall", count = 0, max = 1, side = "right", x = 985, y = 5, dynamic = false, spawnTimer = 0, spawnTimerMax = 3}
           }
         },
@@ -108,6 +109,17 @@ local dictionary = {
             {name = "tutMsg", count = 0, max = 1, side = "right", x = 2125, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 3, uniqueParam = "Congratulations!\nYou completed the Tutorial Level!\nStep through the door to continue!"},
           }
         },
+
+        {
+          name = "upgrade",
+          x = 1775,
+          y = 45,
+          w = 50,
+          h = 100,
+          enemies = {
+            {name = "upgrade", count = 0, max = 1, side = "left", x = 2000, y = 25, dynamic = false, spawnTimer = 0, spawnTimerMax = 2.2, uniqueParam = "machineGun"},
+          }
+        }
       }, -- end of zones
 
       -- level specific functions
