@@ -141,7 +141,7 @@ local dictionary = {
         for i = 1, 35 do
           newFairy = copy(fairy, newFairy)
 
-          newFairy.x = love.math.random(player.x - 140, player.x + 400)
+          newFairy.x = love.math.random(player.x - 140, player.x + 800)
           newFairy.y = love.math.random(0, 300)
           newFairy.w = 2
           newFairy.h = 2
@@ -193,7 +193,7 @@ local dictionary = {
           end
 
           if newFairy.tails[#newFairy.tails].y < -2 then
-            newFairy.x = love.math.random(player.x - 300, player.x + 300)
+            newFairy.x = love.math.random(player.x - 300, player.x + 500)
             newFairy.y = 200
             newFairy.range = love.math.random(7, 15) * 0.01
             newFairy.sinSpeed = love.math.random(1, 8) * 0.1

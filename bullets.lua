@@ -1,8 +1,14 @@
 -- bullets.lua --
 
+--local hit = love.audio.newSource("sound/bullet sound/hit.wav", static)
+--hit:setVolume(0.1)
+--love.audio.play(hit)
+
 local pbullet = {
   type = "invincible",
   owner = "player",
+  hitSound = nil,
+  hit = false,
   x = nil,
   y = nil,
   w = 4, -- 8
@@ -25,9 +31,11 @@ local pbullet = {
   reaction = function(entity, cols, len)
     for j = 1, len do
       if cols[j].other.type == "enemy" or cols[j].other.type == "boss" or cols[j].other.type == "bubble" then
+        entity.hit = true
         entity.isDead = true -- destroy bullet
         cols[j].other.hp = cols[j].other.hp - 1 -- decrement other.hp
       elseif cols[j].other.type == "block" or cols[j].other.type == "ground" then
+        entity.hit = true
         entity.isDead = true
       end
     end
@@ -104,6 +112,9 @@ function loadBullet()
     anim8.newAnimation(pbullet.spriteGrid('1-3', '3-4'), 0.02, 'pauseAtEnd'), -- 3 dead
   }
 
+  pbullet.hitSound = love.audio.newSource("sound/bullet sound/hit.wav", static)
+  pbullet.hitSound:setVolume(0.00)
+
   -- load enemy bullets
   ebullet.spriteSheet = love.graphics.newImage("img/other/enemy bullet.png")
 
@@ -119,7 +130,7 @@ function addBullet(danger, xPos, yPos, direction, world, newDir, isProne) -- add
 
   isProne = isProne or false
 
-  if pBulletsCount >= 4 and danger == false then
+  if pBulletsCount >= player.bulletsMax and danger == false then -- 4
     return false
   elseif danger == false then
     newBullet = copy(pbullet, newBullet)
@@ -167,6 +178,9 @@ local function handleBullets(dt, left, viewportWidth, world, bullets)
         end
         newBullet.curAnim = 3
         addTimer(0.1, "dead", newBullet.timers)
+        if newBullet.hit == true then
+          love.audio.play(newBullet.hitSound)
+        end
       end
 
       if updateTimer(dt, "dead", newBullet.timers) then

@@ -36,15 +36,14 @@ game = {}
 local debug = true
 bossFight = false
 maxFPS = 60
+endLevel = false
 
 --windowWidth, windowHeight, windowScale = 320, 180, 1 -- 1:1
 --windowWidth, windowHeight, windowScale = 640, 360, 2 -- 2:2
---windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
-windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
+windowWidth, windowHeight, windowScale = 960, 540, 3 -- 3:3
+--windowWidth, windowHeight, windowScale = 1280, 720, 4 -- 4:4
 --windowWidth, windowHeight, windowScale = 1600, 900, 5  -- 5:5
 --windowWidth, windowHeight, windowScale = 1920, 1080, 6 -- 6:6
-
-
 
 -- Camera boundaries
 local bounds = {
@@ -65,10 +64,66 @@ local gui = {
   livesCurAnim = 1,
 }
 
+local leftWall = {
+  name = "leftWall",
+  type = "pBlock",
+  filter = function(item, other)
+    if other.type == "player" then
+      return 'slide'
+    end
+  end,
+  x = 0,
+  y = 0,
+  h = 200,
+  w = 10
+}
+
+local fade = {
+  x = 0,
+  y = 0,
+  w = 320,
+  h = 180,
+  speed = 180,
+  transparency = 255,
+  volume = 0,
+  fadeIn = function(dt, fade, music)
+    if fade.transparency > 0 then
+      fade.transparency = fade.transparency - fade.speed * dt
+    end
+
+    if fade.volume < 0.75 then
+      fade.volume = fade.volume + 0.1 * dt
+      music:setVolume(fade.volume)
+    end
+  end,
+  fadeOut = function(dt, fade, music)
+    if fade.transparency < 255 then
+      fade.transparency = fade.transparency + fade.speed * dt
+    end
+
+    if fade.volume > 0 then
+      fade.volume = fade.volume - 0.5 * dt
+      music:setVolume(fade.volume)
+    end
+  end,
+  draw = function(fade)
+    setColor(0, 0, 0, fade.transparency)
+    love.graphics.rectangle("fill", fade.x, fade.y, fade.w, fade.h)
+    setColor(255, 255, 255, 255)
+  end
+}
+
 -- Level specific functions
 local levelFunctions = {}
 
-function game:enter(menu, levelName)
+function game:enter(menu, levelName, res)
+  windowWidth, windowHeight, windowScale = res.w, res.h, res.s
+
+  tutMusic = love.audio.newSource("music/matrix.wav", stream)
+
+  -- adjust window
+  love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
+
   -- seed math.random
   math.randomseed(os.time())
   love.graphics.setDefaultFilter( "nearest", "nearest") -- set nearest pixel distance
@@ -92,11 +147,13 @@ function game:enter(menu, levelName)
     end
   end
 
+  world:add(leftWall, leftWall.x, leftWall.y, leftWall.w, leftWall.h)
+
   -- set level bounds
   bounds = level.bounds
 
   -- adjust window
-  love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
+  --love.window.setMode(windowWidth, windowHeight, {fullscreen=false, vsync=true})
 
   -- load player
   player.x = startPos -- set player starting position
@@ -125,6 +182,17 @@ end
 
 
 function game:update(dt)
+  if tutMusic:isPlaying() == false then
+    love.audio.play(tutMusic)
+  end
+
+
+  if endLevel == false then
+    fade.fadeIn(dt, fade, tutMusic)
+  elseif endLevel then
+    fade.fadeOut(dt, fade, tutMusic)
+  end
+
   dt = math.min(dt, 1/maxFPS)
 
   -- if player wants to quit
@@ -133,6 +201,9 @@ function game:update(dt)
   -- update bounds
   local left, right = camera:position()
   bounds.left = left - ((180 * windowScale) - (20 * windowScale))
+
+  leftWall.x = bounds.left
+  world:move(leftWall, leftWall.x, leftWall.y, leftWall.filter)
 
   -- run level specific update
   if levelFunctions.update ~= nil then levelFunctions.update(dt) end
@@ -187,6 +258,9 @@ function game:draw()
       --drawZones()
     end
 
+    -- draw leftWall
+    -- love.graphics.rectangle("line", leftWall.x, leftWall.y, leftWall.w, leftWall.h)
+
   camera:detach()
 
   -- draw gui
@@ -204,9 +278,13 @@ function game:draw()
   end
 
   if debug then
-    --love.graphics.print(tostring(love.timer.getFPS( )), 5, 5) -- print fps in the top left corner of the screen
+    love.graphics.print(tostring(love.timer.getFPS( )), 0.2, 0.2, 0, 0.35, 0.35) -- print fps in the top left corner of the screen
     --love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
     --love.graphics.print(player.lives, 5, 35)
     if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
   end
+
+  -- draw fade
+  fade.draw(fade)
+
 end

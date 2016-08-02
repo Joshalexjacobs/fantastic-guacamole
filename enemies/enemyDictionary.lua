@@ -1023,7 +1023,12 @@ local dictionary = {
     collision = function(cols, len, entity, world)
       for i = 1, len do
         if cols[i].other.type == "player" and entity.isDead == false then
-          --player.upgrade = "machineGun"
+          if player.upgrade ~= "mg" then
+            player.upgrade = "mg"
+            player.shootTimerMax = player.shootTimerMax - 0.03
+            player.bulletsMax = player.bulletsMax + 1
+          end
+
           entity.isDead = true
         elseif cols[i].other.type == "ground" and entity.isDead == false and checkTimer("bounce", entity.timers) == false then
           entity.dy = -1

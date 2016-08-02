@@ -30,17 +30,22 @@ local player = {
   animations = {},
   curAnim = 1,
   timers = {},
+  shootTimerMax = 0.17, -- 0.17
+  bulletsMax = 4,
+  upgrade = nil,
   filter = function(item, other)
     if other.type == "enemy" then
       return 'cross'
-    elseif other.type == "block" or other.type == "ground" or other.type == "boss" then
+    elseif other.type == "block" or other.type == "pBlock" or other.type == "ground" or other.type == "boss" then
       return 'slide'
     elseif other.type == "bullet" then
+      return 'cross'
+    elseif other.type == "portal" then
       return 'cross'
     end
   end,
   respawnFilter = function(item, other)
-    if other.type == "block" or other.type == "ground" then
+    if other.type == "block" or other.type == "ground" or other.type == "pBlock" then
       return 'slide'
     end
   end,
@@ -61,6 +66,10 @@ local player = {
         player.dx = 2
         player.dy = -5
       end
+
+      player.shootTimerMax = 0.17
+      player.bulletsMax = 4
+      player.upgrade = nil
 
       player.curAnim = 8
       player.isGrounded = false
@@ -99,6 +108,10 @@ invinceTimerMax = 2.0
 --------- GENERAL FUNCTIONS ---------
 
 function loadPlayer(world, playerSkinV, playerSkinH)
+  if world:hasItem(player) then
+    world:remove(player)
+  end
+
   world:add(player, player.x, player.y, player.w, player.h)
 
   -- load player sprites
@@ -134,7 +147,7 @@ function loadPlayer(world, playerSkinV, playerSkinH)
 end
 
 --------- PLAYER GLOBAL ---------
-local shootTimerMax = 0.2 -- 0.15
+--local shootTimerMax = 0.17 -- 0.15
 local shootTimer = 0
 
 local animTimerMax = 0.2
@@ -352,6 +365,18 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
     else
       player.isGrounded = false
     end
+
+    for i = 1, len do
+      if cols[i].other.type == "portal" then
+        endLevel = true
+        addTimer(2.0, "fadeOut", player.timers)
+      end
+    end
+
+  end
+
+  if checkTimer("fadeOut", player.timers) and updateTimer(dt, "fadeOut", player.timers) then
+    love.event.quit()
   end
 
   --------- SHOOTING ---------
@@ -361,7 +386,7 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
 
   if animTimer > 0 then animTimer = animTimer - (1 * dt) end
 
-  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false and player.isDead == false and player.lives > -1 then
+  if (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.isDead == false and player.lives > -1 and player.upgrade == "mg" then
     if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1], player.isProne) then
       love.audio.play(playerSounds.shoot)
       player.shootLock = true
@@ -371,7 +396,19 @@ function updatePlayer(dt, world) -- Update Player Movement [http://2dengine.com/
       end
     end
 
-    shootTimer = shootTimerMax
+    shootTimer = player.shootTimerMax
+    animTimer = animTimerMax
+  elseif (pressCircle() or love.keyboard.isDown('m')) and shootTimer <= 0 and player.shootLock == false and player.isDead == false and player.lives > -1 then
+    if addBullet(false, player.x + player.controls[2].x, player.y + player.controls[2].y, player.lastDir, world, player.controls[1], player.isProne) then
+      love.audio.play(playerSounds.shoot)
+      player.shootLock = true
+
+      if player.isProne then
+        resetTimer(0.05, "proneShot", player.timers)
+      end
+    end
+
+    shootTimer = player.shootTimerMax
     animTimer = animTimerMax
   end
 

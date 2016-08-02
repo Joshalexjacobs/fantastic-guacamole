@@ -67,9 +67,17 @@ function waterWalker:load(world)
   }
 
   -- add to world
+  if world:hasItem(waterWalker) then
+    world:remove(waterWalker)
+  end
+
   world:add(waterWalker, waterWalker.x, waterWalker.y, waterWalker.w, waterWalker.h)
 
   -- add legs to world
+  if world:hasItem(legs) then
+    world:remove(legs)
+  end
+
   world:add(legs, legs.x, legs.y, legs.w, legs.h) -- leg stuff
 
   -- add any needed timers
