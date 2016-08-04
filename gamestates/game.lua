@@ -117,6 +117,7 @@ local fade = {
 local levelFunctions = {}
 
 function game:enter(menu, levelName, res)
+
   windowWidth, windowHeight, windowScale = res.w, res.h, res.s
 
   tutMusic = love.audio.newSource("music/matrix.wav", stream)
@@ -126,7 +127,7 @@ function game:enter(menu, levelName, res)
 
   -- seed math.random
   math.randomseed(os.time())
-  love.graphics.setDefaultFilter( "nearest", "nearest") -- set nearest pixel distance
+  love.graphics.setDefaultFilter("nearest", "nearest") -- set nearest pixel distance
 
   -- load level
   local pSkinV, pSkinH, tilemap, startPos = loadLevel(levelName, world, levelFunctions)
@@ -136,7 +137,7 @@ function game:enter(menu, levelName, res)
   loadBubbles()
 
   -- load tilemap
-  map = sti.new(tilemap, {"bump"})
+  map = sti(tilemap, {"bump"})
 
   map:bump_init(world)
 
@@ -173,11 +174,13 @@ function game:enter(menu, levelName, res)
   if level.name == "tutorial" then gui.livesCurAnim = 2 end
 
   -- load boss
-  waterWalker:load(world)
+  -- waterWalker:load(world)
 
   -- load camera
-  camera = Camera(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale, 1, 0, Camera.smooth.linear(100))
+  --camera = Camera(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale, 1, 0, Camera.smooth.linear(player.speed))
+  camera = Camera(math.floor( player.x + 20 + (160 * (windowScale - 1)) ), math.floor( 90 * windowScale ), 1, 0)
   camera.smoother = Camera.smooth.forwardDamped(3)
+  --camera.smoother = Camera.smooth.linear(player.speed)
 end
 
 
@@ -186,14 +189,14 @@ function game:update(dt)
     love.audio.play(tutMusic)
   end
 
-
   if endLevel == false then
     fade.fadeIn(dt, fade, tutMusic)
   elseif endLevel then
     fade.fadeOut(dt, fade, tutMusic)
   end
 
-  dt = math.min(dt, 1/maxFPS)
+  -- not sure if this is really changing anything
+  --dt = math.min(dt, 1/maxFPS)
 
   -- if player wants to quit
   if love.keyboard.isDown('escape') then love.event.quit() end -- if player hits esc then quit
@@ -217,14 +220,15 @@ function game:update(dt)
   updateEnemies(dt, world)
   updateZones(player.x, player.w, bounds.left, world, dt)
 
-  if bossFight then -- if player activated boss fight, update boss
-    waterWalker:update(dt, world)
-  end
+  --if bossFight then -- if player activated boss fight, update boss
+    --waterWalker:update(dt, world)
+  --end
 
   -- update gui
-  gui.livesAnimations[gui.livesCurAnim]:update(dt)
+  -- gui.livesAnimations[gui.livesCurAnim]:update(dt)
 
-  camera:lockPosition(player.x + 20 + (160 * (windowScale - 1)), 90 * windowScale)
+  --camera:lockPosition(math.floor(player.x + 20 + (160 * (windowScale - 1))), math.floor(90 * windowScale))
+  camera:lockX(math.floor(player.x + 20 + (160 * (windowScale - 1))))
 end
 
 function game:keyreleased(key, code)
@@ -236,10 +240,15 @@ function game:keyreleased(key, code)
 end
 
 function game:draw()
-
   love.graphics.scale(windowScale, windowScale)
 
+  --[[ IF YOU DEACTIVATE CAMERA AND UNCOMMENT THESE LINES, THE TILED SEAM PROBLEM GOES AWAY ]]
+  --local tx = math.floor(player.x - 90)
+
+  --love.graphics.translate(-tx, 0)
+
   camera:attach()
+    map:setDrawRange(math.floor(bounds.left), 0, 320, 180)
     map:draw()
 
     -- run level specific draw
@@ -250,17 +259,14 @@ function game:draw()
     drawBullets()
     drawBubbles()
 
-    if bossFight then -- if player activated boss fight, update boss
-      waterWalker:draw()
-    end
+    --if bossFight then -- if player activated boss fight, update boss
+      --waterWalker:draw()
+    --end
 
-    if debug then
-      --drawZones()
-    end
+    --drawZones()
 
     -- draw leftWall
     -- love.graphics.rectangle("line", leftWall.x, leftWall.y, leftWall.w, leftWall.h)
-
   camera:detach()
 
   -- draw gui
@@ -273,16 +279,11 @@ function game:draw()
 
   setColor({255, 255, 255, 255})
 
-  if bossFight then
-    waterWalker:drawHealth()
-  end
+  --if bossFight then
+    --waterWalker:drawHealth()
+  --end
 
-  if debug then
-    love.graphics.print(tostring(love.timer.getFPS( )), 0.2, 0.2, 0, 0.35, 0.35) -- print fps in the top left corner of the screen
-    --love.graphics.printf(math.floor(player.x + 0.5), 5, 20, 100)
-    --love.graphics.print(player.lives, 5, 35)
-    if player.lives == 0 then love.graphics.printf("GAME OVER", 360, 300, 100) end
-  end
+  love.graphics.print(tostring(love.timer.getFPS( )), 0.2, 0.2, 0, 0.35, 0.35) -- print fps in the top left corner of the screen
 
   -- draw fade
   fade.draw(fade)

@@ -20,6 +20,10 @@
 -- guy who made sti
 --]]
 
+frame_limiter = require 'frameLimiter'
+
+local fpsMax = 60
+
 -- Gamestates --
 Gamestate = require 'gamestates/gamestate'
 require 'gamestates/start'
@@ -36,13 +40,21 @@ function copy(obj, seen)
   return res
 end
 
+function love.run() --delete default love.run
+end
+
 function love.load(arg)
+  frame_limiter.set(fpsMax) -- set the cap
+
   -- load font
   smallFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 17)
   teenyFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 13)
   bigFont = love.graphics.newFont("img/fonts/OpenSansPXBold.ttf", 100)
   love.graphics.setFont(smallFont)
 
+
   Gamestate.registerEvents()
   Gamestate.switch(menu)
 end
+
+frame_limiter.run() -- start the main loop
