@@ -262,7 +262,7 @@ function game:draw()
     --if bossFight then -- if player activated boss fight, update boss
       --waterWalker:draw()
     --end
-
+    
     --drawZones()
 
     -- draw leftWall

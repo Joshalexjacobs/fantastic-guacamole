@@ -76,8 +76,8 @@ local dictionary = {
 
   {
       name = "tutorial",
-      playerSkinV = "img/player/matrix player.png", -- vertical
-      playerSkinH = "img/player/matrix prone.png", -- horizontal
+      playerSkinV = "img/player/matrix playerBIG.png", -- vertical
+      playerSkinH = "img/player/matrix proneBIG.png", -- horizontal
       tilemap = "tiled/matrix.lua",
       startPos = 140, -- player's starting position
       bounds = { -- camera boundaries
